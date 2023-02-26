@@ -18,13 +18,13 @@ namespace PawnShopBE.Core.Models
         public string ContractCode { get; set; }
         public DateTime ContractStartDate { get; set; }
         public DateTime ContractEndDate { get; set; }
-        public DateTime ActualEndDate { get; set; }
+        public DateTime? ActualEndDate { get; set; }
         public decimal Loan { get; set; }
         public decimal? InsuranceFee { get; set; }
         public decimal? StorageFee { get; set; }
         public decimal CustomerRecieved { get; set; }
         public string Description { get; set; }
-        public string ContractVerifying { get; set; }
+        public string? ContractVerifying { get; set; }
         public DateTime? UpdateDate { get; set; }
         public int Status { get; set; }
 

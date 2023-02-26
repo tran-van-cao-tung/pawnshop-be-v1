@@ -89,7 +89,7 @@ namespace PawnShopBE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContractId"));
 
-                    b.Property<DateTime>("ActualEndDate")
+                    b.Property<DateTime?>("ActualEndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("BranchId")
@@ -109,7 +109,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ContractVerifying")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CustomerId")
@@ -216,7 +215,8 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("KycId")
+                    b.Property<int?>("KycId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Phone")

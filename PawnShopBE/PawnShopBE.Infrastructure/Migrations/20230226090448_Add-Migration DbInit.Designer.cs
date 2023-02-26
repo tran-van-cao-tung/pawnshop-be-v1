@@ -12,8 +12,8 @@ using PawnShopBE.Infrastructure.Helpers;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContextClass))]
-    [Migration("20230223052612_Add-migration DbInit")]
-    partial class AddmigrationDbInit
+    [Migration("20230226090448_Add-Migration DbInit")]
+    partial class AddMigrationDbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,7 +92,7 @@ namespace PawnShopBE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContractId"));
 
-                    b.Property<DateTime>("ActualEndDate")
+                    b.Property<DateTime?>("ActualEndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("BranchId")
@@ -112,7 +112,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ContractVerifying")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CustomerId")
@@ -208,18 +207,19 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
+                    b.Property<string>("CCCD")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("KycId")
+                    b.Property<int?>("KycId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Phone")
@@ -258,6 +258,10 @@ namespace PawnShopBE.Infrastructure.Migrations
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RelativeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RelativePhone")
                         .IsRequired()

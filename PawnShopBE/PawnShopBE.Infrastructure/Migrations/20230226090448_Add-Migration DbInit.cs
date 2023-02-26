@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddmigrationDbInit : Migration
+    public partial class AddMigrationDbInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -250,6 +250,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                 {
                     CustomerRelativeRelationshipId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RelativeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RelativeRelationship = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Salary = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -353,13 +354,13 @@ namespace PawnShopBE.Infrastructure.Migrations
                     ContractCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ContractStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ContractEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ActualEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ActualEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Loan = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     InsuranceFee = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     StorageFee = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     CustomerRecieved = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContractVerifying = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ContractVerifying = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },

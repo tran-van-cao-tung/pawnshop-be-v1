@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Const;
 using PawnShopBE.Core.Requests;
 using Services.Services;
 using Services.Services.IServices;
@@ -18,34 +19,71 @@ namespace PawnShopBE.Controllers
         private readonly ICustomerService _customerService;
         private readonly IContractAssetService _contractAssetService;
         private readonly IPackageService _packageService;
-
+        private readonly IBranchService _branchService;
         private readonly IMapper _mapper;
 
-        public ContractController(IContractService contractService, IMapper mapper)
+        public ContractController(
+            IContractService contractService, 
+            ICustomerService customer, 
+            IContractAssetService contractAssetService, 
+            IPackageService packageService,
+            IBranchService branchService,
+            IMapper mapper)
         {
             _contractService = contractService;
+            _customerService = customer;
+            _contractAssetService = contractAssetService;
+            _packageService = packageService;
+            _branchService = branchService;
             _mapper = mapper;
         }
 
         [HttpPost("contract")]
-        public async Task<IActionResult> CreateContract(CreateContractRequest request)
+        public async Task<IActionResult> CreateContract(ContractDTO request)
         {
             StringBuilder sb = new StringBuilder();
-            foreach( Core.Models.Attribute attributes in request.PawnableAttributes){
-                sb.Append(attributes.Description + ",");          
+            foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
+            {            
+                sb.Append(attributes.Description + ",");              
+            }
+            // Get Interest by recommend
+            Package package = await _packageService.GetPackageById(request.PackageId);
+            if (request.InterestRecommend != 0)
+            {
+                package.PackageInterest = request.InterestRecommend;
+            }
+            //Get Branch
+            Branch branch = await _branchService.GetBranchById(request.BranchId);
+
+            // Check if old Customer
+            var oldCus = await _customerService.GetCustomerById(request.CustomerId);
+            if (oldCus == null)
+            {
+                // Create contract with new Customer
+                var customerDTO = _mapper.Map<CustomerDTO>(request);
+                    customerDTO.CreatedDate = DateTime.Now;
+                    customerDTO.Point = 0;
+                var customer = _mapper.Map<Customer>(customerDTO);
+                    customer.Status = (int) CustomerConst.ACTIVE;
+                var newCus= await _customerService.CreateCustomer(customer);
             }
 
-            ContractDTO contractDTO = new ContractDTO();
-            if (request != null){
-                contractDTO.FullName = request.CustomerName;
-                contractDTO.Address = request.Address;
-                contractDTO.Phone = request.PhoneNumber;
-                contractDTO.InsuranceFee = request.InsuranceFee;
-                contractDTO.PackageId = request.PackageId;
-                contractDTO.Description = sb.ToString();
-            }
-            var contract = _mapper.Map<Contract>(contractDTO);
-            contract.ContractStartDate = DateTime.Now;
+            // Create new contract asset
+            var contractAssetDTO = _mapper.Map<ContractAssetDTO>(request);
+                contractAssetDTO.Description = sb.ToString();
+            var contractAsset = _mapper.Map<ContractAsset>(contractAssetDTO);
+            await _contractAssetService.CreateContractAsset(contractAsset);
+
+
+            var contract = _mapper.Map<Contract>(request);
+            var listContract = await _contractService.GetAllContracts();
+            
+            contract.ContractStartDate = DateTime.Now;           
+            contract.ContractEndDate = contract.ContractStartDate.AddDays(package.Day);
+            contract.ContractCode = "CĐ-" + listContract.Last()+1.ToString();
+            request.CustomerRecived = (request.CustomerRecived - (request.InsuranceFee + request.StorageFee));
+            request.Loan = request.CustomerRecived * package.PackageInterest * package.PaymentPeriod;
+            contract.Status = (int) ContractConst.IN_PROGRESS;
             var response = await _contractService.CreateContract(contract);
 
             if (response)

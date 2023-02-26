@@ -22,7 +22,6 @@ namespace Services.Services
         {
             if (contract != null)
             {
-                contract.ContractStartDate = DateTime.Now;
                 await _unitOfWork.Contracts.Add(contract);
 
                 var result = _unitOfWork.Save();

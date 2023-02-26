@@ -9,7 +9,7 @@ namespace PawnShopBE.Core.Models
     public class Customer
     {
         public Guid CustomerId { get; set; }
-        public int KycId { get; set; }
+        public int? KycId { get;}
         public string FullName { get; set; }
         public string CCCD { get; set; }
         public string Address { get; set; }
@@ -21,11 +21,11 @@ namespace PawnShopBE.Core.Models
 
 
 
-        public virtual Kyc Kyc { get; set; }
-        public ICollection<Contract> Contracts { get; set; }
-        public ICollection<DependentPeople> DependentPeople { get; set; }
-        public ICollection<Job> Jobs { get; set; }
-        public ICollection<CustomerRelativeRelationship> CustomerRelativeRelationships { get; set; }
+        public virtual Kyc? Kyc { get; set; }
+        public ICollection<Contract>? Contracts { get; set; }
+        public ICollection<DependentPeople>? DependentPeople { get; set; }
+        public ICollection<Job>? Jobs { get; set; }
+        public ICollection<CustomerRelativeRelationship>? CustomerRelativeRelationships { get; set; }
         public Customer()
         {
             Contracts = new List<Contract>();
