@@ -9,7 +9,6 @@ namespace PawnShopBE.Core.Models
 {
     public class PawnableProduct
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PawnableProductId { get; set; }
         public string TypeOfProduct { get; set; }
         public string CommodityCode { get; set; }

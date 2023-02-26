@@ -35,7 +35,7 @@ namespace PawnShopBE.Controllers
             }
         }
 
-        [HttpGet("branches")]
+        [HttpGet("branch")]
         public async Task<IActionResult> GetBranchList()
         {
             var branchList = await _branchService.GetAllBranch();
@@ -62,12 +62,12 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("branch/{id}")]
-        public async Task<IActionResult> UpdateBranch(int id, BranchDTO request)
+        public async Task<IActionResult> UpdateBranch(int id, Branch request)
         {
             if (id == request.BranchId)
             {
-                var branch = _mapper.Map<Branch>(request);
-                var response = await _branchService.UpdateBranch(branch);
+               // var branch = _mapper.Map<Branch>(request);
+                var response = await _branchService.UpdateBranch(request);
                 if (response)
                 {
                     return Ok(response);
