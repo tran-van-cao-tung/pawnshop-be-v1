@@ -174,10 +174,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<int>("PawnableProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SerialCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -188,8 +184,7 @@ namespace PawnShopBE.Infrastructure.Migrations
 
                     b.HasIndex("PawnableProductId");
 
-                    b.HasIndex("WarehouseId")
-                        .IsUnique();
+                    b.HasIndex("WarehouseId");
 
                     b.ToTable("ContractAsset", (string)null);
                 });
@@ -215,8 +210,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("KycId")
-                        .IsRequired()
+                    b.Property<int>("KycId")
                         .HasColumnType("int");
 
                     b.Property<string>("Phone")
@@ -414,15 +408,12 @@ namespace PawnShopBE.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KycId"));
 
                     b.Property<string>("FaceImg")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdentityCardBacking")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdentityCardFronting")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("KycId");
@@ -745,8 +736,8 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("PawnShopBE.Core.Models.Warehouse", "Warehouse")
-                        .WithOne("ContractAsset")
-                        .HasForeignKey("PawnShopBE.Core.Models.ContractAsset", "WarehouseId")
+                        .WithMany("ContractAssets")
+                        .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -918,7 +909,7 @@ namespace PawnShopBE.Infrastructure.Migrations
 
             modelBuilder.Entity("PawnShopBE.Core.Models.Warehouse", b =>
                 {
-                    b.Navigation("ContractAsset");
+                    b.Navigation("ContractAssets");
                 });
 #pragma warning restore 612, 618
         }

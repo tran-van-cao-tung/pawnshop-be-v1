@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddMigrationDbInit : Migration
+    public partial class DbInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,9 +36,9 @@ namespace PawnShopBE.Infrastructure.Migrations
                 {
                     KycId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdentityCardFronting = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IdentityCardBacking = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FaceImg = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IdentityCardFronting = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdentityCardBacking = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FaceImg = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -221,7 +221,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     WarehouseId = table.Column<int>(type: "int", nullable: false),
                     PawnableProductId = table.Column<int>(type: "int", nullable: false),
-                    SerialCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ContractAssetName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -478,8 +477,7 @@ namespace PawnShopBE.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ContractAsset_WarehouseId",
                 table: "ContractAsset",
-                column: "WarehouseId",
-                unique: true);
+                column: "WarehouseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_KycId",

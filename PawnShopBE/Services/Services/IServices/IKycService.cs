@@ -9,7 +9,7 @@ namespace Services.Services.IServices
 {
     public interface IKycService
     {
-        Task<bool> CreateKyc(Kyc kyc);
+        Task<Kyc> CreateKyc(Kyc kyc);
         Task<bool> DeleteKyc(int idKyc);
         Task<bool> UpdateKyc(Kyc kyc);
         Task<IEnumerable<Kyc>> GetAllKyc();

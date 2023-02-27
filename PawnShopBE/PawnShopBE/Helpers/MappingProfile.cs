@@ -53,7 +53,13 @@ namespace PawnShopBE.Helpers
                 opt => opt.MapFrom(src => src.ContractAssetName))
                 .ForMember(
                 dest => dest.PawnableProductId,
-                opt => opt.MapFrom(src => src.PawnableProductID));
+                opt => opt.MapFrom(src => src.PawnableProductId))
+                .ForMember(
+                dest => dest.WarehouseId,
+                opt => opt.MapFrom(src => src.WarehouseId))
+                .ForMember(
+                dest => dest.Image,
+                opt => opt.MapFrom(src => src.AssetImg));
 
             // Mapping from ContractAssetDTO to ContractAsset
             CreateMap<ContractAssetDTO, ContractAsset>()
@@ -97,6 +103,7 @@ namespace PawnShopBE.Helpers
                 dest => dest.Description,
                 opt => opt.MapFrom(src => src.Description));
 
+      
             CreateMap<Role, RoleDTO>().ReverseMap();
           
             CreateMap<Role, RoleDTO>().ReverseMap();
