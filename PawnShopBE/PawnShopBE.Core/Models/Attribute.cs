@@ -9,7 +9,6 @@ namespace PawnShopBE.Core.Models
 {
     public class Attribute
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int AttributeId { get; set; }
         public int PawnableProductId { get; set; }
         public string Description { get; set; }

@@ -10,6 +10,15 @@ namespace PawnShopBE.Helpers
         {
             // Mapping tu DTO sang entity
 
+            #region Customer
+            // Mapping from Customer to Display Customer
+            CreateMap<Customer,DisplayCustomer>().ReverseMap();
+
+            // Mapping from Customer to Contract
+            CreateMap<Contract, Customer>().
+                ForMember(customer => customer.CustomerId,
+                contract => contract.MapFrom(src => src.CustomerId));
+
             // Mapping from ContractDTO to CustomerDTO
             CreateMap<ContractDTO, CustomerDTO>()
                 .ForMember(
@@ -45,6 +54,12 @@ namespace PawnShopBE.Helpers
                 .ForMember(
                 dest => dest.Point,
                 opt => opt.MapFrom(src => src.Point));
+            #endregion Customer
+
+            #region Contract
+            // Mapping from Contract to Branch
+            CreateMap<Branch, Contract>().ForMember(contract => contract.BranchId,
+                branch => branch.MapFrom(src => src.BranchId));
 
             // Mapping from ContractDTO to ContractAsset
             CreateMap<ContractDTO, ContractAsset>()
@@ -95,27 +110,23 @@ namespace PawnShopBE.Helpers
                 opt => opt.MapFrom(src => src.InsuranceFee))
                 .ForMember(
                 dest => dest.StorageFee,
-                opt => opt.MapFrom(src => src.StorageFee))               
+                opt => opt.MapFrom(src => src.StorageFee))
                 .ForMember(
                 dest => dest.CustomerRecieved,
                 opt => opt.MapFrom(src => src.CustomerRecived))
                 .ForMember(
                 dest => dest.Description,
                 opt => opt.MapFrom(src => src.Description));
+            #endregion Contract
 
       
             CreateMap<Role, RoleDTO>().ReverseMap();
-          
             CreateMap<Role, RoleDTO>().ReverseMap();
             CreateMap<Contract, ContractDTO>().ReverseMap();         
             CreateMap<BranchDTO, Branch>().ReverseMap();
             CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<AttributeDTO, Core.Models.Attribute>();
-            CreateMap<PawnableProductDTO, PawnableProduct>()
-                .ForMember(
-                    dest => dest.Attributes,
-                    opt => opt.MapFrom(src => src.AttributeDTOs));
-            
+            CreateMap<PawnableDTO, PawnableProduct>().ReverseMap();
             CreateMap<Kyc,KycDTO>().ReverseMap();
             CreateMap<Job, JobDTO>().ReverseMap();
             CreateMap<Warehouse, WareHouseDTO>().ReverseMap();

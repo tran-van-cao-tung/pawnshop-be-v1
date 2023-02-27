@@ -26,39 +26,31 @@ namespace PawnShopBE.Controllers
             _attributeService = attributeService;
             _mapper = mapper;
         }
-
-        [HttpPost("pawnable")]
-        public async Task<IActionResult> CreatePawnableProduct([FromBody] PawnableProductDTO request)
+        [HttpGet("pawnable")]
+        public async Task<IActionResult> GetAllPawnable()
         {
-            PawnableProduct pawnableProduct = _mapper.Map<PawnableProduct>(request);
-            var createPawnableProduct = await _pawnableProductService.CreatePawnableProduct(pawnableProduct);
-            var response = true;
-            if (createPawnableProduct)
+            var respone = await _pawnableProductService.GetAllPawnableProducts();
+            if (respone != null)
             {
-                List<Core.Models.Attribute> listAttribute = new List<Core.Models.Attribute>();
-                foreach (Core.Models.Attribute attribute in pawnableProduct.Attributes.ToList())
-                {
-                    listAttribute.Add(attribute);
-                }
-                try
-                {
-                    await _attributeService.CreateAttribute(listAttribute);
-                }
-                catch (SqlException sql)
-                {
-                    return Ok(response);
-                }
+                return Ok(respone);
             }
-
-            
-          
-          
-           return BadRequest();
+            return BadRequest();
         }
 
+        [HttpPost("pawnable")]
+        public async Task<IActionResult> CreatePawnable(PawnableDTO pawnable)
+        {
+            var pawnableMapper = _mapper.Map<PawnableProduct>(pawnable);
+            var respone = await _pawnableProductService.CreatePawnableProduct(pawnableMapper);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
 
-        [HttpPut("pawnable{id}")]
-        public async Task<IActionResult> UpdatePawnableProduct(int pawnableId, PawnableProductDTO request)
+        [HttpPut("pawnable/{id}")]
+        public async Task<IActionResult> UpdatePawnableProduct(int pawnableId, PawnableDTO request)
         {
                      
                 var pawnableProduct = _mapper.Map<PawnableProduct>(request);
