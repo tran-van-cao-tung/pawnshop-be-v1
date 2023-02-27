@@ -17,14 +17,14 @@ namespace Services.Services
         public KycService(IUnitOfWork unitOfWork) {
             _unit = unitOfWork;
         }
-        public async Task<bool> CreateKyc(Kyc kyc)
+        public async Task<Kyc> CreateKyc(Kyc kyc)
         {
             await _unit.Kycs.Add(kyc);
             var result = _unit.Save();
             if (result > 0)
-                return true;
+                return kyc;
 
-            return false;
+            return null;
         }
 
         public async Task<bool> DeleteKyc(int idKyc)

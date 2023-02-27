@@ -20,6 +20,7 @@ namespace PawnShopBE.Controllers
         private readonly IContractAssetService _contractAssetService;
         private readonly IPackageService _packageService;
         private readonly IBranchService _branchService;
+        private readonly IKycService _kycService;
         private readonly IMapper _mapper;
 
         public ContractController(
@@ -28,6 +29,7 @@ namespace PawnShopBE.Controllers
             IContractAssetService contractAssetService, 
             IPackageService packageService,
             IBranchService branchService,
+            IKycService kycService,
             IMapper mapper)
         {
             _contractService = contractService;
@@ -35,6 +37,7 @@ namespace PawnShopBE.Controllers
             _contractAssetService = contractAssetService;
             _packageService = packageService;
             _branchService = branchService;
+            _kycService = kycService;
             _mapper = mapper;
         }
 
@@ -57,32 +60,57 @@ namespace PawnShopBE.Controllers
 
             // Check if old Customer
             var oldCus = await _customerService.GetCustomerById(request.CustomerId);
-            if (oldCus == null)
-            {
+            //if (oldCus == null)
+            //{
                 // Create contract with new Customer
                 var customerDTO = _mapper.Map<CustomerDTO>(request);
                     customerDTO.CreatedDate = DateTime.Now;
                     customerDTO.Point = 0;
                 var customer = _mapper.Map<Customer>(customerDTO);
                     customer.Status = (int) CustomerConst.ACTIVE;
-                var newCus= await _customerService.CreateCustomer(customer);
-            }
 
-            // Create new contract asset
-            var contractAssetDTO = _mapper.Map<ContractAssetDTO>(request);
-                contractAssetDTO.Description = sb.ToString();
-            var contractAsset = _mapper.Map<ContractAsset>(contractAssetDTO);
+                // Create new Kyc
+                Kyc kyc = new Kyc();
+                kyc.IdentityCardBacking = "";
+                kyc.IdentityCardFronting = "";
+                kyc.FaceImg = "";    
+                Kyc createKyc = await _kycService.CreateKyc(kyc);
+                customer.KycId = createKyc.KycId;
+
+                var newCus= await _customerService.CreateCustomer(customer);
+            //}
+
+          
+          
+            var contractAsset = _mapper.Map<ContractAsset>(request);
+                contractAsset.Description = sb.ToString();
+                contractAsset.Status = (int) ContractAssetConst.IN_STOCK;
             await _contractAssetService.CreateContractAsset(contractAsset);
 
 
+            
+
+            // Create contract
             var contract = _mapper.Map<Contract>(request);
             var listContract = await _contractService.GetAllContracts();
-            
+            int countList = 0;
+            if (listContract == null)
+            {
+                countList = listContract.Count();
+            }
+            contract.ContractAssetId = contractAsset.ContractAssetId;
+            contract.CustomerId = customer.CustomerId;
+            contract.BranchId = branch.BranchId;
+            contract.ContractAsset = contractAsset;
+            contract.Customer = customer;
+            contract.Branch = branch;
             contract.ContractStartDate = DateTime.Now;           
-            contract.ContractEndDate = contract.ContractStartDate.AddDays(package.Day);
-            contract.ContractCode = "CĐ-" + listContract.Last()+1.ToString();
+            contract.ContractEndDate = contract.ContractStartDate.AddDays((double) package.Day);
+            
+            contract.ContractCode = "CĐ-" + (countList+1).ToString();
             request.CustomerRecived = (request.CustomerRecived - (request.InsuranceFee + request.StorageFee));
             request.Loan = request.CustomerRecived * package.PackageInterest * package.PaymentPeriod;
+            
             contract.Status = (int) ContractConst.IN_PROGRESS;
             var response = await _contractService.CreateContract(contract);
 

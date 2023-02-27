@@ -54,9 +54,17 @@ namespace Services.Services
             return result;
         }
 
-        public Task<Warehouse> GetWareHouseById(int wareHouseId)
+        public async Task<Warehouse> GetWareHouseById(int warehouseId)
         {
-            throw new NotImplementedException();
+            if (warehouseId != null)
+            {
+                var warehouse = await _unit.Warehouses.GetById(warehouseId);
+                if (warehouse != null)
+                {
+                    return warehouse;
+                }
+            }
+            return null;
         }
 
         public async Task<bool> UpdateWareHouse(Warehouse warehouse)

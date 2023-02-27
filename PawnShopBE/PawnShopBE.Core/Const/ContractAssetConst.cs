@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace PawnShopBE.Core.Const
 {
-    public enum PawnableProductConst
+    public enum ContractAssetConst
     {
-        ACTIVE = 1,
-        INACTIVE = 2
+        IN_STOCK = 1,
+        OUT_STOCK = 2
     }
 }

@@ -8,7 +8,7 @@ namespace PawnShopBE.Core.Const
 {
     public enum RoleConst
     {
-        ADMIN,
-        STAFF
+        ADMIN = 1,
+        STAFF = 2
     }
 }
