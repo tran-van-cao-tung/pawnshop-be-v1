@@ -1,5 +1,6 @@
 ﻿using Azure;
 using PawnShopBE.Core.Display;
+﻿using PawnShopBE.Core.Const;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
@@ -18,7 +19,8 @@ namespace Services.Services
         public IUnitOfWork _unitOfWork;
         private IContractService _contract;
         private IBranchService _branch;
-        public CustomerService(IUnitOfWork unitOfWork, IContractService contract, IBranchService branch)
+        public CustomerService(IUnitOfWork unitOfWork, IContractService contract, 
+            IBranchService branch)
         {
             _unitOfWork = unitOfWork;
             _contract = contract;
@@ -26,6 +28,8 @@ namespace Services.Services
         }
         public async Task<bool> CreateCustomer(Customer customer)
         {
+            var oldCus = GetCustomerById(customer.CustomerId);
+
             if (customer != null) {
                 customer.CreatedDate = DateTime.Now;
                 await _unitOfWork.Customers.Add(customer);

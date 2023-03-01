@@ -47,7 +47,7 @@ namespace PawnShopBE.Controllers
             StringBuilder sb = new StringBuilder();
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
             {            
-                sb.Append(attributes.Description + ",");              
+                sb.Append(attributes.Description + "/");              
             }
             // Get Interest by recommend
             Package package = await _packageService.GetPackageById(request.PackageId);
@@ -55,9 +55,6 @@ namespace PawnShopBE.Controllers
             {
                 package.PackageInterest = request.InterestRecommend;
             }
-            //Get Branch
-            Branch branch = await _branchService.GetBranchById(request.BranchId);
-
             // Check if old Customer
             var oldCus = await _customerService.GetCustomerById(request.CustomerId);
             //if (oldCus == null)
@@ -92,36 +89,51 @@ namespace PawnShopBE.Controllers
 
             // Create contract
             var contract = _mapper.Map<Contract>(request);
-            var listContract = await _contractService.GetAllContracts();
-            int countList = 0;
-            if (listContract == null)
-            {
-                countList = listContract.Count();
-            }
+
             contract.ContractAssetId = contractAsset.ContractAssetId;
             contract.CustomerId = customer.CustomerId;
-            contract.BranchId = branch.BranchId;
+            contract.BranchId = request.BranchId;
             contract.ContractAsset = contractAsset;
             contract.Customer = customer;
-            contract.Branch = branch;
-            contract.ContractStartDate = DateTime.Now;           
-            contract.ContractEndDate = contract.ContractStartDate.AddDays((double) package.Day);
-            
-            contract.ContractCode = "CĐ-" + (countList+1).ToString();
-            request.CustomerRecived = (request.CustomerRecived - (request.InsuranceFee + request.StorageFee));
-            request.Loan = request.CustomerRecived * package.PackageInterest * package.PaymentPeriod;
-            
-            contract.Status = (int) ContractConst.IN_PROGRESS;
+      
+  
             var response = await _contractService.CreateContract(contract);
-
             if (response)
             {
-                return Ok(response);
+                var interestDiary = new InterestDiary();
+
+            }
+            if (response)
+            {
+                return Ok(response); 
             }
             else
             {
                 return BadRequest();
             }
+        }
+
+        [HttpGet("contracts")]
+        public async Task<IActionResult> GetAllContracts()
+        {
+            var listContracts = await _contractService.GetAllContracts();
+            if (listContracts == null)
+            {
+                return NotFound();
+            }
+            return Ok(listContracts);
+        }
+
+        [HttpPut("contract")]
+        public async Task<IActionResult> UpdateContract(ContractDTO request)
+        {       
+                var contract = _mapper.Map<Contract>(request);
+                var response = await _contractService.UpdateContract(contract);
+                if (response)
+                {
+                    return Ok(response);
+                }         
+            return BadRequest();
         }
     }
 }

@@ -21,7 +21,7 @@ namespace PawnShopBE.Core.Models
 
 
 
-        public virtual Kyc Kyc { get; set; }
+        public virtual Kyc? Kyc { get; set; }
         public ICollection<Contract>? Contracts { get; set; }
         public ICollection<DependentPeople>? DependentPeople { get; set; }
         public ICollection<Job>? Jobs { get; set; }
