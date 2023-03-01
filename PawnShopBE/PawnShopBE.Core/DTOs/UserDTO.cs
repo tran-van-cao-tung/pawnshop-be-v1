@@ -9,8 +9,7 @@ namespace PawnShopBE.Core.DTOs
 {
     public class UserDTO
     {
-        public Guid UserId { get; set; }
-        public int? RoleId { get; set; }
+        public int RoleId { get; set; }
         public int? BranchId { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
@@ -18,6 +17,8 @@ namespace PawnShopBE.Core.DTOs
         public string FullName { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
+        public DateTime CreateTime { get; set; }
+        public DateTime? UpdateTime { get; set; }
         public int Status { get; set; }
     }  
 }

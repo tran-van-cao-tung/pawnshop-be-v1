@@ -8,7 +8,7 @@ namespace PawnShopBE.Core.DTOs
 {
     public class LedgerDTO
     {
-        public int LedgerId { get; set; }
+        public int branchId { get; set; }
         public decimal ReceivedPrincipal { get; set; }
         public decimal RecveivedInterest { get; set; }
         public decimal Loan { get; set; }

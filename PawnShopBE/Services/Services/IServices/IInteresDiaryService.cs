@@ -10,7 +10,7 @@ namespace Services.Services.IServices
     public interface IInteresDiaryService
     {
         Task<bool> CreateInteresDiary(InterestDiary interestDiary);
-        Task<IEnumerable<InterestDiary>> GetInteresDiary();
+        Task<IEnumerable<InterestDiary>> GetDiary();
         Task<InterestDiary> GetInteresDiaryById(int interestDiaryId);
         Task<bool> UpdateInteresDiary(InterestDiary interestDiary);
         Task<bool> DeleteInteresDiary(int interestDiaryId);

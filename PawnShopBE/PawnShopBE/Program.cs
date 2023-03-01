@@ -34,6 +34,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 builder.Services.Configure<Appsetting>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddDIServices(builder.Configuration);
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILedgerService, LedgerService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IDependentService, DependentService>();

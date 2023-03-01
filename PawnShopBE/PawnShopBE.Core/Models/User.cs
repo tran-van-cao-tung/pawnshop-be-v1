@@ -28,7 +28,7 @@ namespace PawnShopBE.Core.Models
 
 
 
-        public virtual Role Role { get; set; }
+        public virtual Role? Role { get; set; }
         public virtual Branch? Branch { get; set; }
         
 

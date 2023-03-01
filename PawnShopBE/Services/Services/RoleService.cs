@@ -40,7 +40,13 @@ namespace Services.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Role> GetRole(int roleId)
+        public async Task<IEnumerable<Role>> GetAllRole()
+        {
+            var result = await _unitOfWork.Roles.GetAll();
+            return result;
+        }
+
+        public async Task<Role> GetRoleById(int roleId)
         {
             if (roleId != null)
             {

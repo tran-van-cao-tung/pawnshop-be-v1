@@ -1,9 +1,12 @@
-﻿using PawnShopBE.Core.DTOs;
+﻿using Azure;
+using PawnShopBE.Core.Display;
+using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +16,13 @@ namespace Services.Services
     public class CustomerService : ICustomerService
     {
         public IUnitOfWork _unitOfWork;
-
-        public CustomerService(IUnitOfWork unitOfWork) {
-        _unitOfWork= unitOfWork;
+        private IContractService _contract;
+        private IBranchService _branch;
+        public CustomerService(IUnitOfWork unitOfWork, IContractService contract, IBranchService branch)
+        {
+            _unitOfWork = unitOfWork;
+            _contract = contract;
+            _branch = branch;
         }
         public async Task<bool> CreateCustomer(Customer customer)
         {
@@ -78,6 +85,37 @@ namespace Services.Services
                 }
             }
             return null;
+        }
+
+        public async Task<IEnumerable<DisplayCustomer>> getCustomerDTO
+            (IEnumerable<DisplayCustomer> customerDTOList, IEnumerable<Customer> customerList)
+        {
+            int i = 1;
+            foreach (var customer in customerDTOList)
+            {
+                // lấy customer id
+                var customerId = customer.customerId;
+                // lấy branchName
+                customer.nameBranch = await GetBranchName(customerId, customerList);
+                customer.numerical = i++;
+            }
+            return customerDTOList;
+        }
+        private async Task<string> GetBranchName(Guid customerId, IEnumerable<Customer> listCustomer)
+        {
+            //lấy danh sách contract
+            var listContract = await _contract.GetAll();
+            // lấy branch id mà customer đang ở
+            var branch = listCustomer.Join(listContract, p => p.CustomerId, c => c.CustomerId
+                    , (p, c) => { return c.BranchId; });
+            var branchtId = branch.First();
+            // lấy danh sách branch
+            var listBranch = await _branch.GetAllBranch();
+            // lấy branchname
+            var branchName = listContract.Join(listBranch, c => c.BranchId, b => b.BranchId,
+                (c, b) => { return b.BranchName; });
+            var name = branchName.First().ToString();
+            return name;
         }
 
         public async Task<bool> UpdateCustomer(Customer customer)

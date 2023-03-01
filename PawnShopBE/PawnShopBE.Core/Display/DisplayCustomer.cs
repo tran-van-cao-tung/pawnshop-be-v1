@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PawnShopBE.Core.DTOs
+namespace PawnShopBE.Core.Display
 {
     public class DisplayCustomer
     {

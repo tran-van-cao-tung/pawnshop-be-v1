@@ -1,4 +1,6 @@
-﻿using PawnShopBE.Core.Interfaces;
+﻿using PawnShopBE.Core.Display;
+using PawnShopBE.Core.DTOs;
+using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
 using System;
@@ -12,10 +14,12 @@ namespace Services.Services
     public class UserService : IUserService
     {
         public IUnitOfWork _unitOfWork;
+        private readonly IBranchService _branchService;
 
-        public UserService(IUnitOfWork unitOfWork)
+        public UserService(IUnitOfWork unitOfWork, IBranchService branchService)
         {
             _unitOfWork = unitOfWork;
+            _branchService = branchService;
         }
         public async Task<bool> CreateUser(User user)
         {
@@ -93,5 +97,30 @@ namespace Services.Services
             }
             return false;
         }
+
+        public async Task<IEnumerable<DisplayUser>> getUserDTO(IEnumerable<DisplayUser> userDTOList,
+            IEnumerable<User> userList)
+        {
+            int i = 1;
+            foreach (var user in userDTOList)
+            {
+                var userId = user.BranchId;
+                user.BranchName = await getBranchName(userId, userList);
+                user.Num = i++;
+            }
+            return userDTOList;
+        }
+
+        private async Task<string> getBranchName(int userId, IEnumerable<User> userList)
+        {
+            //get branch list
+            var branch = await _branchService.GetAllBranch();
+            //get branch name
+            var branchName = userList.Join(branch, u => u.BranchId, b => b.BranchId,
+                (u, b) => { return b.BranchName; });
+            var name = branchName.First().ToString();
+            return name;
+        }
+
     }
 }

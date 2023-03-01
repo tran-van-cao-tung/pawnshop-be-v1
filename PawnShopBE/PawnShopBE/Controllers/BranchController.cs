@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
@@ -34,16 +35,29 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-
+        [HttpGet("branch/detail/{id}")]
+        public async Task<IActionResult> GetBranchDetail(int id)
+        {
+            var branchList = await _branchService.GetBranchById(id);
+            var branchDetail= _mapper.Map<DisplayBranchDetail>(branchList);
+            if(branchDetail != null)
+            {
+                branchDetail = await _branchService.getDisplayBranchDetail(branchDetail);
+                return Ok(branchDetail);
+            }
+            return BadRequest();
+        }
         [HttpGet("branch")]
         public async Task<IActionResult> GetBranchList()
         {
             var branchList = await _branchService.GetAllBranch();
-            if (branchList == null)
+            var displayBranch = _mapper.Map<IEnumerable<DisplayBranch>>(branchList);
+            if (displayBranch != null)
             {
-                return NotFound();
+                displayBranch=await _branchService.getDisplayBranch(displayBranch);
+                return Ok(displayBranch);
             }
-            return Ok(branchList);
+            return NotFound();
         }
 
         [HttpGet("branch/{id}")]

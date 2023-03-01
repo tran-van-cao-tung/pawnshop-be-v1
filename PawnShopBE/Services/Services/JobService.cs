@@ -62,11 +62,11 @@ namespace Services.Services
             var jobUpdate = _unit.Jobs.SingleOrDefault(job, j => j.JobId == job.JobId);
             if(jobUpdate!= null)
             {
-                jobUpdate.Salary=job.Salary;
-                jobUpdate.WorkLocation=job.WorkLocation;
-                jobUpdate.IsWork=job.IsWork;
-                jobUpdate.LaborContract=job.LaborContract;
-                jobUpdate.Customer=job.Customer;
+                jobUpdate.Salary = job.Salary;
+                jobUpdate.WorkLocation = job.WorkLocation;
+                jobUpdate.IsWork = job.IsWork;
+                jobUpdate.LaborContract = job.LaborContract;
+                jobUpdate.Customer = job.Customer;
                 _unit.Jobs.Update(jobUpdate);
                 var result= _unit.Save();
                 if(result> 0)

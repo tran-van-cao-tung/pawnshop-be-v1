@@ -1,4 +1,6 @@
-﻿using PawnShopBE.Core.Models;
+﻿using PawnShopBE.Core.Display;
+using PawnShopBE.Core.DTOs;
+using PawnShopBE.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +20,7 @@ namespace Services.Services.IServices
         Task<bool> UpdateUser(User user);
 
         Task<bool> DeleteUser(Guid userId);
+        Task<IEnumerable<DisplayUser>> getUserDTO(IEnumerable<DisplayUser> userDTOList,
+           IEnumerable<User> userList);
     }
 }

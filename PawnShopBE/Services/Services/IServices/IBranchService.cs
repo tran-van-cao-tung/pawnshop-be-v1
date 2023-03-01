@@ -1,4 +1,5 @@
-﻿using PawnShopBE.Core.DTOs;
+﻿using PawnShopBE.Core.Display;
+using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,8 @@ namespace Services.Services.IServices
 
         Task<bool> UpdateBranch(Branch branch);
 
-        Task<bool> DeleteBranch(int branchId);  
+        Task<bool> DeleteBranch(int branchId);
+        Task<IEnumerable<DisplayBranch>> getDisplayBranch(IEnumerable<DisplayBranch> branchList);
+        Task<DisplayBranchDetail> getDisplayBranchDetail(DisplayBranchDetail branchDetail);
     }
 }

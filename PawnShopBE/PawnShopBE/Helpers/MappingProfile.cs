@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
 
@@ -119,12 +120,20 @@ namespace PawnShopBE.Helpers
                 opt => opt.MapFrom(src => src.Description));
             #endregion Contract
 
-      
-            CreateMap<Role, RoleDTO>().ReverseMap();
+            #region User
+            CreateMap<User, UserDTO>().ReverseMap();
+            CreateMap<User, DisplayUser>().ReverseMap();
+            #endregion User
+
+            #region Branch
+            CreateMap<DisplayBranch,Branch>().ReverseMap();
+            CreateMap<DisplayBranchDetail, Branch>().ReverseMap();
+            #endregion Branch
+
+            CreateMap<Ledger,LedgerDTO>().ReverseMap(); 
             CreateMap<Role, RoleDTO>().ReverseMap();
             CreateMap<Contract, ContractDTO>().ReverseMap();         
             CreateMap<BranchDTO, Branch>().ReverseMap();
-            CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<AttributeDTO, Core.Models.Attribute>();
             CreateMap<PawnableDTO, PawnableProduct>().ReverseMap();
             CreateMap<Kyc,KycDTO>().ReverseMap();
