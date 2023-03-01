@@ -11,7 +11,7 @@ namespace Services.Services.IServices
     {
         Task<bool> CreateContract(Contract contract);
 
-        Task<IEnumerable<Contract>> GetAll();
+        Task<IEnumerable<Contract>> GetAllContracts();
 
         Task<Contract> GetContractById(int contractId);
 

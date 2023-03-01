@@ -104,7 +104,7 @@ namespace Services.Services
         private async Task<string> GetBranchName(Guid customerId, IEnumerable<Customer> listCustomer)
         {
             //lấy danh sách contract
-            var listContract = await _contract.GetAll();
+            var listContract = await _contract.GetAllContracts();
             // lấy branch id mà customer đang ở
             var branch = listCustomer.Join(listContract, p => p.CustomerId, c => c.CustomerId
                     , (p, c) => { return c.BranchId; });

@@ -48,7 +48,7 @@ namespace Services.Services
             return false;
         }
 
-        public async Task<IEnumerable<Ledger>> GetDiary()
+        public async Task<IEnumerable<Ledger>> GetLedger()
         {
             var result = await _unit.Ledgers.GetAll();
             return result;
