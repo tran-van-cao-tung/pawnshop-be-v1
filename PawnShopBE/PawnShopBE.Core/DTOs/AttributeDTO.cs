@@ -9,7 +9,6 @@ namespace PawnShopBE.Core.DTOs
 {
     public class AttributeDTO
     {
-        public int PawnableProductId { get; set; }
         public string Description { get; set; }
     }
 }

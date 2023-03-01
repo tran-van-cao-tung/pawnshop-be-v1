@@ -1,4 +1,5 @@
-﻿using PawnShopBE.Core.DTOs;
+﻿using PawnShopBE.Core.Const;
+using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
@@ -19,7 +20,30 @@ namespace Services.Services
         }
         public async Task<bool> CreateCustomer(Customer customer)
         {
+            var oldCus = GetCustomerById(customer.CustomerId);
+
             if (customer != null) {
+
+               
+                //{
+                // Create contract with new Customer
+                var customerDTO = _mapper.Map<CustomerDTO>(request);
+                customerDTO.CreatedDate = DateTime.Now;
+                customerDTO.Point = 0;
+                var customer = _mapper.Map<Customer>(customerDTO);
+                customer.Status = (int)CustomerConst.ACTIVE;
+
+                // Create new Kyc
+                Kyc kyc = new Kyc();
+                kyc.IdentityCardBacking = "";
+                kyc.IdentityCardFronting = "";
+                kyc.FaceImg = "";
+                Kyc createKyc = await _kycService.CreateKyc(kyc);
+                customer.KycId = createKyc.KycId;
+
+                var newCus = await _customerService.CreateCustomer(customer);
+                //}
+
                 customer.CreatedDate = DateTime.Now;
                 await _unitOfWork.Customers.Add(customer);
                 var result = _unitOfWork.Save();

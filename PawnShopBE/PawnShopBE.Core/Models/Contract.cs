@@ -19,13 +19,14 @@ namespace PawnShopBE.Core.Models
         public DateTime ContractStartDate { get; set; }
         public DateTime ContractEndDate { get; set; }
         public DateTime? ActualEndDate { get; set; }
+        public int InterestRecommend { get; set; } = 0;
         public decimal Loan { get; set; }
-        public decimal? InsuranceFee { get; set; }
-        public decimal? StorageFee { get; set; }
-        public decimal CustomerRecieved { get; set; }
-        public string Description { get; set; }
-        public string? ContractVerifying { get; set; }
+        public decimal InsuranceFee { get; set; } = 0;
+        public decimal StorageFee { get; set; } = 0;
+        public decimal TotalProfit { get; set; }
+        public string? ContractVerifyImg { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string? Description { get; set; }
         public int Status { get; set; }
 
 
@@ -39,8 +40,5 @@ namespace PawnShopBE.Core.Models
         {
             InterestDiaries = new List<InterestDiary>();
         }
-
-
-
     }
 }

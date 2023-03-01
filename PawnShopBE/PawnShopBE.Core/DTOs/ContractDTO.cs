@@ -9,6 +9,7 @@ namespace PawnShopBE.Core.DTOs
 {
     public class ContractDTO
     {
+        public int ContractId { get; set; }
         public Guid CustomerId { get; }
         public Guid UserId { get; set; }
         public int BranchId { get; set; }
@@ -22,7 +23,7 @@ namespace PawnShopBE.Core.DTOs
         public decimal InsuranceFee { get; set; }
         public decimal StorageFee { get; set; }
         public decimal Loan { get; set; }
-        public decimal CustomerRecived { get; set; }
+        public decimal TotalProfit { get; set; }
         public string AssetImg { get; set; }
         public ICollection<AttributeDTO>? PawnableAttributeDTOs { get; set; }
 
