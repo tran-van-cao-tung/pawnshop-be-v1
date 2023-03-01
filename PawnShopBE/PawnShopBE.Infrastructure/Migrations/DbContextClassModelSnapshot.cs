@@ -108,21 +108,20 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<DateTime>("ContractStartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ContractVerifying")
+                    b.Property<string>("ContractVerifyImg")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("CustomerRecieved")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("InsuranceFee")
+                    b.Property<decimal>("InsuranceFee")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("InterestRecommend")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Loan")
                         .HasColumnType("decimal(18,2)");
@@ -133,7 +132,10 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("StorageFee")
+                    b.Property<decimal>("StorageFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalProfit")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdateDate")

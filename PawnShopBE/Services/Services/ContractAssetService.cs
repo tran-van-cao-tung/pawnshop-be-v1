@@ -74,7 +74,7 @@ namespace Services.Services
                 contractAssetUpdate.PawnableProductId = contractAsset.PawnableProductId;
                 contractAssetUpdate.Description = contractAsset.Description;
                 contractAssetUpdate.Image = contractAsset.Image;
-                contractAssetUpdate.Status = contractAsset.Status; 
+                contractAssetUpdate.Status = contractAsset.Status;
                 _unitOfWork.ContractAssets.Update(contractAssetUpdate);
                 var result = _unitOfWork.Save();
                 if (result > 0)
