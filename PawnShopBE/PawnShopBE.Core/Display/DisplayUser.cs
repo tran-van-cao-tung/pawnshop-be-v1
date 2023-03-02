@@ -5,15 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PawnShopBE.Core.DTOs
+namespace PawnShopBE.Core.Display
 {
-    public class BranchDTO
+    public class DisplayUser
     {
+        public int Num { get; set; }
+        public Guid UserId { get; set; }
         public int BranchId { get; set; }
         public string BranchName { get; set; }
+        public string FullName { get; set; }
+        public string UserName { get; set; }
+        public string Phone { get; set; }
         public string Address { get; set; }
-        public string PhoneNumber { get; set; }
-        public decimal Fund { get; set; }
+        public DateTime CreateTime { get; set; }
         public int Status { get; set; }
     }
 }

@@ -1,10 +1,13 @@
-﻿using PawnShopBE.Core.Const;
+﻿using Azure;
+using PawnShopBE.Core.Const;
+using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,35 +17,19 @@ namespace Services.Services
     public class CustomerService : ICustomerService
     {
         public IUnitOfWork _unitOfWork;
-
-        public CustomerService(IUnitOfWork unitOfWork) {
+        private readonly IContractService _contract;
+        private readonly IBranchService _branch;
+        public CustomerService(IUnitOfWork unitOfWork, IContractService contract,
+           IBranchService branch) {
         _unitOfWork= unitOfWork;
+            _branch = branch;
+            _contract = contract;
         }
         public async Task<bool> CreateCustomer(Customer customer)
         {
             var oldCus = GetCustomerById(customer.CustomerId);
 
             if (customer != null) {
-
-               
-                //{
-                // Create contract with new Customer
-                var customerDTO = _mapper.Map<CustomerDTO>(request);
-                customerDTO.CreatedDate = DateTime.Now;
-                customerDTO.Point = 0;
-                var customer = _mapper.Map<Customer>(customerDTO);
-                customer.Status = (int)CustomerConst.ACTIVE;
-
-                // Create new Kyc
-                Kyc kyc = new Kyc();
-                kyc.IdentityCardBacking = "";
-                kyc.IdentityCardFronting = "";
-                kyc.FaceImg = "";
-                Kyc createKyc = await _kycService.CreateKyc(kyc);
-                customer.KycId = createKyc.KycId;
-
-                var newCus = await _customerService.CreateCustomer(customer);
-                //}
 
                 customer.CreatedDate = DateTime.Now;
                 await _unitOfWork.Customers.Add(customer);
@@ -90,7 +77,36 @@ namespace Services.Services
              }
             return null;
         }
-
+        public async Task<IEnumerable<DisplayCustomer>> getCustomerHaveBranch(
+            IEnumerable<DisplayCustomer> respone, IEnumerable<Customer> listCustomer)
+        {
+            int i = 1;
+            foreach (var customer in respone)
+            {
+                // lấy customer id
+                var customerId = customer.customerId;
+                // lấy branchName
+                customer.nameBranch = await GetBranchName(customerId, listCustomer);
+                customer.numerical = i++;
+            }
+            return respone;
+        }
+        private async Task<string> GetBranchName(Guid customerId, IEnumerable<Customer> listCustomer)
+        {
+            //lấy danh sách contract
+            var listContract = await _contract.GetAllContracts();
+            // lấy branch id mà customer đang ở
+            var branch = listCustomer.Join(listContract, p => p.CustomerId, c => c.CustomerId
+                    , (p, c) => { return c.BranchId; });
+            var branchtId = branch.First();
+            // lấy danh sách branch
+            var listBranch = await _branch.GetAllBranch();
+            // lấy branchname
+            var branchName = listContract.Join(listBranch, c => c.BranchId, b => b.BranchId,
+                (c, b) => { return b.BranchName; });
+            var name = branchName.First().ToString();
+            return name;
+        }
         public async Task<Customer> GetCustomerById(Guid idCus)
         {
             if (idCus != null)

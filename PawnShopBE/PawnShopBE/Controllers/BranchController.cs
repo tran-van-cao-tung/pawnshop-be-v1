@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
@@ -34,7 +35,30 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-
+        [HttpGet("branch/detail/{id}")]
+        public async Task<IActionResult> GetBranchDetail(int id)
+        {
+            var branchList = await _branchService.GetBranchById(id);
+            var branchDetail = _mapper.Map<DisplayBranchDetail>(branchList);
+            if (branchDetail != null)
+            {
+                branchDetail = await _branchService.getDisplayBranchDetail(branchDetail);
+                return Ok(branchDetail);
+            }
+            return BadRequest();
+        }
+        [HttpGet("branch/chain")]
+        public async Task<IActionResult> GetBranchChain()
+        {
+            var branchList = await _branchService.GetAllBranch();
+            var displayBranch = _mapper.Map<IEnumerable<DisplayBranch>>(branchList);
+            if (displayBranch != null)
+            {
+                displayBranch = await _branchService.getDisplayBranch(displayBranch);
+                return Ok(displayBranch);
+            }
+            return NotFound();
+        }
         [HttpGet("branch")]
         public async Task<IActionResult> GetBranchList()
         {
@@ -47,9 +71,9 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpGet("branch/{id}")]
-        public async Task<IActionResult> GetBranchById(int branchId)
+        public async Task<IActionResult> GetBranchById(int id)
         {
-            var branch = await _branchService.GetBranchById(branchId);
+            var branch = await _branchService.GetBranchById(id);
 
             if (branch != null)
             {

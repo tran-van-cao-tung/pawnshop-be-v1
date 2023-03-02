@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using Attribute = PawnShopBE.Core.Models.Attribute;
 
 namespace PawnShopBE.Helpers
 {
@@ -119,18 +121,23 @@ namespace PawnShopBE.Helpers
                 opt => opt.MapFrom(src => src.InterestRecommend));
             #endregion Contract
 
+            #region Branch
+            CreateMap<Branch, DisplayBranch>().ReverseMap();
+            CreateMap<Branch, DisplayBranchDetail>().ReverseMap();
+            CreateMap<BranchDTO, Branch>().ReverseMap();
+            #endregion Branch
+
             CreateMap<PawnableDTO, PawnableProduct>()
                 .ForMember(
                     dest => dest.Attributes,
                     opt => opt.MapFrom(src => src.AttributeDTOs));
-
-            CreateMap<AttributeDTO, Core.Models.Attribute>();
+            CreateMap<Ledger, LedgerDTO>().ReverseMap();
+            CreateMap<AttributeDTO,Attribute>();
             CreateMap<Role, RoleDTO>().ReverseMap();
             CreateMap<Role, RoleDTO>().ReverseMap();
             CreateMap<Contract, ContractDTO>().ReverseMap();         
-            CreateMap<BranchDTO, Branch>().ReverseMap();
             CreateMap<User, UserDTO>().ReverseMap();
-            CreateMap<AttributeDTO, Core.Models.Attribute>();
+            CreateMap<AttributeDTO, Attribute>();
             CreateMap<PawnableDTO, PawnableProduct>().ReverseMap();
             CreateMap<Kyc,KycDTO>().ReverseMap();
             CreateMap<Job, JobDTO>().ReverseMap();

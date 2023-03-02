@@ -35,6 +35,7 @@ builder.Services.Configure<Appsetting>(builder.Configuration.GetSection("AppSett
 builder.Services.AddDIServices(builder.Configuration);
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<ILedgerService, LedgerService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IDependentService, DependentService>();
 builder.Services.AddScoped<ICustomerRelativeService, CustomerRelativeService>();

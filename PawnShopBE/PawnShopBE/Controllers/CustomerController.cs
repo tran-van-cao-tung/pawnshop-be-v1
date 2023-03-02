@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Org.BouncyCastle.Utilities;
+using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
@@ -13,15 +14,11 @@ namespace PawnShopBE.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customer;
-        private readonly IContractService _contract;
-        private readonly IBranchService _branch;
+       
         private readonly IMapper _mapper;
 
-        public CustomerController(ICustomerService customer, IContractService contract,
-           IBranchService branch, IMapper mapper) {
+        public CustomerController(ICustomerService customer, IMapper mapper) {
             _customer = customer;
-            _branch= branch;
-            _contract = contract;   
             _mapper = mapper;
         }
 
@@ -44,35 +41,12 @@ namespace PawnShopBE.Controllers
             var respone = _mapper.Map<IEnumerable<DisplayCustomer>>(listCustomer);
             if (respone != null)
             {
-                int i = 1;
-                foreach (var customer in respone)
-                {
-                    // lấy customer id
-                    var customerId = customer.customerId;
-                    // lấy branchName
-                    customer.nameBranch =await GetBranchName(customerId,listCustomer);
-                    customer.numerical = i++;
-                }
+                respone = await _customer.getCustomerHaveBranch(respone, listCustomer);
                 return Ok(respone);
             }
             return NotFound();
         }
-        private async Task<string> GetBranchName(Guid customerId,IEnumerable<Customer> listCustomer)
-        {
-            //lấy danh sách contract
-            var listContract = await _contract.GetAllContracts();
-            // lấy branch id mà customer đang ở
-            var branch = listCustomer.Join(listContract, p => p.CustomerId, c => c.CustomerId
-                    , (p, c) => { return c.BranchId; });
-            var branchtId = branch.First();
-            // lấy danh sách branch
-            var listBranch = await _branch.GetAllBranch();
-            // lấy branchname
-            var branchName = listContract.Join(listBranch,c=> c.BranchId,b=> b.BranchId,
-                (c, b) => { return b.BranchName; });
-            var name = branchName.First().ToString();
-            return name;
-        }
+       
         [HttpGet("customer/{id}")]
         public async Task<IActionResult> GetCustomerById(Guid id)
         {
