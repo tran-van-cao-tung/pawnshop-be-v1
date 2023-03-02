@@ -1,4 +1,7 @@
-﻿using PawnShopBE.Core.Interfaces;
+﻿using AutoMapper;
+using Org.BouncyCastle.Crypto;
+using PawnShopBE.Core.DTOs;
+using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
 using System;
@@ -7,35 +10,55 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Attribute = PawnShopBE.Core.Models.Attribute;
 
 namespace Services.Services
 {
     public class PawnableProductService : IPawnableProductService
     {
         public IUnitOfWork _unitOfWork;
+        private IAttributeService _attribute;
+        private readonly IMapper _mapper;
 
-        public PawnableProductService(IUnitOfWork unitOfWork)
+        public PawnableProductService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
         public async Task<bool> CreatePawnableProduct(PawnableProduct pawnableProduct)
         {
             if (pawnableProduct != null)
             {               
-                await _unitOfWork.PawnableProduct.Add(pawnableProduct);
+                _unitOfWork.PawnableProduct.Add(pawnableProduct);
                 var result = _unitOfWork.Save();
-
+                //get pawnable
+                var pawnableList = await GetAllPawnableProducts();
+                var pawnableId = pawnableList.LastOrDefault().PawnableProductId;
+                //create Attribute
+                var attribute = new Attribute();
+               foreach(var x in pawnableProduct.Attributes)
+                {
+                    attribute.Description = x.Description;
+                    attribute.PawnableProductId = pawnableId;
+                }
+               // var attribute = _mapper.Map<Attribute>(attributeDTO);
+                try
+                {
+                  var respone=  await _attribute.CreateAttribute(attribute);
+                }catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
                 if (result > 0)
                     return true;
-                else
-                    return false;
             }
             return false;
         }
 
-        public Task<IEnumerable<PawnableProduct>> GetAllPawnableProducts()
+        public async Task<IEnumerable<PawnableProduct>> GetAllPawnableProducts()
         {
-            throw new NotImplementedException();
+            var result = await _unitOfWork.PawnableProduct.GetAll();
+            return result;
         }
 
         public Task<PawnableProduct> GetPawnableProductById(int pawnableProductId)
@@ -52,7 +75,6 @@ namespace Services.Services
                 {
                     pawnableProductUpdate.Status = pawnableProduct.Status;
                     _unitOfWork.PawnableProduct.Update(pawnableProductUpdate);
-
                     var result = _unitOfWork.Save();
 
                     if (result > 0)

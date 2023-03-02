@@ -19,9 +19,7 @@ namespace Services.Services
         private IContractService _contract;
         private IInteresDiaryService _diary;
         private ILedgerService _ledger;
-        private IEnumerable<Ledger> _ledgerList;
-        private IEnumerable<PawnShopBE.Core.Models.Contract> _contractList;
-        private IEnumerable<InterestDiary> _diaryList;
+      
 
         public BranchService(IUnitOfWork unitOfWork,IContractService contract
             ,ILedgerService ledger, IInteresDiaryService diary)
@@ -30,19 +28,16 @@ namespace Services.Services
             _contract = contract;
             _ledger = ledger;
             _diary = diary;
-            getList();
         }
-        private async void getList()
-        {
-            //get list Ledger
-            _ledgerList = await _ledger.GetLedger();
-            //get list contract
-            _contractList = await _contract.GetAllContracts();
-            //get list Diary
-            _diaryList = await _diary.GetInteresDiary();
-        }
+      
         public async Task<DisplayBranchDetail> getDisplayBranchDetail(DisplayBranchDetail branchDetail)
         {
+            //get list Ledger
+           var _ledgerList = await _ledger.GetLedger();
+            //get list contract
+            var _contractList = await _contract.GetAllContracts();
+            //get list Diary
+            var _diaryList = await _diary.GetInteresDiary();
             //get branch id
             var branchID = branchDetail.branchId;
 
@@ -67,7 +62,7 @@ namespace Services.Services
             foreach(var x in contract)
             {
                 branchDetail.loanContract = x.Loan;
-                branchDetail.interestRecommend = x.CustomerRecieved;
+                branchDetail.interestRecommend = x.TotalProfit;
                 branchDetail.contractCode = x.ContractCode;
                 branchDetail.statusContract = x.Status;
             }
@@ -86,6 +81,8 @@ namespace Services.Services
         }
         public async Task<IEnumerable<DisplayBranch>> getDisplayBranch(IEnumerable<DisplayBranch> branchList)
         {
+            //get list Ledger
+           var _ledgerList = await _ledger.GetLedger();
             foreach(var branch in branchList)
             {
                var branchId = branch.branchId;

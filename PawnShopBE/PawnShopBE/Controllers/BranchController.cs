@@ -47,8 +47,18 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpGet("branch")]
+        [HttpGet("branch/list")]
         public async Task<IActionResult> GetBranchList()
+        {
+            var branchList = await _branchService.GetAllBranch();
+            if (branchList != null)
+            {
+                return Ok(branchList);
+            }
+            return BadRequest();
+        }
+            [HttpGet("branch/chain")]
+        public async Task<IActionResult> GetBranchChain()
         {
             var branchList = await _branchService.GetAllBranch();
             var displayBranch = _mapper.Map<IEnumerable<DisplayBranch>>(branchList);

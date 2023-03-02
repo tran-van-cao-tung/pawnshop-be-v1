@@ -12,7 +12,7 @@ using PawnShopBE.Infrastructure.Helpers;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContextClass))]
-    [Migration("20230228125448_DbInit")]
+    [Migration("20230301044633_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -66,8 +66,8 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Fund")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Fund")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -344,7 +344,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<DateTime>("PaidDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("PaidMoney")
+                    b.Property<decimal>("PaidMoney")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Payment")
@@ -353,7 +353,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<int?>("PaymentMethod")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Penalty")
+                    b.Property<decimal>("Penalty")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ProofImg")

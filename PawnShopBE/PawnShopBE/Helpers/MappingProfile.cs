@@ -120,23 +120,7 @@ namespace PawnShopBE.Helpers
                 opt => opt.MapFrom(src => src.InterestRecommend));
             #endregion Contract
 
-            #region User
-            CreateMap<User, UserDTO>().ReverseMap();
-            CreateMap<User, DisplayUser>().ReverseMap();
-            #endregion User
-
-            #region Branch
-            CreateMap<DisplayBranch,Branch>().ReverseMap();
-            CreateMap<DisplayBranchDetail, Branch>().ReverseMap();
-            #endregion Branch
-
-            CreateMap<Ledger,LedgerDTO>().ReverseMap(); 
-            CreateMap<PawnableDTO, PawnableProduct>()
-                .ForMember(
-                    dest => dest.Attributes,
-                    opt => opt.MapFrom(src => src.AttributeDTOs));
-
-            CreateMap<AttributeDTO, Core.Models.Attribute>();
+      
             CreateMap<Role, RoleDTO>().ReverseMap();
             CreateMap<Role, RoleDTO>().ReverseMap();
             CreateMap<Contract, ContractDTO>().ReverseMap();         
