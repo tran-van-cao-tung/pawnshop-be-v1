@@ -18,5 +18,8 @@ namespace PawnShopBE.Core.DTOs
         public DateTime? UpdateDate { get; set; }
         public int Status { get; set; }
         public int Point { get; set; }
+        public ICollection<DependentPeopleDTO>? DependentPeople { get; set; }
+        public ICollection<JobDTO>? Jobs { get; set; }
+        public ICollection<CustomerRelativeDTO>? CustomerRelativeRelationships { get; set; }
     }
 }

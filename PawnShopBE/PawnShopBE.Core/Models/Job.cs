@@ -9,6 +9,7 @@ namespace PawnShopBE.Core.Models
     public class Job
     {
         public int JobId { get; set; }
+        public string NameJob { get; set; }
         public Guid CustomerId { get; set; }
         public string WorkLocation { get; set; }
         public decimal Salary { get; set; }

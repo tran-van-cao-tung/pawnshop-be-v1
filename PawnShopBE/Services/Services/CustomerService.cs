@@ -19,12 +19,165 @@ namespace Services.Services
         public IUnitOfWork _unitOfWork;
         private readonly IContractService _contract;
         private readonly IBranchService _branch;
+        private readonly IJobService _job;
+        private readonly ICustomerRelativeService _relative;
+        private readonly IDependentService _dependent;
+
         public CustomerService(IUnitOfWork unitOfWork, IContractService contract,
-           IBranchService branch) {
-        _unitOfWork= unitOfWork;
+           IBranchService branch, IJobService job, ICustomerRelativeService relativeService,
+           IDependentService dependent)
+        {
+            _unitOfWork = unitOfWork;
             _branch = branch;
             _contract = contract;
+            _job = job;
+            _relative = relativeService;
+            _dependent = dependent;
         }
+
+        public async Task<CustomerDTO> getRelative(Guid idCus)
+        {
+            var listCustomer = await GetAllCustomer();
+            //get Job
+            var listJob =await _job.GetJob();
+            var Job = from b in listJob where b.CustomerId==idCus select b;
+
+            //get Relative
+            var listRelative = await _relative.GetCustomerRelative();
+            var Relative=from r in listRelative where r.CustomerId==idCus select r;
+
+            //get Dependent
+            var listDependent = await _dependent.GetDependent();
+            var dependent= from d in listDependent where d.CustomerId==idCus select d;
+
+            //trien khai CustomerDTO
+            var customerDTOs = new CustomerDTO();
+            try
+            {
+                customerDTOs.Jobs= new List<JobDTO>();
+                customerDTOs.DependentPeople= new List<DependentPeopleDTO>();
+                customerDTOs.CustomerRelativeRelationships = new List<CustomerRelativeDTO>();
+                //đưa vào list trong customer
+                customerDTOs = getListRelativeDTO(idCus,customerDTOs,Job,Relative,dependent);
+
+                return customerDTOs;
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        private CustomerDTO getListRelativeDTO(Guid idCus,CustomerDTO customerDTOs, IEnumerable<Job> job, 
+            IEnumerable<CustomerRelativeRelationship> relative, IEnumerable<DependentPeople> dependent)
+        {
+            foreach (var y in job)
+            {
+                var x = new JobDTO();
+                x.CustomerId = idCus;
+                x.NameJob = y.NameJob;
+                x.IsWork = y.IsWork;
+                x.WorkLocation = y.WorkLocation;
+                x.LaborContract = y.LaborContract;
+                x.Salary = y.Salary;
+                customerDTOs.Jobs.Add(x);
+            }
+            foreach (var x in dependent)
+            {
+                var y = new DependentPeopleDTO();
+                y.CustomerId = idCus;
+                y.DependentPeopleName = x.DependentPeopleName;
+                y.CustomerRelationShip = x.CustomerRelationShip;
+                y.MoneyProvided = x.MoneyProvided;
+                y.Address = x.Address;
+                y.PhoneNumber = x.PhoneNumber;
+                customerDTOs.DependentPeople.Add(y);
+            }
+            foreach (var x in relative)
+            {
+                var y = new CustomerRelativeDTO();
+                y.CustomerId = idCus;
+                y.RelativeName = x.RelativeName;
+                y.RelativeRelationship = x.RelativeRelationship;
+                y.Salary = x.Salary;
+                y.Address = x.Address;
+                y.RelativePhone = x.RelativePhone;
+                customerDTOs.CustomerRelativeRelationships.Add(y);
+            }
+            return customerDTOs;
+        }
+
+        public async Task<bool> createRelative(Guid idCus,CustomerDTO customer)
+        {
+            var job = new Job();
+            var relative = new CustomerRelativeRelationship();
+            var dependent = new DependentPeople();
+
+            //get id Cus for All Relative
+            job.CustomerId = idCus;
+            relative.CustomerId = idCus;
+            dependent.CustomerId = idCus;
+
+            //create relative
+            try
+            {
+                //get field for relative
+                job = getFieldJob(customer,job);
+                relative=getFieldRelative(customer,relative);
+                dependent=getFieldDependent(customer,dependent);
+               
+                //create relative
+                var createRelative = _relative.CreateCustomerRelative(relative);
+                var createJob = _job.CreateJob(job);
+                var createDependent = _dependent.CreateDependent(dependent);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+            return true;
+        }
+
+        private DependentPeople getFieldDependent(CustomerDTO customer, DependentPeople dependent)
+        {
+            foreach (var x in customer.DependentPeople)
+            {
+                dependent.DependentPeopleName = x.DependentPeopleName;
+                dependent.CustomerRelationShip = x.CustomerRelationShip;
+                dependent.MoneyProvided = x.MoneyProvided;
+                dependent.Address = x.Address;
+                dependent.PhoneNumber = x.PhoneNumber;
+            }
+            return dependent;
+        }
+
+        private CustomerRelativeRelationship getFieldRelative(CustomerDTO customer, CustomerRelativeRelationship relative)
+        {
+            foreach (var x in customer.CustomerRelativeRelationships)
+            {
+                relative.RelativeName = x.RelativeName;
+                relative.RelativeRelationship = x.RelativeRelationship;
+                relative.Salary = x.Salary;
+                relative.Address = x.Address;
+                relative.RelativePhone = x.RelativePhone;
+            }
+            return relative;
+        }
+
+        private Job getFieldJob(CustomerDTO customer, Job job)
+        {
+            foreach (var x in customer.Jobs)
+            {
+                job.WorkLocation = x.WorkLocation;
+                job.NameJob = x.NameJob;
+                job.Salary = x.Salary;
+                job.LaborContract = x.LaborContract;
+                job.IsWork = x.IsWork;
+            }
+            return job;
+        }
+
         public async Task<bool> CreateCustomer(Customer customer)
         {
             var oldCus = GetCustomerById(customer.CustomerId);
@@ -45,29 +198,6 @@ namespace Services.Services
             }
             return false;
         }
-
-        public async Task<bool> DeleteCustomer(Guid customerId)
-        {
-           if(customerId != null)
-            {
-                var customer= await _unitOfWork.Customers.GetById(customerId);
-                if(customer != null)
-                {
-                    _unitOfWork.Customers.Delete(customer);
-                    var result= _unitOfWork.Save();
-                    if(result > 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            return false;
-        }
-
         public async Task<IEnumerable<Customer>> GetAllCustomer()
         {
             var listCustomer = await _unitOfWork.Customers.GetAll();
@@ -119,7 +249,27 @@ namespace Services.Services
             }
             return null;
         }
-
+        public async Task<bool> DeleteCustomer(Guid customerId)
+        {
+            if (customerId != null)
+            {
+                var customer = await _unitOfWork.Customers.GetById(customerId);
+                if (customer != null)
+                {
+                    _unitOfWork.Customers.Delete(customer);
+                    var result = _unitOfWork.Save();
+                    if (result > 0)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
         public async Task<bool> UpdateCustomer(Customer customer)
         {
             if (customer != null)

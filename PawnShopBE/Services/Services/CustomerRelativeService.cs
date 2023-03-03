@@ -83,10 +83,7 @@ namespace Services.Services
                     customerUpdate.Salary = customerRelative.Salary;
                     customerUpdate.Address= customerRelative.Address;
                     customerUpdate.RelativePhone = customerRelative.RelativePhone;
-                    customerUpdate.AddressVerify = customerRelative.AddressVerify;
-                    customerUpdate.RelativePhoneVerify = customerRelative.RelativePhoneVerify;
                     customerUpdate.CustomerId = customerRelative.CustomerId;
-                    customerUpdate.RelativePhoneVerify = customerRelative.RelativePhoneVerify;
                     customerUpdate.RelativeName = customerRelative.RelativeName;
                     _unitOfWork.CustomersRelativeRelationships.Update(customerUpdate);
                     var result = _unitOfWork.Save();

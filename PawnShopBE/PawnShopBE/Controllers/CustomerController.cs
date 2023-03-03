@@ -21,7 +21,27 @@ namespace PawnShopBE.Controllers
             _customer = customer;
             _mapper = mapper;
         }
+        [HttpGet("customer/getRelative/{id}")]
+        public async Task<IActionResult> getCustomerRelative(Guid id)
+        {
+            var respone= await _customer.getRelative(id);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
 
+        [HttpPost("customer/createRelative/{id}")]
+        public async Task<IActionResult> createCustomerRelative(Guid id, CustomerDTO customer)
+        {
+            var respone = await _customer.createRelative(id,customer);
+            if (respone)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
         [HttpPost("customer/{id}")]
         public async Task<IActionResult> CreateCustomer(CustomerDTO customer)
         {
