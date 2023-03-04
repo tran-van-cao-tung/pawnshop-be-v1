@@ -1,6 +1,7 @@
 ﻿using PawnShopBE.Core.Const;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Infrastructure.Helpers;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,16 @@ namespace Services.Services
 
         public async Task<bool> CreateContract(Contract contract)
         {
+
+           
+            
+
             if (contract != null)
             {
+                contract.Branch = null;
+                contract.Package = null;
+                contract.Customer = null;
+                contract.ContractAsset = null;
                 var contractList = await GetAllContracts();
                 var count = 0;
                 if (contractList != null)
@@ -49,7 +58,7 @@ namespace Services.Services
                     contract.TotalProfit = (contract.Loan * (decimal)interest + fee) * period;                   
                 }
                 contract.ContractStartDate = DateTime.Now;
-                contract.ContractEndDate = contract.ContractStartDate.AddDays((double)package.Day);
+                contract.ContractEndDate = contract.ContractStartDate.AddDays((double)package.Day -1);
                 contract.Status = (int)ContractConst.IN_PROGRESS;
                 await _unitOfWork.Contracts.Add(contract);
 

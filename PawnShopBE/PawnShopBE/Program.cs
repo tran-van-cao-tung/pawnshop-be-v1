@@ -43,13 +43,13 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IContractAssetService, ContractAssetService>();
 builder.Services.AddScoped<IWareHouseService, WareHouseService>();
 builder.Services.AddScoped<IPackageService, PackageService>();
-builder.Services.AddScoped<IInteresDiaryService, InterestDiaryService>();
 builder.Services.AddScoped<ILiquidationService,LiquidationService>();
 builder.Services.AddScoped<IPawnableProductService, PawnableProductService>();
 builder.Services.AddScoped<ICustomerService,CustomerService>();
 builder.Services.AddScoped<IKycService, KycService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IAttributeService, AttributeService>();
+builder.Services.AddScoped<IInteresDiaryService, InterestDiaryService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

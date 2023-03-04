@@ -17,17 +17,21 @@ namespace Services.Services
     public class CustomerService : ICustomerService
     {
         public IUnitOfWork _unitOfWork;
+        public IKycService _kycService;
+        public ICustomerRepository _customerRepository;
         private readonly IContractService _contract;
         private readonly IBranchService _branch;
         private readonly IJobService _job;
         private readonly ICustomerRelativeService _relative;
         private readonly IDependentService _dependent;
 
-        public CustomerService(IUnitOfWork unitOfWork, IContractService contract,
+        public CustomerService(IUnitOfWork unitOfWork, IKycService kycService, ICustomerRepository customerRepository, IContractService contract,
            IBranchService branch, IJobService job, ICustomerRelativeService relativeService,
            IDependentService dependent)
         {
             _unitOfWork = unitOfWork;
+            _kycService= kycService;
+            _customerRepository= customerRepository;
             _branch = branch;
             _contract = contract;
             _job = job;
@@ -180,22 +184,20 @@ namespace Services.Services
         public async Task<bool> CreateCustomer(Customer customer)
         {
             var oldCus = GetCustomerById(customer.CustomerId);
-
-            if (customer != null) {
-
+            // Check if new customer
+            if (oldCus == null)
+            {       
+                customer.Kyc = null;
+                customer.DependentPeople = null;
+                customer.Jobs = null;
+                customer.CustomerRelativeRelationships = null;
+                customer.Status = (int)CustomerConst.ACTIVE;
+                customer.Point = 0;
                 customer.CreatedDate = DateTime.Now;
                 await _unitOfWork.Customers.Add(customer);
-                var result = _unitOfWork.Save();
-                if(result > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
             }
             return false;
+           
         }
         public async Task<IEnumerable<Customer>> GetAllCustomer()
         {
@@ -206,6 +208,20 @@ namespace Services.Services
              }
             return null;
         }
+
+        public async Task<Customer> getCustomerByCCCD(string cccd)
+        {
+            if (cccd != null)
+            {
+                var customer = await _customerRepository.getCustomerByCCCD(cccd);
+                if (customer != null)
+                {
+                    return customer;
+                }
+            }
+            return null;
+        }
+
         public async Task<IEnumerable<DisplayCustomer>> getCustomerHaveBranch(
             IEnumerable<DisplayCustomer> respone, IEnumerable<Customer> listCustomer)
         {

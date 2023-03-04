@@ -30,12 +30,12 @@ namespace PawnShopBE.Core.Models
         public int Status { get; set; }
 
 
-        public virtual Customer Customer { get; set; }
-        public virtual Package Package { get; set; }
-        public virtual Branch Branch { get; set; }
-        public virtual ContractAsset ContractAsset { get; set; }
-        public virtual Liquidtation Liquidtation { get; set; }
-        public ICollection<InterestDiary> InterestDiaries { get; set; }
+        public virtual Customer? Customer { get; set; }
+        public virtual Package? Package { get; set; }
+        public virtual Branch? Branch { get; set; }
+        public virtual ContractAsset? ContractAsset { get; set; }
+        public virtual Liquidtation? Liquidtation { get; set; }
+        public ICollection<InterestDiary>? InterestDiaries { get; set; }
         public Contract()
         {
             InterestDiaries = new List<InterestDiary>();

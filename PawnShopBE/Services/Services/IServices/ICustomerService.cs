@@ -16,6 +16,7 @@ namespace Services.Services.IServices
         Task<Customer> GetCustomerById(Guid idCus);
         Task<bool> UpdateCustomer(Customer customer);
         Task<bool> DeleteCustomer(Guid customerId);
+        Task<Customer> getCustomerByCCCD(string cccd);
         Task<CustomerDTO> getRelative(Guid idCus);
         Task<bool> createRelative(Guid idCus, CustomerDTO customer);
         Task<IEnumerable<DisplayCustomer>> getCustomerHaveBranch(

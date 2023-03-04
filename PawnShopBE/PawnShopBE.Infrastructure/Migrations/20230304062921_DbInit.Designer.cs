@@ -12,7 +12,7 @@ using PawnShopBE.Infrastructure.Helpers;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContextClass))]
-    [Migration("20230228125448_DbInit")]
+    [Migration("20230304062921_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
@@ -323,11 +323,11 @@ namespace PawnShopBE.Infrastructure.Migrations
 
             modelBuilder.Entity("PawnShopBE.Core.Models.InterestDiary", b =>
                 {
-                    b.Property<int>("InterestDiaryId")
+                    b.Property<int?>("InterestDiaryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InterestDiaryId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("InterestDiaryId"));
 
                     b.Property<int>("ContractId")
                         .HasColumnType("int");
@@ -341,10 +341,10 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<DateTime>("NextDueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("PaidDate")
+                    b.Property<DateTime?>("PaidDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("PaidMoney")
+                    b.Property<decimal>("PaidMoney")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Payment")
@@ -353,7 +353,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<int?>("PaymentMethod")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Penalty")
+                    b.Property<decimal>("Penalty")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ProofImg")
@@ -869,8 +869,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                 {
                     b.Navigation("InterestDiaries");
 
-                    b.Navigation("Liquidtation")
-                        .IsRequired();
+                    b.Navigation("Liquidtation");
                 });
 
             modelBuilder.Entity("PawnShopBE.Core.Models.ContractAsset", b =>

@@ -19,8 +19,8 @@ namespace PawnShopBE.Controllers
         private readonly ICustomerService _customerService;
         private readonly IContractAssetService _contractAssetService;
         private readonly IPackageService _packageService;
-        private readonly IBranchService _branchService;
-        private readonly IKycService _kycService;
+        private readonly IInteresDiaryService _interesDiaryService;
+
         private readonly IMapper _mapper;
 
         public ContractController(
@@ -28,16 +28,14 @@ namespace PawnShopBE.Controllers
             ICustomerService customer, 
             IContractAssetService contractAssetService, 
             IPackageService packageService,
-            IBranchService branchService,
-            IKycService kycService,
+            IInteresDiaryService interestDiaryService,
             IMapper mapper)
         {
             _contractService = contractService;
             _customerService = customer;
             _contractAssetService = contractAssetService;
             _packageService = packageService;
-            _branchService = branchService;
-            _kycService = kycService;
+            _interesDiaryService = interestDiaryService;
             _mapper = mapper;
         }
 
@@ -48,64 +46,27 @@ namespace PawnShopBE.Controllers
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
             {            
                 sb.Append(attributes.Description + "/");              
-            }
-            // Get Interest by recommend
-            Package package = await _packageService.GetPackageById(request.PackageId);
-            if (request.InterestRecommend != 0)
-            {
-                package.PackageInterest = request.InterestRecommend;
-            }
-            // Check if old Customer
-            var oldCus = await _customerService.GetCustomerById(request.CustomerId);
-            //if (oldCus == null)
-            //{
-                // Create contract with new Customer
-                var customerDTO = _mapper.Map<CustomerDTO>(request);
-                    customerDTO.CreatedDate = DateTime.Now;
-                    customerDTO.Point = 0;
-                var customer = _mapper.Map<Customer>(customerDTO);
-                    customer.Status = (int) CustomerConst.ACTIVE;
-
-                // Create new Kyc
-                Kyc kyc = new Kyc();
-                kyc.IdentityCardBacking = "";
-                kyc.IdentityCardFronting = "";
-                kyc.FaceImg = "";    
-                Kyc createKyc = await _kycService.CreateKyc(kyc);
-                customer.KycId = createKyc.KycId;
-
-                var newCus= await _customerService.CreateCustomer(customer);
-            //}
-
-          
-          
+            }       
+            //Get package
+            Package package = await _packageService.GetPackageById(request.PackageId, request.InterestRecommend);
+            //Get customer
+            var customer = await _customerService.getCustomerByCCCD(request.cccd); 
+            
+            //Create asset
             var contractAsset = _mapper.Map<ContractAsset>(request);
                 contractAsset.Description = sb.ToString();
-                contractAsset.Status = (int) ContractAssetConst.IN_STOCK;
             await _contractAssetService.CreateContractAsset(contractAsset);
-
-
             
-
             // Create contract
             var contract = _mapper.Map<Contract>(request);
-
             contract.ContractAssetId = contractAsset.ContractAssetId;
             contract.CustomerId = customer.CustomerId;
-            contract.BranchId = request.BranchId;
-            contract.ContractAsset = contractAsset;
-            contract.Customer = customer;
-      
-  
-            var response = await _contractService.CreateContract(contract);
-            if (response)
+            var contractSuccess = await _contractService.CreateContract(contract);
+            var interestDiarySuccess = await _interesDiaryService.CreateInteresDiary(contract);
+            
+            if (interestDiarySuccess == true && interestDiarySuccess == true)
             {
-                var interestDiary = new InterestDiary();
-
-            }
-            if (response)
-            {
-                return Ok(response); 
+                return Ok(interestDiarySuccess); 
             }
             else
             {

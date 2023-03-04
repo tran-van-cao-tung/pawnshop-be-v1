@@ -1,4 +1,5 @@
-﻿using PawnShopBE.Core.Interfaces;
+﻿using PawnShopBE.Core.Const;
+using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
 using System;
@@ -24,6 +25,7 @@ namespace Services.Services
         {
             if (contractAsset != null)
             {
+                contractAsset.Status = (int)ContractAssetConst.IN_STOCK;
                 await _unitOfWork.ContractAssets.Add(contractAsset);
 
                 var result = _unitOfWork.Save();
