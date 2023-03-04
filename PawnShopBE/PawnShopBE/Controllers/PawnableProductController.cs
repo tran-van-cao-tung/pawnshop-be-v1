@@ -7,6 +7,7 @@ using PawnShopBE.Core.Models;
 using Services.Services;
 using Services.Services.IServices;
 using System.Collections.Generic;
+using Attribute = PawnShopBE.Core.Models.Attribute;
 
 namespace PawnShopBE.Controllers
 {
@@ -26,6 +27,7 @@ namespace PawnShopBE.Controllers
             _attributeService = attributeService;
             _mapper = mapper;
         }
+        
         [HttpGet("pawnable")]
         public async Task<IActionResult> GetAllPawnable()
         {
@@ -40,7 +42,9 @@ namespace PawnShopBE.Controllers
         [HttpPost("pawnable")]
         public async Task<IActionResult> CreatePawnable(PawnableDTO pawnableDTO)
         {
+            var attribure = _mapper.Map<ICollection<Attribute>>(pawnableDTO.AttributeDTOs);
             var pawnable = _mapper.Map<PawnableProduct>(pawnableDTO);
+            pawnable.Attributes = attribure;
             var respone = await _pawnableProductService.CreatePawnableProduct(pawnable);
 
             if (respone != null)
@@ -51,11 +55,11 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("pawnable/{id}")]
-        public async Task<IActionResult> UpdatePawnableProduct(int pawnableId, PawnableDTO request)
+        public async Task<IActionResult> UpdatePawnableProduct(int id, PawnableDTO request)
         {
                      
                 var pawnableProduct = _mapper.Map<PawnableProduct>(request);
-                pawnableProduct.PawnableProductId = pawnableId;
+                pawnableProduct.PawnableProductId = id;
 
                 var response = await _pawnableProductService.UpdatePawnableProduct(pawnableProduct);
                 if (response)

@@ -13,5 +13,7 @@ namespace PawnShopBE.Core.DTOs
         public string ContractAssetName { get; set; }
         public string? Description { get; set; }
         public string Image { get; set; }
+        public string? commodifyCode { get; set; }
+
     }
 }

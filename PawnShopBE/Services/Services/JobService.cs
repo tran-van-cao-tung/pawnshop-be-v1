@@ -62,6 +62,7 @@ namespace Services.Services
             var jobUpdate = _unit.Jobs.SingleOrDefault(job, j => j.JobId == job.JobId);
             if(jobUpdate!= null)
             {
+                jobUpdate.NameJob = job.NameJob;
                 jobUpdate.Salary=job.Salary;
                 jobUpdate.WorkLocation=job.WorkLocation;
                 jobUpdate.IsWork=job.IsWork;

@@ -20,11 +20,11 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> CreateAttribute(ICollection<PawnShopBE.Core.Models.Attribute> attributes)
+        public async Task<bool> CreateAttribute(PawnShopBE.Core.Models.Attribute attributes)
         {
             if (attributes != null)
             {               
-                    await _unitOfWork.Attributes.AddList(attributes);               
+                    await _unitOfWork.Attributes.Add(attributes);               
                 var result = _unitOfWork.Save();
 
                 if (result > 0)

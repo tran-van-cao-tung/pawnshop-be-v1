@@ -1,4 +1,5 @@
-﻿using PawnShopBE.Core.Interfaces;
+﻿using PawnShopBE.Core.DTOs;
+using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
 using System;
@@ -13,10 +14,52 @@ namespace Services.Services
     {
         private readonly IUnitOfWork _unit;
         private readonly Warehouse warehouse;
-
-        public WareHouseService(IUnitOfWork unitOfWork) { 
+        private readonly IContractAssetService _asset;
+        private readonly IPawnableProductService _pawnable;
+        public WareHouseService(IUnitOfWork unitOfWork, IContractAssetService asset,
+            IPawnableProductService pawnable) { 
               _unit=unitOfWork;
+            _asset=asset;
+            _pawnable=pawnable;
         }
+        public async Task<WareHouseDTO> getWareHouseDetail(int id)
+        {
+            //get List Asset
+            var listAsset= await _asset.GetAllContractAssets();
+            var asset = from l in listAsset where l.WarehouseId== id select l;
+
+            //get pawnable
+            var getPawnableId = from l in asset select l.PawnableProductId;
+            var pawnableID= getPawnableId.First();
+            var listPawnable= await _pawnable.GetAllPawnableProducts();
+            var pawnable= from p in listPawnable where p.PawnableProductId==pawnableID select p;
+
+            //get wareHouse Detail
+            var wareHouseDTO = new WareHouseDTO();
+            wareHouseDTO.ContractAssets=new List<ContractAssetDTO>();
+            wareHouseDTO=getAssetDTO(wareHouseDTO,asset,pawnable);
+           
+            return wareHouseDTO;
+        }
+
+        private WareHouseDTO getAssetDTO(WareHouseDTO wareHouseDTO, IEnumerable<ContractAsset> asset,
+            IEnumerable<PawnableProduct> pawnable)
+        {
+            foreach (var x in asset)
+            {
+                var assetDTO = new ContractAssetDTO();
+                assetDTO.ContractAssetName = x.ContractAssetName;
+                assetDTO.Description = x.Description;
+                assetDTO.Image = x.Image;
+                foreach (var y in pawnable)
+                {
+                    assetDTO.commodifyCode = y.CommodityCode;
+                }
+                wareHouseDTO.ContractAssets.Add(assetDTO);
+            }
+            return wareHouseDTO;
+        }
+
         public async Task<bool> CreateWareHouse(Warehouse warehouse)
         {
             if ( warehouse!= null)
