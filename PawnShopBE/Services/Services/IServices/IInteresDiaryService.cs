@@ -9,9 +9,9 @@ namespace Services.Services.IServices
 {
     public interface IInteresDiaryService
     {
-        Task<bool> CreateInteresDiary(InterestDiary interestDiary);
+        Task<bool> CreateInteresDiary(Contract contract);
         Task<IEnumerable<InterestDiary>> GetInteresDiary();
-        Task<InterestDiary> GetInteresDiaryById(int interestDiaryId);
+        Task<InterestDiary> GetInteresDiaryByContractId(int contractId);
         Task<bool> UpdateInteresDiary(InterestDiary interestDiary);
         Task<bool> DeleteInteresDiary(int interestDiaryId);
     }

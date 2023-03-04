@@ -19,27 +19,27 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("interestDiary")]
-        public async Task<IActionResult> GetAllinterestDiary() {
-            var respone =await _interestDiaryService.GetInteresDiary();
-            if (respone != null)
-            {
-                return Ok(respone);
-            }
-            return BadRequest();
-        }
+        //[HttpGet("interestDiary{contractId}")]
+        //public async Task<IActionResult> GetAllinterestDiary(int contractId) {
+        //    var respone =await _interestDiaryService.GetInteresDiaryByContractId(contractId);
+        //    if (respone != null)
+        //    {
+        //        return Ok(respone);
+        //    }
+        //    return BadRequest();
+        //}
 
-        [HttpPost("interestDiary")]
-        public async Task<IActionResult> CreateinterestDiary(InterestDiaryDTO diary)
-        {
-            var diaryMapper = _mapper.Map<InterestDiary>(diary);
-            var respone = await _interestDiaryService.CreateInteresDiary(diaryMapper);
-            if (respone != null)
-            {
-                return Ok(respone);
-            }
-            return BadRequest();
-        }
+        //[HttpPost("interestDiary")]
+        //public async Task<IActionResult> CreateinterestDiary(InterestDiaryDTO diary)
+        //{
+        //    var diaryMapper = _mapper.Map<InterestDiary>(diary);
+        //    var respone = await _interestDiaryService.CreateInteresDiary(diaryMapper);
+        //    if (respone != null)
+        //    {
+        //        return Ok(respone);
+        //    }
+        //    return BadRequest();
+        //}
 
         [HttpDelete("interestDiary/{id}")]
         public async Task<IActionResult> DeleteinterestDiary(int id)

@@ -14,49 +14,30 @@ namespace Services.Services
     public class CustomerService : ICustomerService
     {
         public IUnitOfWork _unitOfWork;
-
-        public CustomerService(IUnitOfWork unitOfWork) {
-        _unitOfWork= unitOfWork;
+        public IKycService _kycService;
+        public ICustomerRepository _customerRepository;
+        public CustomerService(IUnitOfWork unitOfWork, IKycService kycService, ICustomerRepository customerRepository) {
+            _unitOfWork= unitOfWork;
+            _kycService= kycService;
+            _customerRepository= customerRepository;
         }
         public async Task<bool> CreateCustomer(Customer customer)
         {
             var oldCus = GetCustomerById(customer.CustomerId);
-
-            if (customer != null) {
-
-               
-                //{
-                // Create contract with new Customer
-                var customerDTO = _mapper.Map<CustomerDTO>(request);
-                customerDTO.CreatedDate = DateTime.Now;
-                customerDTO.Point = 0;
-                var customer = _mapper.Map<Customer>(customerDTO);
+            // Check if new customer
+            if (oldCus == null)
+            {       
+                customer.Kyc = null;
+                customer.DependentPeople = null;
+                customer.Jobs = null;
+                customer.CustomerRelativeRelationships = null;
                 customer.Status = (int)CustomerConst.ACTIVE;
-
-                // Create new Kyc
-                Kyc kyc = new Kyc();
-                kyc.IdentityCardBacking = "";
-                kyc.IdentityCardFronting = "";
-                kyc.FaceImg = "";
-                Kyc createKyc = await _kycService.CreateKyc(kyc);
-                customer.KycId = createKyc.KycId;
-
-                var newCus = await _customerService.CreateCustomer(customer);
-                //}
-
+                customer.Point = 0;
                 customer.CreatedDate = DateTime.Now;
                 await _unitOfWork.Customers.Add(customer);
-                var result = _unitOfWork.Save();
-                if(result > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
             }
             return false;
+           
         }
 
         public async Task<bool> DeleteCustomer(Guid customerId)
@@ -88,6 +69,19 @@ namespace Services.Services
             { 
             return listCustomer;
              }
+            return null;
+        }
+
+        public async Task<Customer> getCustomerByCCCD(string cccd)
+        {
+            if (cccd != null)
+            {
+                var customer = await _customerRepository.getCustomerByCCCD(cccd);
+                if (customer != null)
+                {
+                    return customer;
+                }
+            }
             return null;
         }
 

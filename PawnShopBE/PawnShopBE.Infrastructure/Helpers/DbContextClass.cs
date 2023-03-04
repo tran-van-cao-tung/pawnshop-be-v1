@@ -12,6 +12,10 @@ namespace PawnShopBE.Infrastructure.Helpers
 {
     public class DbContextClass : DbContext
     {
+        public DbContextClass()
+        {
+        }
+
         public DbContextClass(DbContextOptions<DbContextClass> options) : base(options)
         {
 

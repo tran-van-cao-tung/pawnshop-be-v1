@@ -110,5 +110,15 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
         }
 
+        [HttpGet("customer/{cccd}")]
+        public async Task<IActionResult> GetCustomerByCCCD(string cccd)
+        {
+            var customer = await _customer.getCustomerByCCCD(cccd);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
     }
 }

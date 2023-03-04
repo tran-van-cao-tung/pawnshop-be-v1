@@ -26,11 +26,12 @@ namespace PawnShopBE.Core.DTOs
         public decimal TotalProfit { get; set; }
         public string AssetImg { get; set; }
         public ICollection<AttributeDTO>? PawnableAttributeDTOs { get; set; }
-
+        public string cccd { get; set; }
         public ContractDTO()
         {
             InsuranceFee = 0;
             StorageFee = 0;
+            InterestRecommend = 0;
         }
         public string CustomerPhoneNumber { get; set; }
         public string CustomerAddress { get; set; }
