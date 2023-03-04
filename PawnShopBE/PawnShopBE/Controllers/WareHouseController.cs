@@ -19,6 +19,16 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
+        [HttpGet("warehouse/detail/{id}")]
+        public async Task<IActionResult> GetAllWareHouseDetail(int id)
+        {
+            var respone = await _wareHouseService.getWareHouseDetail(id);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
         [HttpGet("warehouse")]
         public async Task<IActionResult> GetAllWareHouse() {
             var respone =await _wareHouseService.GetWareHouse();

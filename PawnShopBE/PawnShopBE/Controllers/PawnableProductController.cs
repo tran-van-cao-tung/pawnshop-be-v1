@@ -27,6 +27,7 @@ namespace PawnShopBE.Controllers
             _attributeService = attributeService;
             _mapper = mapper;
         }
+        
         [HttpGet("pawnable")]
         public async Task<IActionResult> GetAllPawnable()
         {
@@ -54,11 +55,11 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("pawnable/{id}")]
-        public async Task<IActionResult> UpdatePawnableProduct(int pawnableId, PawnableDTO request)
+        public async Task<IActionResult> UpdatePawnableProduct(int id, PawnableDTO request)
         {
                      
                 var pawnableProduct = _mapper.Map<PawnableProduct>(request);
-                pawnableProduct.PawnableProductId = pawnableId;
+                pawnableProduct.PawnableProductId = id;
 
                 var response = await _pawnableProductService.UpdatePawnableProduct(pawnableProduct);
                 if (response)

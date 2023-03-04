@@ -15,11 +15,14 @@ namespace Services.Services
     {
         public IUnitOfWork _unitOfWork;
         private IAttributeService _attribute;
+       
 
-        public PawnableProductService(IUnitOfWork unitOfWork)
+        public PawnableProductService(IUnitOfWork unitOfWork,IAttributeService attribute)
         {
             _unitOfWork = unitOfWork;
+            _attribute = attribute;
         }
+
         public async Task<bool> CreatePawnableProduct(PawnableProduct pawnableProduct)
         {
             if (pawnableProduct != null)
@@ -69,6 +72,8 @@ namespace Services.Services
                 var pawnableProductUpdate = await _unitOfWork.PawnableProduct.GetById(pawnableProduct.PawnableProductId);
                 if (pawnableProductUpdate != null)
                 {
+                    pawnableProductUpdate.TypeOfProduct=pawnableProduct.TypeOfProduct;
+                    pawnableProductUpdate.CommodityCode=pawnableProduct.CommodityCode;
                     pawnableProductUpdate.Status = pawnableProduct.Status;
                     _unitOfWork.PawnableProduct.Update(pawnableProductUpdate);
 

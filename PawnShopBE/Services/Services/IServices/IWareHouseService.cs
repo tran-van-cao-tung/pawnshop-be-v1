@@ -1,4 +1,5 @@
-﻿using PawnShopBE.Core.Models;
+﻿using PawnShopBE.Core.DTOs;
+using PawnShopBE.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace Services.Services.IServices
         Task<Warehouse> GetWareHouseById(int wareHouseId);
         Task<bool> UpdateWareHouse(Warehouse warehouse);
         Task<bool> DeleteWareHouse(int wareHouseId);
+        Task<WareHouseDTO> getWareHouseDetail(int id);
     }
 }

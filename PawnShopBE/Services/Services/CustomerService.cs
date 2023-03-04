@@ -59,7 +59,6 @@ namespace Services.Services
                 customerDTOs.CustomerRelativeRelationships = new List<CustomerRelativeDTO>();
                 //đưa vào list trong customer
                 customerDTOs = getListRelativeDTO(idCus,customerDTOs,Job,Relative,dependent);
-
                 return customerDTOs;
             }catch(Exception ex)
             {
