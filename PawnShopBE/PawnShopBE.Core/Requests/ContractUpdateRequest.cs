@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PawnShopBE.Core.Const
+namespace PawnShopBE.Core.Requests
 {
-    public enum RoleConst
+    public class ContractUpdateRequest
     {
-        ADMIN,
-        STAFF
     }
 }

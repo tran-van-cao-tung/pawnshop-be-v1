@@ -12,6 +12,10 @@ namespace PawnShopBE.Infrastructure.Helpers
 {
     public class DbContextClass : DbContext
     {
+        public DbContextClass()
+        {
+        }
+
         public DbContextClass(DbContextOptions<DbContextClass> options) : base(options)
         {
 
@@ -106,7 +110,7 @@ namespace PawnShopBE.Infrastructure.Helpers
                 entity.ToTable("ContractAsset");
                 entity.HasKey(c => c.ContractAssetId);
                 entity.HasOne(c => c.PawnableProduct).WithMany(p => p.ContractAssets).HasForeignKey(c => c.PawnableProductId).IsRequired(true);
-                entity.HasOne(c => c.Warehouse).WithOne(p => p.ContractAsset).HasForeignKey<ContractAsset>(c => c.WarehouseId).IsRequired(true);
+                entity.HasOne(c => c.Warehouse).WithMany(p => p.ContractAssets).HasForeignKey(c => c.WarehouseId).IsRequired(true);
             });
 
             modelBuilder.Entity<PawnableProduct>(entity =>
@@ -120,7 +124,6 @@ namespace PawnShopBE.Infrastructure.Helpers
             {
                 entity.ToTable("Attribute");
                 entity.HasKey(a => a.AttributeId);
-                //entity.Property(a => a.AttributeId).ValueGeneratedOnAdd();
                 entity.HasOne(a => a.PawnableProduct).WithMany(p => p.Attributes).HasForeignKey(a => a.PawnableProductId).IsRequired(true);
 
             });

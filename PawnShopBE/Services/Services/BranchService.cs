@@ -1,4 +1,5 @@
-﻿using PawnShopBE.Core.DTOs;
+﻿using PawnShopBE.Core.Display;
+using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
@@ -14,13 +15,84 @@ namespace Services.Services
     {
 
         public IUnitOfWork _unitOfWork;
+        private IContractService _contract;
+        private IInteresDiaryService _diary;
+        private ILedgerService _ledger;
 
-        public BranchService(IUnitOfWork unitOfWork)
+        public BranchService(IUnitOfWork unitOfWork, IContractService contract
+           , ILedgerService ledger, IInteresDiaryService diary)
         {
             _unitOfWork = unitOfWork;
+            _contract = contract;
+            _ledger = ledger;
+            _diary = diary;
         }
+        public async Task<DisplayBranchDetail> getDisplayBranchDetail(DisplayBranchDetail branchDetail)
+        {
+            //get list Ledger
+            var _ledgerList = await _ledger.GetLedger();
+            //get list contract
+            var _contractList = await _contract.GetAllContracts();
+            //get list Diary
+            var _diaryList = await _diary.GetInteresDiary();
+            //get branch id
+            var branchID = branchDetail.branchId;
 
-        
+            //get ledger have branchID
+            var ledger = from l in _ledgerList where l.BranchId == branchID select l;
+            //get contract have branchID
+            var contract = from c in _contractList where c.BranchId == branchID select c;
+
+            //get contract id
+            var contractId = getContractId(contract);
+
+            //get diary have contractId
+            var diary = from d in _diaryList where d.ContractId == contractId select d;
+
+            //get Branch Detail
+            foreach (var x in ledger)
+            {
+                branchDetail.recveivedInterest = x.RecveivedInterest;
+                branchDetail.loanBranch = x.Loan;
+                branchDetail.balance = x.Balance;
+            }
+            foreach (var x in contract)
+            {
+                branchDetail.loanContract = x.Loan;
+                branchDetail.interestRecommend = x.TotalProfit;
+                branchDetail.contractCode = x.ContractCode;
+                branchDetail.statusContract = x.Status;
+            }
+            foreach (var x in diary)
+            {
+                branchDetail.debtCustomers = x.TotalPay - x.PaidMoney;
+            }
+            return branchDetail;
+        }
+        private int getContractId(IEnumerable<PawnShopBE.Core.Models.Contract> contract)
+        {
+            var getContractId = from c in contract select c.ContractId;
+            var contractId = getContractId.First();
+            return contractId;
+        }
+        public async Task<IEnumerable<DisplayBranch>> getDisplayBranch(IEnumerable<DisplayBranch> branchList)
+        {
+            //get list Ledger
+            var _ledgerList = await _ledger.GetLedger();
+            foreach (var branch in branchList)
+            {
+                var branchId = branch.branchId;
+                // ger ledger khi branch id = nhau
+                var ledger = from l in _ledgerList where l.BranchId == branchId select l;
+                foreach (var l in ledger)
+                {
+                    branch.recveivedInterest = l.RecveivedInterest;
+                    branch.loan = l.Loan;
+                    branch.balance = l.Balance;
+                }
+            }
+            return branchList;
+        }
         public async Task<bool> CreateBranch(Branch branch)
         {
             if (branch != null)

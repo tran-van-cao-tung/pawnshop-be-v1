@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Org.BouncyCastle.Utilities;
+using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
@@ -11,13 +14,34 @@ namespace PawnShopBE.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly ICustomerService _customer;
+       
         private readonly IMapper _mapper;
 
         public CustomerController(ICustomerService customer, IMapper mapper) {
             _customer = customer;
             _mapper = mapper;
         }
+        [HttpGet("customer/getRelative/{id}")]
+        public async Task<IActionResult> getCustomerRelative(Guid id)
+        {
+            var respone= await _customer.getRelative(id);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
 
+        [HttpPost("customer/createRelative/{id}")]
+        public async Task<IActionResult> createCustomerRelative(Guid id, CustomerDTO customer)
+        {
+            var respone = await _customer.createRelative(id,customer);
+            if (respone)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
         [HttpPost("customer/{id}")]
         public async Task<IActionResult> CreateCustomer(CustomerDTO customer)
         {
@@ -34,13 +58,15 @@ namespace PawnShopBE.Controllers
         public async Task<IActionResult> GetAllCustomers()
         {
             var listCustomer = await _customer.GetAllCustomer();
-            if (listCustomer == null)
+            var respone = _mapper.Map<IEnumerable<DisplayCustomer>>(listCustomer);
+            if (respone != null)
             {
-                return NotFound();
+                respone = await _customer.getCustomerHaveBranch(respone, listCustomer);
+                return Ok(respone);
             }
-            return Ok(listCustomer);
+            return NotFound();
         }
-
+       
         [HttpGet("customer/{id}")]
         public async Task<IActionResult> GetCustomerById(Guid id)
         {
@@ -49,7 +75,7 @@ namespace PawnShopBE.Controllers
             {
                 return NotFound();
             }
-            return Ok(listCustomer);
+            return Ok();
         }
 
         [HttpDelete("customer/{id}")]
@@ -64,13 +90,11 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("customer/{id}")]
-        public async Task<IActionResult> UpdateCustomer(Guid id, CustomerDTO customer)
+        public async Task<IActionResult> UpdateCustomer(Guid id, Customer customer)
         {
             if (customer != null)
             {
-                var customerMapper = _mapper.Map<Customer>(customer);
-                customerMapper.CustomerId= id;
-                    var respone = await _customer.UpdateCustomer(customerMapper);
+                    var respone = await _customer.UpdateCustomer(customer);
                     if (respone)
                     {
                         return Ok(respone);
@@ -80,5 +104,15 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
         }
 
+        [HttpGet("customer/{cccd}")]
+        public async Task<IActionResult> GetCustomerByCCCD(string cccd)
+        {
+            var customer = await _customer.getCustomerByCCCD(cccd);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            return Ok();
+        }
     }
 }

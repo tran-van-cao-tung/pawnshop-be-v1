@@ -7,6 +7,7 @@ using PawnShopBE.Core.Models;
 using Services.Services;
 using Services.Services.IServices;
 using System.Collections.Generic;
+using Attribute = PawnShopBE.Core.Models.Attribute;
 
 namespace PawnShopBE.Controllers
 {
@@ -26,43 +27,39 @@ namespace PawnShopBE.Controllers
             _attributeService = attributeService;
             _mapper = mapper;
         }
-
-        [HttpPost("pawnable")]
-        public async Task<IActionResult> CreatePawnableProduct([FromBody] PawnableProductDTO request)
+        
+        [HttpGet("pawnable")]
+        public async Task<IActionResult> GetAllPawnable()
         {
-            PawnableProduct pawnableProduct = _mapper.Map<PawnableProduct>(request);
-            var createPawnableProduct = await _pawnableProductService.CreatePawnableProduct(pawnableProduct);
-            var response = true;
-            if (createPawnableProduct)
+            var respone = await _pawnableProductService.GetAllPawnableProducts();
+            if (respone != null)
             {
-                List<Core.Models.Attribute> listAttribute = new List<Core.Models.Attribute>();
-                foreach (Core.Models.Attribute attribute in pawnableProduct.Attributes.ToList())
-                {
-                    listAttribute.Add(attribute);
-                }
-                try
-                {
-                    await _attributeService.CreateAttribute(listAttribute);
-                }
-                catch (SqlException sql)
-                {
-                    return Ok(response);
-                }
+                return Ok(respone);
             }
-
-            
-          
-          
-           return BadRequest();
+            return BadRequest();
         }
 
+        [HttpPost("pawnable")]
+        public async Task<IActionResult> CreatePawnable(PawnableDTO pawnableDTO)
+        {
+            var attribure = _mapper.Map<ICollection<Attribute>>(pawnableDTO.AttributeDTOs);
+            var pawnable = _mapper.Map<PawnableProduct>(pawnableDTO);
+            pawnable.Attributes = attribure;
+            var respone = await _pawnableProductService.CreatePawnableProduct(pawnable);
 
-        [HttpPut("pawnable{id}")]
-        public async Task<IActionResult> UpdatePawnableProduct(int pawnableId, PawnableProductDTO request)
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
+
+        [HttpPut("pawnable/{id}")]
+        public async Task<IActionResult> UpdatePawnableProduct(int id, PawnableDTO request)
         {
                      
                 var pawnableProduct = _mapper.Map<PawnableProduct>(request);
-                pawnableProduct.PawnableProductId = pawnableId;
+                pawnableProduct.PawnableProductId = id;
 
                 var response = await _pawnableProductService.UpdatePawnableProduct(pawnableProduct);
                 if (response)

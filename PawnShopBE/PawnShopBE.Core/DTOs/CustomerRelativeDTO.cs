@@ -13,8 +13,6 @@ namespace PawnShopBE.Core.DTOs
         public string RelativeName { get; set; }
         public decimal? Salary { get; set; }
         public string Address { get; set; }
-        public bool AddressVerify { get; set; }
         public string RelativePhone { get; set; }
-        public bool RelativePhoneVerify { get; set; }
     }
 }

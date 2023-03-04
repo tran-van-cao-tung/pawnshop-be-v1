@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddmigrationDbInit : Migration
+    public partial class DbInit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -36,9 +36,9 @@ namespace PawnShopBE.Infrastructure.Migrations
                 {
                     KycId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    IdentityCardFronting = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IdentityCardBacking = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FaceImg = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    IdentityCardFronting = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IdentityCardBacking = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FaceImg = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -221,7 +221,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     WarehouseId = table.Column<int>(type: "int", nullable: false),
                     PawnableProductId = table.Column<int>(type: "int", nullable: false),
-                    SerialCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ContractAssetName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -250,6 +249,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                 {
                     CustomerRelativeRelationshipId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RelativeName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RelativeRelationship = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Salary = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -353,14 +353,15 @@ namespace PawnShopBE.Infrastructure.Migrations
                     ContractCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ContractStartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ContractEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ActualEndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ActualEndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    InterestRecommend = table.Column<int>(type: "int", nullable: false),
                     Loan = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    InsuranceFee = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    StorageFee = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    CustomerRecieved = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContractVerifying = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InsuranceFee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    StorageFee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalProfit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ContractVerifyImg = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -400,12 +401,12 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ContractId = table.Column<int>(type: "int", nullable: false),
                     Payment = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Penalty = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Penalty = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalPay = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaidMoney = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    PaidMoney = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     DueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     NextDueDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PaidDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaidDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaymentMethod = table.Column<int>(type: "int", nullable: true),
@@ -477,8 +478,7 @@ namespace PawnShopBE.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ContractAsset_WarehouseId",
                 table: "ContractAsset",
-                column: "WarehouseId",
-                unique: true);
+                column: "WarehouseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customer_KycId",

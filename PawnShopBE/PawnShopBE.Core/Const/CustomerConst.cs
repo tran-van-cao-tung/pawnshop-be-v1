@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace PawnShopBE.Core.Const
 {
-    public enum PawnableProduct
+     public enum CustomerConst
     {
-        ACTIVE,
-        INACTIVE
+        ACTIVE = 1,
+        BLACKLIST =2
     }
 }

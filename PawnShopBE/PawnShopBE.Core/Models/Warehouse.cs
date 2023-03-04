@@ -12,6 +12,11 @@ namespace PawnShopBE.Core.Models
         public string WarehouseName { get; set; }
         public string WarehouseAddress { get; set; }
         public int Status { get; set; }
-        public virtual ContractAsset? ContractAsset { get; set; }
+        public ICollection<ContractAsset> ContractAssets { get; set; }
+
+        public Warehouse()
+        {
+            ContractAssets = new List<ContractAsset>();
+        }
     }
 }

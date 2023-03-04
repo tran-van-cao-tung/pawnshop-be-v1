@@ -20,9 +20,9 @@ namespace PawnShopBE.Controllers
 
 
         [HttpGet("package/{id}")]
-        public async Task<IActionResult> GetPackagehById(int packageId)
+        public async Task<IActionResult> GetPackagehById(int packageId, int interestRecommend)
         {
-            var package = await _packageService.GetPackageById(packageId);
+            var package = await _packageService.GetPackageById(packageId, interestRecommend);
 
             if (package != null)
             {

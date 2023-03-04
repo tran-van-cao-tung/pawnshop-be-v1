@@ -12,8 +12,8 @@ using PawnShopBE.Infrastructure.Helpers;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContextClass))]
-    [Migration("20230223052612_Add-migration DbInit")]
-    partial class AddmigrationDbInit
+    [Migration("20230304062921_DbInit")]
+    partial class DbInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -92,7 +92,7 @@ namespace PawnShopBE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContractId"));
 
-                    b.Property<DateTime>("ActualEndDate")
+                    b.Property<DateTime?>("ActualEndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("BranchId")
@@ -111,22 +111,20 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<DateTime>("ContractStartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ContractVerifying")
-                        .IsRequired()
+                    b.Property<string>("ContractVerifyImg")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("CustomerRecieved")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("InsuranceFee")
+                    b.Property<decimal>("InsuranceFee")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("InterestRecommend")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Loan")
                         .HasColumnType("decimal(18,2)");
@@ -137,7 +135,10 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("StorageFee")
+                    b.Property<decimal>("StorageFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("TotalProfit")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -178,10 +179,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<int>("PawnableProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SerialCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -192,8 +189,7 @@ namespace PawnShopBE.Infrastructure.Migrations
 
                     b.HasIndex("PawnableProductId");
 
-                    b.HasIndex("WarehouseId")
-                        .IsUnique();
+                    b.HasIndex("WarehouseId");
 
                     b.ToTable("ContractAsset", (string)null);
                 });
@@ -208,12 +204,12 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
+                    b.Property<string>("CCCD")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -258,6 +254,10 @@ namespace PawnShopBE.Infrastructure.Migrations
 
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("RelativeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RelativePhone")
                         .IsRequired()
@@ -323,11 +323,11 @@ namespace PawnShopBE.Infrastructure.Migrations
 
             modelBuilder.Entity("PawnShopBE.Core.Models.InterestDiary", b =>
                 {
-                    b.Property<int>("InterestDiaryId")
+                    b.Property<int?>("InterestDiaryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("InterestDiaryId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("InterestDiaryId"));
 
                     b.Property<int>("ContractId")
                         .HasColumnType("int");
@@ -341,10 +341,10 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<DateTime>("NextDueDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("PaidDate")
+                    b.Property<DateTime?>("PaidDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("PaidMoney")
+                    b.Property<decimal>("PaidMoney")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Payment")
@@ -353,7 +353,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<int?>("PaymentMethod")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("Penalty")
+                    b.Property<decimal>("Penalty")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("ProofImg")
@@ -413,15 +413,12 @@ namespace PawnShopBE.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("KycId"));
 
                     b.Property<string>("FaceImg")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdentityCardBacking")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdentityCardFronting")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("KycId");
@@ -744,8 +741,8 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("PawnShopBE.Core.Models.Warehouse", "Warehouse")
-                        .WithOne("ContractAsset")
-                        .HasForeignKey("PawnShopBE.Core.Models.ContractAsset", "WarehouseId")
+                        .WithMany("ContractAssets")
+                        .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -872,8 +869,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                 {
                     b.Navigation("InterestDiaries");
 
-                    b.Navigation("Liquidtation")
-                        .IsRequired();
+                    b.Navigation("Liquidtation");
                 });
 
             modelBuilder.Entity("PawnShopBE.Core.Models.ContractAsset", b =>
@@ -917,7 +913,7 @@ namespace PawnShopBE.Infrastructure.Migrations
 
             modelBuilder.Entity("PawnShopBE.Core.Models.Warehouse", b =>
                 {
-                    b.Navigation("ContractAsset");
+                    b.Navigation("ContractAssets");
                 });
 #pragma warning restore 612, 618
         }

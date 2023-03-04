@@ -67,9 +67,7 @@ namespace Services.Services
                 dependentUpdate.CustomerRelationShip = dependent.CustomerRelationShip;
                 dependentUpdate.MoneyProvided = dependent.MoneyProvided;
                 dependentUpdate.Address = dependent.Address;
-                dependentUpdate.AddressVerify = dependent.AddressVerify;
                 dependentUpdate.PhoneNumber= dependent.Address;
-                dependentUpdate.PhoneVerify = dependent.PhoneVerify;
                 dependentUpdate.CustomerId = dependent.CustomerId;
                 _unit.DependentPeople.Update(dependentUpdate);
                 var result = _unit.Save();

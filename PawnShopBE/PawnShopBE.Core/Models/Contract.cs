@@ -18,29 +18,27 @@ namespace PawnShopBE.Core.Models
         public string ContractCode { get; set; }
         public DateTime ContractStartDate { get; set; }
         public DateTime ContractEndDate { get; set; }
-        public DateTime ActualEndDate { get; set; }
+        public DateTime? ActualEndDate { get; set; }
+        public int InterestRecommend { get; set; } = 0;
         public decimal Loan { get; set; }
-        public decimal? InsuranceFee { get; set; }
-        public decimal? StorageFee { get; set; }
-        public decimal CustomerRecieved { get; set; }
-        public string Description { get; set; }
-        public string ContractVerifying { get; set; }
+        public decimal InsuranceFee { get; set; } = 0;
+        public decimal StorageFee { get; set; } = 0;
+        public decimal TotalProfit { get; set; }
+        public string? ContractVerifyImg { get; set; }
         public DateTime? UpdateDate { get; set; }
+        public string? Description { get; set; }
         public int Status { get; set; }
 
 
-        public virtual Customer Customer { get; set; }
-        public virtual Package Package { get; set; }
-        public virtual Branch Branch { get; set; }
-        public virtual ContractAsset ContractAsset { get; set; }
-        public virtual Liquidtation Liquidtation { get; set; }
-        public ICollection<InterestDiary> InterestDiaries { get; set; }
+        public virtual Customer? Customer { get; set; }
+        public virtual Package? Package { get; set; }
+        public virtual Branch? Branch { get; set; }
+        public virtual ContractAsset? ContractAsset { get; set; }
+        public virtual Liquidtation? Liquidtation { get; set; }
+        public ICollection<InterestDiary>? InterestDiaries { get; set; }
         public Contract()
         {
             InterestDiaries = new List<InterestDiary>();
         }
-
-
-
     }
 }
