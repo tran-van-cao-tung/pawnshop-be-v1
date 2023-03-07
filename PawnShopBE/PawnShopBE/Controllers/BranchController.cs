@@ -51,7 +51,7 @@ namespace PawnShopBE.Controllers
         [HttpGet("branch/chain")]
         public async Task<IActionResult> GetBranchChain()
         {
-            var branchList = await _branchService.GetAllBranch();
+            var branchList = await _branchService.GetAllBranch(0);
             var displayBranch = _mapper.Map<IEnumerable<DisplayBranch>>(branchList);
             if (displayBranch != null)
             {
@@ -60,10 +60,10 @@ namespace PawnShopBE.Controllers
             }
             return NotFound();
         }
-        [HttpGet("branch")]
-        public async Task<IActionResult> GetBranchList()
+        [HttpGet("branch/list/{numPage}")]
+        public async Task<IActionResult> GetBranchList(int numPage)
         {
-            var branchList = await _branchService.GetAllBranch();
+            var branchList = await _branchService.GetAllBranch(numPage);
             if (branchList == null)
             {
                 return NotFound();

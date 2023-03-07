@@ -19,19 +19,19 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("warehouse/detail/{id}")]
-        public async Task<IActionResult> GetAllWareHouseDetail(int id)
+        [HttpGet("warehouse/detail/{id},{numPage}")]
+        public async Task<IActionResult> GetAllWareHouseDetail(int id,int numPage)
         {
-            var respone = await _wareHouseService.getWareHouseDetail(id);
+            var respone = await _wareHouseService.getWareHouseDetail(id,numPage);
             if (respone != null)
             {
                 return Ok(respone);
             }
             return BadRequest();
         }
-        [HttpGet("warehouse")]
-        public async Task<IActionResult> GetAllWareHouse() {
-            var respone =await _wareHouseService.GetWareHouse();
+        [HttpGet("warehouse/{numPage}")]
+        public async Task<IActionResult> GetAllWareHouse(int numPage) {
+            var respone =await _wareHouseService.GetWareHouse(numPage);
             if (respone != null)
             {
                 return Ok(respone);

@@ -54,10 +54,10 @@ namespace PawnShopBE.Controllers
             return BadRequest(respone);
         }
 
-        [HttpGet("customer")]
-        public async Task<IActionResult> GetAllCustomers()
+        [HttpGet("customer/list/{numPage}")]
+        public async Task<IActionResult> GetAllCustomers(int numPage)
         {
-            var listCustomer = await _customer.GetAllCustomer();
+            var listCustomer = await _customer.GetAllCustomer(numPage);
             var respone = _mapper.Map<IEnumerable<DisplayCustomer>>(listCustomer);
             if (respone != null)
             {
@@ -104,7 +104,7 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
         }
 
-        [HttpGet("customer/{cccd}")]
+        [HttpGet("customer/cccd/{cccd}")]
         public async Task<IActionResult> GetCustomerByCCCD(string cccd)
         {
             var customer = await _customer.getCustomerByCCCD(cccd);

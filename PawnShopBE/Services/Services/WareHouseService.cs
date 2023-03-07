@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace Services.Services
 {
@@ -16,13 +17,16 @@ namespace Services.Services
         private readonly Warehouse warehouse;
         private readonly IContractAssetService _asset;
         private readonly IPawnableProductService _pawnable;
+        private IMapper _mapper;
+        
         public WareHouseService(IUnitOfWork unitOfWork, IContractAssetService asset,
-            IPawnableProductService pawnable) { 
+            IPawnableProductService pawnable,IMapper mapper) { 
               _unit=unitOfWork;
             _asset=asset;
             _pawnable=pawnable;
+            _mapper=mapper;
         }
-        public async Task<WareHouseDTO> getWareHouseDetail(int id)
+        public async Task<WareHouseDTO> getWareHouseDetail(int id,int num)
         {
             //get List Asset
             var listAsset= await _asset.GetAllContractAssets();
@@ -31,14 +35,20 @@ namespace Services.Services
             //get pawnable
             var getPawnableId = from l in asset select l.PawnableProductId;
             var pawnableID= getPawnableId.First();
-            var listPawnable= await _pawnable.GetAllPawnableProducts();
+            var listPawnable= await _pawnable.GetAllPawnableProducts(0);
             var pawnable= from p in listPawnable where p.PawnableProductId==pawnableID select p;
 
             //get wareHouse Detail
             var wareHouseDTO = new WareHouseDTO();
             wareHouseDTO.ContractAssets=new List<ContractAssetDTO>();
             wareHouseDTO=getAssetDTO(wareHouseDTO,asset,pawnable);
-           
+
+            //Mapper Asset To Skip Take PAge
+            var assetMaper = _mapper.Map<IEnumerable<ContractAsset>>(wareHouseDTO.ContractAssets);
+            var takeAsset =await _unit.ContractAssets.TakePage(num, assetMaper);
+            var assetDTO = _mapper.Map<ICollection<ContractAssetDTO>>(takeAsset);
+            wareHouseDTO.ContractAssets = assetDTO;
+
             return wareHouseDTO;
         }
 
@@ -91,9 +101,14 @@ namespace Services.Services
             return false;
         }
 
-        public async Task<IEnumerable<Warehouse>> GetWareHouse()
+        public async Task<IEnumerable<Warehouse>> GetWareHouse(int num)
         {
-            var result = await _unit.Warehouses.GetAll();
+            var listWarehouse = await _unit.Warehouses.GetAll();
+            if (num == 0)
+            {
+                return listWarehouse;
+            }
+            var result = await _unit.Warehouses.TakePage(num,listWarehouse);
             return result;
         }
 

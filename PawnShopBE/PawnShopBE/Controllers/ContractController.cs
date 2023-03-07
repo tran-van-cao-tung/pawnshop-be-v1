@@ -74,10 +74,10 @@ namespace PawnShopBE.Controllers
             }
         }
 
-        [HttpGet("contracts")]
-        public async Task<IActionResult> GetAllContracts()
+        [HttpGet("contracts/{numPage}")]
+        public async Task<IActionResult> GetAllContracts(int numPage)
         {
-            var listContracts = await _contractService.GetAllContracts();
+            var listContracts = await _contractService.GetAllContracts(numPage);
             if (listContracts == null)
             {
                 return NotFound();

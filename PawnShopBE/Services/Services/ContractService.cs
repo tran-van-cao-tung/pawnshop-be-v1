@@ -23,17 +23,13 @@ namespace Services.Services
 
         public async Task<bool> CreateContract(Contract contract)
         {
-
-           
-            
-
             if (contract != null)
             {
                 contract.Branch = null;
                 contract.Package = null;
                 contract.Customer = null;
                 contract.ContractAsset = null;
-                var contractList = await GetAllContracts();
+                var contractList = await GetAllContracts(0);
                 var count = 0;
                 if (contractList != null)
                 {
@@ -91,10 +87,15 @@ namespace Services.Services
             return false;
         }
 
-        public async Task<IEnumerable<Contract>> GetAllContracts()
+        public async Task<IEnumerable<Contract>> GetAllContracts(int num)
         {
-            var contractList = await _unitOfWork.Contracts.GetAll();           
-            return contractList;
+            var contractList = await _unitOfWork.Contracts.GetAll();
+            if (num == 0)
+            {
+                return contractList;
+            }
+            var result= await _unitOfWork.Contracts.TakePage(num,contractList);
+            return result;
         }
 
         public async Task<Contract> GetContractById(int contractId)

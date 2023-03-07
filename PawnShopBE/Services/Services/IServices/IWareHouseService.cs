@@ -11,10 +11,10 @@ namespace Services.Services.IServices
     public interface IWareHouseService
     {
         Task<bool> CreateWareHouse(Warehouse warehouse);
-        Task<IEnumerable<Warehouse>> GetWareHouse();
+        Task<IEnumerable<Warehouse>> GetWareHouse(int num);
         Task<Warehouse> GetWareHouseById(int wareHouseId);
         Task<bool> UpdateWareHouse(Warehouse warehouse);
         Task<bool> DeleteWareHouse(int wareHouseId);
-        Task<WareHouseDTO> getWareHouseDetail(int id);
+        Task<WareHouseDTO> getWareHouseDetail(int id,int num);
     }
 }

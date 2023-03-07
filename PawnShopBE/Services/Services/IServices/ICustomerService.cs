@@ -12,7 +12,7 @@ namespace Services.Services.IServices
    public interface ICustomerService
     {
         Task<bool> CreateCustomer(Customer customer);
-        Task<IEnumerable<Customer>> GetAllCustomer();
+        Task<IEnumerable<Customer>> GetAllCustomer(int num);
         Task<Customer> GetCustomerById(Guid idCus);
         Task<bool> UpdateCustomer(Customer customer);
         Task<bool> DeleteCustomer(Guid customerId);

@@ -29,7 +29,6 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [Authorize]
         [HttpPost("contractAsset")]
         public async Task<IActionResult> CreateContractAsset(ContractAssetDTO contractAsset)
         {
@@ -41,7 +40,6 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [Authorize]
         [HttpDelete("contractAsset/{id}")]
         public async Task<IActionResult> DeleteContractAsset(int id)
         {
@@ -52,7 +50,6 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [Authorize]
         [HttpPut("contractAsset/{id}")]
         public async Task<IActionResult> UpdateContractAsset(int id,ContractAssetDTO contractAsset)
         {

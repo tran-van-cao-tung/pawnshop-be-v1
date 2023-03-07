@@ -53,10 +53,15 @@ namespace Services.Services
             return false;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsers()
+        public async Task<IEnumerable<User>> GetAllUsers(int num)
         {
             var userList = await _unitOfWork.Users.GetAll();
-            return userList;
+            if (num == 0)
+            {
+                return userList;
+            }
+            var result= await _unitOfWork.Users.TakePage(num,userList);
+            return result;
         }
 
         public async Task<User> GetUserById(Guid userId)

@@ -14,12 +14,10 @@ namespace PawnShopBE.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IRoleService _roleService;
         private readonly IMapper _mapper;
-        public UserController(IUserService userService,IRoleService roleService, IMapper mapper)
+        public UserController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
-            _roleService = roleService;
             _mapper = mapper;
         }
 
@@ -39,11 +37,11 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-
-        [HttpGet("user")]
-        public async Task<IActionResult> getUserList()
+        [Authorize]
+        [HttpGet("user/{numPage}")]
+        public async Task<IActionResult> getUserList(int numPage)
         {
-            var userList = await _userService.GetAllUsers();
+            var userList = await _userService.GetAllUsers(numPage);
             if (userList == null)
             {
                 return NotFound();
@@ -65,7 +63,7 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize]
         [HttpPut("user/{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id, UserDTO request)
         {
@@ -85,7 +83,7 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize]
         [HttpDelete("user/{id:guid}")]
         public async Task<IActionResult> DeleteUser(Guid userId)
         {

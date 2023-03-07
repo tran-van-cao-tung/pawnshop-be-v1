@@ -17,10 +17,15 @@ namespace Services.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<Package>> GetAllPackages()
+        public async Task<IEnumerable<Package>> GetAllPackages(int num)
         {
             var packageList = await _unitOfWork.Packages.GetAll();
-            return packageList;
+            if (num == 0)
+            {
+                return packageList;
+            }
+            var result= await _unitOfWork.Packages.TakePage(num,packageList);
+            return result;
         }
 
         public async Task<Package> GetPackageById(int packageId, int interestRecommend)

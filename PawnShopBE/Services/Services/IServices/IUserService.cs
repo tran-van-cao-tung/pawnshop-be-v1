@@ -11,7 +11,7 @@ namespace Services.Services.IServices
     {
         Task<bool> CreateUser(User user);
 
-        Task<IEnumerable<User>> GetAllUsers();
+        Task<IEnumerable<User>> GetAllUsers(int num);
 
         Task<User> GetUserById(Guid userId);
 

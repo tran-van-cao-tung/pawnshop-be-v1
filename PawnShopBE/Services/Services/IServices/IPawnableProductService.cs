@@ -11,7 +11,7 @@ namespace Services.Services.IServices
     {
         Task<bool> CreatePawnableProduct(PawnableProduct pawnableProduct);
 
-        Task<IEnumerable<PawnableProduct>> GetAllPawnableProducts();
+        Task<IEnumerable<PawnableProduct>> GetAllPawnableProducts(int num);
 
         Task<PawnableProduct> GetPawnableProductById(int pawnableProductId);
 

@@ -41,7 +41,7 @@ namespace Services.Services
 
         public async Task<CustomerDTO> getRelative(Guid idCus)
         {
-            var listCustomer = await GetAllCustomer();
+            var listCustomer = await GetAllCustomer(0);
             //get Job
             var listJob =await _job.GetJob();
             var Job = from b in listJob where b.CustomerId==idCus select b;
@@ -199,14 +199,15 @@ namespace Services.Services
             return false;
            
         }
-        public async Task<IEnumerable<Customer>> GetAllCustomer()
+        public async Task<IEnumerable<Customer>> GetAllCustomer(int num)
         {
             var listCustomer = await _unitOfWork.Customers.GetAll();
-            if (listCustomer != null) 
-            { 
-            return listCustomer;
-             }
-            return null;
+            if (num == 0)
+            {
+                return listCustomer;
+            }
+            var result = await _unitOfWork.Customers.TakePage(num, listCustomer);
+            return result;
         }
 
         public async Task<Customer> getCustomerByCCCD(string cccd)
@@ -239,13 +240,13 @@ namespace Services.Services
         private async Task<string> GetBranchName(Guid customerId, IEnumerable<Customer> listCustomer)
         {
             //lấy danh sách contract
-            var listContract = await _contract.GetAllContracts();
+            var listContract = await _contract.GetAllContracts(0);
             // lấy branch id mà customer đang ở
             var branch = listCustomer.Join(listContract, p => p.CustomerId, c => c.CustomerId
                     , (p, c) => { return c.BranchId; });
             var branchtId = branch.First();
             // lấy danh sách branch
-            var listBranch = await _branch.GetAllBranch();
+            var listBranch = await _branch.GetAllBranch(0);
             // lấy branchname
             var branchName = listContract.Join(listBranch, c => c.BranchId, b => b.BranchId,
                 (c, b) => { return b.BranchName; });
