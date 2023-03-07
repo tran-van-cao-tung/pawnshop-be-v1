@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Display;
@@ -19,7 +20,7 @@ namespace PawnShopBE.Controllers
             _branchService = branchService;
             _mapper = mapper;
         }
-
+        [Authorize]
         [HttpPost("branch")]
         public async Task<IActionResult> CreateBranch(BranchDTO request)
         {
@@ -99,7 +100,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-
+        [Authorize]
         [HttpDelete("branch/{id}")]
         public async Task<IActionResult> DeleteBranch(int branchId)
         {

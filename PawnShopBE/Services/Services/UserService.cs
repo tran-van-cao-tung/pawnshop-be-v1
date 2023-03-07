@@ -80,6 +80,14 @@ namespace Services.Services
                 if (userUpdate != null)
                 {
                     userUpdate.UserName = user.UserName;
+                    userUpdate.Password = user.Password;
+                    userUpdate.Status = user.Status;
+                    userUpdate.Email= user.Email;
+                    userUpdate.Phone = user.Phone;
+                    userUpdate.Address= user.Address;
+                    userUpdate.FullName= user.FullName;
+                    userUpdate.Role= user.Role;
+                    userUpdate.Branch= user.Branch;
                     userUpdate.UpdateTime = DateTime.Now;
                     _unitOfWork.Users.Update(userUpdate);
 

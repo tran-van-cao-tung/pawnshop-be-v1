@@ -1,4 +1,4 @@
-﻿namespace PawnShopBE
+﻿namespace PawnShopBE.Core.Data
 {
     public class Appsetting
     {

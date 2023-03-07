@@ -7,6 +7,7 @@ using Services.Services.IServices;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using PawnShopBE.Core.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 //Add Authentication
@@ -35,6 +36,7 @@ builder.Services.Configure<Appsetting>(builder.Configuration.GetSection("AppSett
 builder.Services.AddDIServices(builder.Configuration);
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IAuthentication, AuthenticationService>();
 builder.Services.AddScoped<ILedgerService, LedgerService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IDependentService, DependentService>();

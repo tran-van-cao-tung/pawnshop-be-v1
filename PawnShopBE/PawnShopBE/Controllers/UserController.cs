@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Const;
@@ -22,6 +23,7 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpPost("user")]
         public async Task<IActionResult> CreateUser(UserDTO request)
         {  
@@ -38,7 +40,7 @@ namespace PawnShopBE.Controllers
             }
         }
 
-        [HttpGet("users")]
+        [HttpGet("user")]
         public async Task<IActionResult> getUserList()
         {
             var userList = await _userService.GetAllUsers();

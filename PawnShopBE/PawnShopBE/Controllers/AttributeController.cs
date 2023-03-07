@@ -20,9 +20,9 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpGet("attribute/{id}")]
-        public async Task<IActionResult> GetAttributesById(int pawnableId)
+        public async Task<IActionResult> GetAttributesById(int id)
         {
-            var attributes = await _attributeService.GetAttributeByPawnableId(pawnableId);
+            var attributes = await _attributeService.GetAttributeByPawnableId(id);
 
             if (attributes != null)
             {
