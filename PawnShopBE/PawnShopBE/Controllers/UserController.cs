@@ -20,7 +20,16 @@ namespace PawnShopBE.Controllers
             _userService = userService;
             _mapper = mapper;
         }
-
+        [HttpPost("user/recoverPassword")]
+        public async Task<IActionResult> recoverPass(UserDTO user)
+        {
+            var respone = await _userService.sendEmail(user);
+            if (respone)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
         [Authorize]
         [HttpPost("user")]
         public async Task<IActionResult> CreateUser(UserDTO request)
