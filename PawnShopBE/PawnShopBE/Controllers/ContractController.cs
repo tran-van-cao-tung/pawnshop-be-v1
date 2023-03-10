@@ -8,6 +8,7 @@ using PawnShopBE.Core.Requests;
 using Services.Services;
 using Services.Services.IServices;
 using System.Text;
+using PawnShopBE.Core.Validation;
 
 namespace PawnShopBE.Controllers
 {
@@ -38,10 +39,17 @@ namespace PawnShopBE.Controllers
             _interesDiaryService = interestDiaryService;
             _mapper = mapper;
         }
-
-        [HttpPost("contract")]
+        private Validation<ContractDTO> _validation;
+       
+    [HttpPost("contract")]
         public async Task<IActionResult> CreateContract(ContractDTO request)
         {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(request);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             StringBuilder sb = new StringBuilder();
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
             {            

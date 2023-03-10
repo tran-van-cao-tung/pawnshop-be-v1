@@ -5,6 +5,7 @@ using Org.BouncyCastle.Utilities;
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -42,9 +43,17 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpPost("customer/{id}")]
+        private Validation<CustomerDTO> _validation;
+      
+         [HttpPost("customer/{id}")]
         public async Task<IActionResult> CreateCustomer(CustomerDTO customer)
         {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(customer);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var customerMap= _mapper.Map<Customer>(customer);
             var respone=await _customer.CreateCustomer(customerMap);
             if (respone)

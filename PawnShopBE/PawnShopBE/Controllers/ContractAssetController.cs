@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -29,9 +30,17 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpPost("contractAsset")]
+        private Validation<ContractAssetDTO> _validation;
+        
+    [HttpPost("contractAsset")]
         public async Task<IActionResult> CreateContractAsset(ContractAssetDTO contractAsset)
         {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(contractAsset);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var contractAssetMapper = _mapper.Map<ContractAsset>(contractAsset);
             var respone = await _contractAssetService.CreateContractAsset(contractAssetMapper);
             if (respone != null)

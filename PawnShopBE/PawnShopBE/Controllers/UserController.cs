@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Const;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -30,10 +31,18 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [Authorize]
+        private Validation<UserDTO> _validation;
+       
+       [Authorize]
         [HttpPost("user")]
         public async Task<IActionResult> CreateUser(UserDTO request)
-        {  
+        {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(request);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var user = _mapper.Map<User>(request);
             var response = await _userService.CreateUser(user);
 

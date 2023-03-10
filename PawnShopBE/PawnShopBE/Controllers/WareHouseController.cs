@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
+using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
+using System.ComponentModel.DataAnnotations;
 
 namespace PawnShopBE.Controllers
 {
@@ -12,6 +16,7 @@ namespace PawnShopBE.Controllers
     {
         private readonly IWareHouseService _wareHouseService;
         private readonly IMapper _mapper;
+       
 
         public WareHouseController(IWareHouseService wareHouseService, IMapper mapper) 
         { 
@@ -38,10 +43,17 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-
+         private Validation<WareHouseDTO> _validation;
         [HttpPost("warehouse")]
         public async Task<IActionResult> CreateWareHouse(WareHouseDTO wareHouse)
         {
+            //Check Validation
+            var checkValidation =await _validation.CheckValidation(wareHouse);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
+
             var wareHouseMapper = _mapper.Map<Warehouse>(wareHouse);
             var respone = await _wareHouseService.CreateWareHouse(wareHouseMapper);
             if (respone != null)

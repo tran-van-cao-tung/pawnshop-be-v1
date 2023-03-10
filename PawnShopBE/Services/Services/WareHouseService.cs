@@ -26,6 +26,7 @@ namespace Services.Services
             _pawnable=pawnable;
             _mapper=mapper;
         }
+        
         public async Task<WareHouseDTO> getWareHouseDetail(int id,int num)
         {
             //get List Asset

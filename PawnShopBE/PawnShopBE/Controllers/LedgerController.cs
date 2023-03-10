@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -28,10 +29,17 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-
-        [HttpPost("ledger")]
+        private Validation<LedgerDTO> _validation;
+        
+    [HttpPost("ledger")]
         public async Task<IActionResult> CreateLedger(LedgerDTO ledger)
         {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(ledger);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var ledgerMapper = _mapper.Map<Ledger>(ledger);
             var respone = await _ledgerService.CreateLedger(ledgerMapper);
             if (respone != null)
