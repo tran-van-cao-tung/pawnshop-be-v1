@@ -17,7 +17,7 @@ namespace PawnShopBE.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.2")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -63,8 +63,8 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Fund")
-                        .HasColumnType("int");
+                    b.Property<decimal>("Fund")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -84,10 +84,7 @@ namespace PawnShopBE.Infrastructure.Migrations
             modelBuilder.Entity("PawnShopBE.Core.Models.Contract", b =>
                 {
                     b.Property<int>("ContractId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContractId"));
 
                     b.Property<DateTime?>("ActualEndDate")
                         .HasColumnType("datetime2");
@@ -246,9 +243,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("AddressVerify")
-                        .HasColumnType("bit");
-
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -259,9 +253,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<string>("RelativePhone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("RelativePhoneVerify")
-                        .HasColumnType("bit");
 
                     b.Property<string>("RelativeRelationship")
                         .IsRequired()
@@ -287,9 +278,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("AddressVerify")
-                        .HasColumnType("bit");
-
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -307,9 +295,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneVerify")
-                        .HasColumnType("bit");
 
                     b.HasKey("DependentPeopleId");
 
@@ -335,6 +320,9 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("InterestDebt")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("NextDueDate")
                         .HasColumnType("datetime2");
 
@@ -346,9 +334,6 @@ namespace PawnShopBE.Infrastructure.Migrations
 
                     b.Property<decimal>("Payment")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("PaymentMethod")
-                        .HasColumnType("int");
 
                     b.Property<decimal>("Penalty")
                         .HasColumnType("decimal(18,2)");
@@ -384,6 +369,10 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("LaborContract")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameJob")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -552,6 +541,46 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.ToTable("PawnableProduct", (string)null);
                 });
 
+            modelBuilder.Entity("PawnShopBE.Core.Models.Ransom", b =>
+                {
+                    b.Property<int?>("RansomId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("RansomId"));
+
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("PaidDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("PaidMoney")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Payment")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Penalty")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ProofImg")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPay")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("RansomId");
+
+                    b.ToTable("Ransom", (string)null);
+                });
+
             modelBuilder.Entity("PawnShopBE.Core.Models.RefeshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -708,6 +737,12 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PawnShopBE.Core.Models.Ransom", "Ransom")
+                        .WithOne("Contract")
+                        .HasForeignKey("PawnShopBE.Core.Models.Contract", "ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PawnShopBE.Core.Models.Customer", "Customer")
                         .WithMany("Contracts")
                         .HasForeignKey("CustomerId")
@@ -727,6 +762,8 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Package");
+
+                    b.Navigation("Ransom");
                 });
 
             modelBuilder.Entity("PawnShopBE.Core.Models.ContractAsset", b =>
@@ -901,6 +938,11 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Navigation("Attributes");
 
                     b.Navigation("ContractAssets");
+                });
+
+            modelBuilder.Entity("PawnShopBE.Core.Models.Ransom", b =>
+                {
+                    b.Navigation("Contract");
                 });
 
             modelBuilder.Entity("PawnShopBE.Core.Models.Role", b =>

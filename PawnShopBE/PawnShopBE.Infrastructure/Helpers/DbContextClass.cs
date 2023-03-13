@@ -169,6 +169,12 @@ namespace PawnShopBE.Infrastructure.Helpers
                 entity.ToTable("Kyc");
                 entity.HasKey("KycId");
             });
+            modelBuilder.Entity<Ransom>(entity =>
+            {
+                entity.ToTable("Ransom");
+                entity.HasKey(r => r.RansomId);
+                entity.HasOne(r => r.Contract).WithOne(c => c.Ransom).HasForeignKey<Contract>(r => r.ContractId).IsRequired(true);  
+            });
         }
 
     }

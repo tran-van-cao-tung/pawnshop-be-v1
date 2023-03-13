@@ -19,6 +19,6 @@ namespace PawnShopBE.Core.Models
         public string? Description { get; set; }
         public string? ProofImg { get; set; }
 
-        public virtual Contract Contract { get; set; }
+        public virtual Contract? Contract { get; set; }
     }
 }
