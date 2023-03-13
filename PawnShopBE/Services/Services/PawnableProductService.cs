@@ -35,9 +35,14 @@ namespace Services.Services
             return false;
         }
 
-        public async Task<IEnumerable<PawnableProduct>> GetAllPawnableProducts()
+        public async Task<IEnumerable<PawnableProduct>> GetAllPawnableProducts(int num)
         {
-            var result = await _unitOfWork.PawnableProduct.GetAll();
+            var listPawn = await _unitOfWork.PawnableProduct.GetAll();
+            if (num == 0)
+            {
+                return listPawn;
+            }
+            var result = await _unitOfWork.PawnableProduct.TakePage(num, listPawn);
             return result;
         }
 

@@ -34,10 +34,10 @@ namespace PawnShopBE.Controllers
             }
         }
 
-        [HttpGet("packages")]
-        public async Task<IActionResult> GetAllPackages()
+        [HttpGet("packages/{numPage}")]
+        public async Task<IActionResult> GetAllPackages(int numPage)
         {
-            var packageList = await _packageService.GetAllPackages();
+            var packageList = await _packageService.GetAllPackages(numPage);
             if (packageList == null)
             {
                 return NotFound();

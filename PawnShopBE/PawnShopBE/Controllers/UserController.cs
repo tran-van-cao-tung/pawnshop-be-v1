@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Const;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -13,18 +15,34 @@ namespace PawnShopBE.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IRoleService _roleService;
         private readonly IMapper _mapper;
-        public UserController(IUserService userService,IRoleService roleService, IMapper mapper)
+        public UserController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
-            _roleService = roleService;
             _mapper = mapper;
         }
-
+        [HttpPost("user/recoverPassword")]
+        public async Task<IActionResult> recoverPass(UserDTO user)
+        {
+            var respone = await _userService.sendEmail(user);
+            if (respone)
+            {
+                return Ok();
+            }
+            return BadRequest();
+        }
+        private Validation<UserDTO> _validation;
+       
+       [Authorize]
         [HttpPost("user")]
         public async Task<IActionResult> CreateUser(UserDTO request)
-        {  
+        {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(request);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var user = _mapper.Map<User>(request);
             var response = await _userService.CreateUser(user);
 
@@ -37,11 +55,11 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-
-        [HttpGet("users")]
-        public async Task<IActionResult> getUserList()
+        [Authorize]
+        [HttpGet("user/{numPage}")]
+        public async Task<IActionResult> getUserList(int numPage)
         {
-            var userList = await _userService.GetAllUsers();
+            var userList = await _userService.GetAllUsers(numPage);
             if (userList == null)
             {
                 return NotFound();
@@ -63,7 +81,7 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize]
         [HttpPut("user/{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id, UserDTO request)
         {
@@ -83,7 +101,7 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-
+        [Authorize]
         [HttpDelete("user/{id:guid}")]
         public async Task<IActionResult> DeleteUser(Guid userId)
         {

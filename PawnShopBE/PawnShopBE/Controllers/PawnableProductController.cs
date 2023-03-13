@@ -28,10 +28,10 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
         
-        [HttpGet("pawnable")]
-        public async Task<IActionResult> GetAllPawnable()
+        [HttpGet("pawnable/{numPage}")]
+        public async Task<IActionResult> GetAllPawnable(int numPage)
         {
-            var respone = await _pawnableProductService.GetAllPawnableProducts();
+            var respone = await _pawnableProductService.GetAllPawnableProducts(numPage);
             if (respone != null)
             {
                 return Ok(respone);

@@ -32,7 +32,7 @@ namespace Services.Services
             //get list Ledger
             var _ledgerList = await _ledger.GetLedger();
             //get list contract
-            var _contractList = await _contract.GetAllContracts();
+            var _contractList = await _contract.GetAllContracts(0);
             //get list Diary
             var _diaryList = await _diary.GetInteresDiary();
             //get branch id
@@ -129,10 +129,15 @@ namespace Services.Services
             return false;
         }
 
-        public async Task<IEnumerable<Branch>> GetAllBranch()
+        public async Task<IEnumerable<Branch>> GetAllBranch(int num)
         {
             var branchList = await _unitOfWork.Branches.GetAll();
-            return branchList;
+            if (num == 0)
+            {
+                return branchList;
+            }
+            var result= await _unitOfWork.Branches.TakePage(num,branchList);
+            return result;
         }
 
         public async Task<Branch> GetBranchById(int branchId)

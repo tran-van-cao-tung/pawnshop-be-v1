@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -19,10 +21,17 @@ namespace PawnShopBE.Controllers
             _branchService = branchService;
             _mapper = mapper;
         }
-
+        private Validation<BranchDTO> _validation;
+        [Authorize]
         [HttpPost("branch")]
         public async Task<IActionResult> CreateBranch(BranchDTO request)
         {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(request);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var branch = _mapper.Map<Branch>(request);
             var response = await _branchService.CreateBranch(branch);
 
@@ -50,7 +59,7 @@ namespace PawnShopBE.Controllers
         [HttpGet("branch/chain")]
         public async Task<IActionResult> GetBranchChain()
         {
-            var branchList = await _branchService.GetAllBranch();
+            var branchList = await _branchService.GetAllBranch(0);
             var displayBranch = _mapper.Map<IEnumerable<DisplayBranch>>(branchList);
             if (displayBranch != null)
             {
@@ -59,10 +68,10 @@ namespace PawnShopBE.Controllers
             }
             return NotFound();
         }
-        [HttpGet("branch")]
-        public async Task<IActionResult> GetBranchList()
+        [HttpGet("branch/list/{numPage}")]
+        public async Task<IActionResult> GetBranchList(int numPage)
         {
-            var branchList = await _branchService.GetAllBranch();
+            var branchList = await _branchService.GetAllBranch(numPage);
             if (branchList == null)
             {
                 return NotFound();
@@ -99,7 +108,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-
+        [Authorize]
         [HttpDelete("branch/{id}")]
         public async Task<IActionResult> DeleteBranch(int branchId)
         {
