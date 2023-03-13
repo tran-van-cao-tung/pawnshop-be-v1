@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -28,10 +29,17 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-
+        private Validation<JobDTO> _validation;
+        
         [HttpPost("job")]
         public async Task<IActionResult> CreateJob(JobDTO job)
         {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(job);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var jobMapper = _mapper.Map<Job>(job);
             var respone = await _jobService.CreateJob(jobMapper);
             if (respone != null)

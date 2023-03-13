@@ -13,7 +13,7 @@ namespace Services.Services.IServices
     {
         Task<bool> CreateBranch(Branch branch);
 
-        Task<IEnumerable<Branch>> GetAllBranch();
+        Task<IEnumerable<Branch>> GetAllBranch(int num);
 
         Task<Branch> GetBranchById(int branchId);
 

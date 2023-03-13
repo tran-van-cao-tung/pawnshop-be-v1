@@ -28,10 +28,10 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
         
-        [HttpGet("pawnable")]
-        public async Task<IActionResult> GetAllPawnable()
+        [HttpGet("pawnable/{numPage}")]
+        public async Task<IActionResult> GetAllPawnable(int numPage)
         {
-            var respone = await _pawnableProductService.GetAllPawnableProducts();
+            var respone = await _pawnableProductService.GetAllPawnableProducts(numPage);
             if (respone != null)
             {
                 return Ok(respone);
@@ -42,9 +42,9 @@ namespace PawnShopBE.Controllers
         [HttpPost("pawnable")]
         public async Task<IActionResult> CreatePawnable(PawnableDTO pawnableDTO)
         {
-            var attribure = _mapper.Map<ICollection<Attribute>>(pawnableDTO.AttributeDTOs);
+            var attribute = _mapper.Map<ICollection<Attribute>>(pawnableDTO.AttributeDTOs);
             var pawnable = _mapper.Map<PawnableProduct>(pawnableDTO);
-            pawnable.Attributes = attribure;
+            pawnable.Attributes = attribute;
             var respone = await _pawnableProductService.CreatePawnableProduct(pawnable);
 
             if (respone != null)

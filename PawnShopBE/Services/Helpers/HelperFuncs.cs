@@ -1,7 +1,11 @@
-﻿namespace PawnShopBE.Helpers
+﻿using PawnShopBE.Core.Const;
+using PawnShopBE.Core.Interfaces;
+using PawnShopBE.Infrastructure.Helpers;
+
+namespace PawnShopBE.Helpers
 {
     public class HelperFuncs
-    {
+    {    
         public static List<Tuple<DateTime, DateTime>> DivideTimePeriodIntoPeriods(DateTime startDate, DateTime endDate, int numberOfPeriods)
         {
             // Calculate the total time span between the start and end dates
@@ -29,6 +33,5 @@
 
             return periods;
         }
-
     }
 }

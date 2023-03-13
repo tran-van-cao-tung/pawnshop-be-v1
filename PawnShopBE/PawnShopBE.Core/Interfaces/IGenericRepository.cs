@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,6 @@ namespace PawnShopBE.Core.Interfaces
         void Delete(T entity);
         void Update(T entity);
         T SingleOrDefault(T entity, Func<T, bool> function);
-
-
+        Task<IEnumerable<T>> TakePage(int number, IEnumerable<T> list);
     }
 }

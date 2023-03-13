@@ -5,12 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PawnShopBE.Core.DTOs
+namespace PawnShopBE.Core.Interfaces
 {
-    public class RoleDTO
+    public interface IRansomRepository : IGenericRepository<Ransom>
     {
-        public int RoleId { get; set; }
-
-        public string RoleName { get; set; }
     }
 }

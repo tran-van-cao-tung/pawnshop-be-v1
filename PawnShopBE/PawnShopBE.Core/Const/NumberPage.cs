@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace PawnShopBE.Core.Const
 {
-    public enum InterestDiaryConsts
+    public enum NumberPage
     {
-        NOT_PAID = 1,
-        PAID = 2
-        
+        numPage=10
     }
 }

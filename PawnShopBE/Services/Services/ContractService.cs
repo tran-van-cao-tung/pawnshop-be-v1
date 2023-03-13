@@ -23,17 +23,13 @@ namespace Services.Services
 
         public async Task<bool> CreateContract(Contract contract)
         {
-
-           
-            
-
             if (contract != null)
             {
                 contract.Branch = null;
                 contract.Package = null;
                 contract.Customer = null;
                 contract.ContractAsset = null;
-                var contractList = await GetAllContracts();
+                var contractList = await GetAllContracts(0);
                 var count = 0;
                 if (contractList != null)
                 {
@@ -55,7 +51,7 @@ namespace Services.Services
                         interest = contract.InterestRecommend * 0.01;
                     }
                     interest = package.PackageInterest * 0.01;
-                    contract.TotalProfit = (contract.Loan * (decimal)interest + fee) * period;                   
+                    contract.TotalProfit = (contract.Loan * (decimal)interest) + (fee * period);                   
                 }
                 contract.ContractStartDate = DateTime.Now;
                 contract.ContractEndDate = contract.ContractStartDate.AddDays((double)package.Day -1);
@@ -91,10 +87,15 @@ namespace Services.Services
             return false;
         }
 
-        public async Task<IEnumerable<Contract>> GetAllContracts()
+        public async Task<IEnumerable<Contract>> GetAllContracts(int num)
         {
-            var contractList = await _unitOfWork.Contracts.GetAll();           
-            return contractList;
+            var contractList = await _unitOfWork.Contracts.GetAll();
+            if (num == 0)
+            {
+                return contractList;
+            }
+            var result= await _unitOfWork.Contracts.TakePage(num,contractList);
+            return result;
         }
 
         public async Task<Contract> GetContractById(int contractId)

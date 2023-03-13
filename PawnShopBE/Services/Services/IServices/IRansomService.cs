@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Services.Services.IServices
 {
-    public interface IPackageService
+    public interface IRansomService
     {
-        Task<IEnumerable<Package>> GetAllPackages(int num);
-        Task<Package> GetPackageById(int packageId, int interestRecommend);
+        Task<bool> CreateRansom(Ransom ransom);
     }
 }

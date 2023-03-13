@@ -7,12 +7,34 @@ using Services.Services.IServices;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Hangfire;
+using Hangfire.SqlServer;
+using PawnShopBE.Helpers;
+using System.Configuration;
+using Quartz;
+using PawnShopBE.Core.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 //Add Authentication
 
 var secretKey = builder.Configuration["AppSettings:SecretKey"];
 var secretKeyByte = Encoding.UTF8.GetBytes(secretKey);
+
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionScopedJobFactory();
+    // Just use the name of your job that you created in the Jobs folder.
+    var jobKey = new JobKey("ScheduleJob");
+    q.AddJob<ScheduleJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("ScheduleJob-trigger")
+        //This Cron interval can be described as "run every minute" (when second is zero)
+        .WithCronSchedule("0 * * ? * *")
+    );
+});
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
     otp =>
@@ -35,6 +57,7 @@ builder.Services.Configure<Appsetting>(builder.Configuration.GetSection("AppSett
 builder.Services.AddDIServices(builder.Configuration);
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IAuthentication, AuthenticationService>();
 builder.Services.AddScoped<ILedgerService, LedgerService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IDependentService, DependentService>();
@@ -50,6 +73,7 @@ builder.Services.AddScoped<IKycService, KycService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IAttributeService, AttributeService>();
 builder.Services.AddScoped<IInteresDiaryService, InterestDiaryService>();
+builder.Services.AddScoped<IRansomService, RansomService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -61,7 +85,6 @@ builder.Services.AddSwaggerGen(c => {
     c.IgnoreObsoleteProperties();
     c.CustomSchemaIds(type => type.FullName);
 });
-//builder.Services.AddDbContext<DbContextClass>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("PawnShop")));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

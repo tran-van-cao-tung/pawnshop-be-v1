@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -28,10 +29,17 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-
-        [HttpPost("customerRelative")]
+        private Validation<CustomerRelativeDTO> _validation;
+       
+    [HttpPost("customerRelative")]
         public async Task<IActionResult> CreateCustomerRelative(CustomerRelativeDTO customerRelative)
         {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(customerRelative);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var customerRelativeMapper = _mapper.Map<CustomerRelativeRelationship>(customerRelative);
             var respone = await _customerRelative.CreateCustomerRelative(customerRelativeMapper);
             if (respone != null)

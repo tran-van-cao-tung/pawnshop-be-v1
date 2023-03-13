@@ -39,6 +39,8 @@ namespace PawnShopBE.Infrastructure.Helpers
         public DbSet<Job> Job { get; set; }
         public DbSet<CustomerRelativeRelationship> CustomerRelativeRelationship { get; set; }
         public DbSet<Kyc> Kyc { get; set; }
+        public DbSet<Ransom> Ransom { get; set; }
+
         #endregion
 
 
@@ -166,6 +168,12 @@ namespace PawnShopBE.Infrastructure.Helpers
             {
                 entity.ToTable("Kyc");
                 entity.HasKey("KycId");
+            });
+            modelBuilder.Entity<Ransom>(entity =>
+            {
+                entity.ToTable("Ransom");
+                entity.HasKey(r => r.RansomId);
+                entity.HasOne(r => r.Contract).WithOne(c => c.Ransom).HasForeignKey<Contract>(r => r.ContractId).IsRequired(true);  
             });
         }
 

@@ -1,8 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PawnShopBE.Core.Const;
 using PawnShopBE.Core.Interfaces;
+using PawnShopBE.Core.Models;
 using PawnShopBE.Infrastructure.Helpers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +15,6 @@ namespace PawnShopBE.Infrastructure.Repositories
     public abstract class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly DbContextClass _dbContext;
-
         protected GenericRepository(DbContextClass context)
         {
             _dbContext = context;
@@ -56,5 +58,13 @@ namespace PawnShopBE.Infrastructure.Repositories
         {
             return _dbContext.Set<T>().SingleOrDefault(function);
         }
+
+        public async Task<IEnumerable<T>> TakePage(int number,IEnumerable<T> list)
+        {
+            var numPage = (int)NumberPage.numPage;
+            var skip = (numPage * number) - numPage;
+            return list.Skip(skip).Take(numPage);
+        }
+
     }
 }

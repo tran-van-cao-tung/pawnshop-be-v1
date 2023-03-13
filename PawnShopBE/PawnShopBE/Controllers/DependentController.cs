@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -28,10 +29,17 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-
+        private Validation<DependentPeopleDTO> _validation;
+       
         [HttpPost("dependent")]
         public async Task<IActionResult> CreateDependent(DependentPeopleDTO dependent)
         {
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(dependent);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var dependentMapper  = _mapper.Map<DependentPeople>(dependent);
             var respone = await _dependentService.CreateDependent(dependentMapper);
             if (respone != null)
