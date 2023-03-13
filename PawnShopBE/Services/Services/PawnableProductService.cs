@@ -27,27 +27,8 @@ namespace Services.Services
         {
             if (pawnableProduct != null)
             {
-                _unitOfWork.PawnableProduct.Add(pawnableProduct);
-                var result = _unitOfWork.Save();
-                ////get pawnable
-                //var pawnableList = await GetAllPawnableProducts();
-                //var pawnableId = pawnableList.LastOrDefault().PawnableProductId;
-                ////create Attribute
-                //var attribute = new Attribute();
-                //foreach (var x in pawnableProduct.Attributes)
-                //{
-                //    attribute.Description = x.Description;
-                //    attribute.PawnableProductId = pawnableId;
-                //}
-                //// var attribute = _mapper.Map<Attribute>(attributeDTO);
-                //try
-                //{
-                //    var respone = await _attribute.CreateAttribute(attribute);
-                //}
-                //catch (Exception ex)
-                //{
-                //    Console.WriteLine(ex.Message);
-                //}
+                await _unitOfWork.PawnableProduct.Add(pawnableProduct);
+                var result = _unitOfWork.Save();              
                 if (result > 0)
                     return true;
             }

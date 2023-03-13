@@ -42,7 +42,7 @@ namespace PawnShopBE.Controllers
         //}
 
         [HttpDelete("interestDiary/{id}")]
-        public async Task<IActionResult> DeleteinterestDiary(int id)
+        public async Task<IActionResult> DeleteInterestDiary(int id)
         {
             var respone = await _interestDiaryService.DeleteInteresDiary(id);
             if (respone != null)
@@ -53,7 +53,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("interestDiary/{id}")]
-        public async Task<IActionResult> UpdateinterestDiary(int id, InterestDiaryDTO diary)
+        public async Task<IActionResult> UpdateInterestDiary(int id, InterestDiaryDTO diary)
         {
             var diaryUpdate=_mapper.Map<InterestDiary>(diary);
             diaryUpdate.InterestDiaryId = id;

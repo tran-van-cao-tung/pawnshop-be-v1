@@ -20,17 +20,17 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> CreateAttribute(PawnShopBE.Core.Models.Attribute attributes)
+        public async Task<bool> CreateAttribute(List<PawnShopBE.Core.Models.Attribute> attributes)
         {
             if (attributes != null)
             {               
-                    await _unitOfWork.Attributes.Add(attributes);               
-                var result = _unitOfWork.Save();
+                await _unitOfWork.Attributes.AddList(attributes);               
+                var result = await _unitOfWork.SaveList();
 
                 if (result > 0)
+                {
                     return true;
-                else
-                    return false;
+                }
             }
             return false;
         }

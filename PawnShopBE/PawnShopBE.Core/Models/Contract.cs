@@ -35,6 +35,8 @@ namespace PawnShopBE.Core.Models
         public virtual Branch? Branch { get; set; }
         public virtual ContractAsset? ContractAsset { get; set; }
         public virtual Liquidtation? Liquidtation { get; set; }
+        public virtual Ransom? Ransom { get; set; }
+
         public ICollection<InterestDiary>? InterestDiaries { get; set; }
         public Contract()
         {

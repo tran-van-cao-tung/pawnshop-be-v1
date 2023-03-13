@@ -24,17 +24,8 @@ namespace PawnShopBE.Helpers
             // Mapping from ContractDTO to CustomerDTO
             CreateMap<ContractDTO, CustomerDTO>()
                 .ForMember(
-                dest => dest.FullName,
-                opt => opt.MapFrom(src => src.CustomerName))
-                .ForMember(
                 dest => dest.CCCD,
-                opt => opt.MapFrom(src => src.IdentityCard))
-                .ForMember(
-                dest => dest.Address,
-                opt => opt.MapFrom(src => src.CustomerAddress))
-                .ForMember(
-                dest => dest.Phone,
-                opt => opt.MapFrom(src => src.CustomerPhoneNumber));
+                opt => opt.MapFrom(src => src.CCCD));
 
             // Mapping from CustomerDTO to Customer
             CreateMap<CustomerDTO, Customer>()
