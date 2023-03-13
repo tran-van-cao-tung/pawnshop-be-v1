@@ -66,7 +66,8 @@ namespace PawnShopBE.Infrastructure.Repositories
         IWarehouseRepository warehouseRepository,
         IDependentPeopleRepository dependentPeopleRepository,
         IJobRepository jobRepository,
-        ICustomerRelativeRelationshipRepository customerRelativeRelationshipRepository)
+        ICustomerRelativeRelationshipRepository customerRelativeRelationshipRepository,
+        IRansomRepository ransomRepository)
         {
             _dbContext = dbContext;
             Users = userRepository;
@@ -86,6 +87,7 @@ namespace PawnShopBE.Infrastructure.Repositories
             DependentPeople = dependentPeopleRepository;
             Jobs = jobRepository;
             CustomersRelativeRelationships = customerRelativeRelationshipRepository;
+            Ransoms = ransomRepository;
         }
 
      

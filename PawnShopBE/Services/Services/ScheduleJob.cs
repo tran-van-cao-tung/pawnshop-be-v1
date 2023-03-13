@@ -46,7 +46,8 @@ namespace Services.Services
                 var contract = await _contractService.GetContractById(diary.ContractId);
                 var package = await _packageService.GetPackageById(contract.PackageId, contract.InterestRecommend);
 
-                // Payment Fee for Interest + Loan if overdue the last period
+
+                // Payment Fee for Interest if overdue the last period
                 if (diary.NextDueDate == contract.ContractEndDate)
                 { 
                     // Calculate how many days that overdue
@@ -89,6 +90,8 @@ namespace Services.Services
                     }
                 }
             }
+
+
 
             foreach (var contract in overdueContracts)
             {

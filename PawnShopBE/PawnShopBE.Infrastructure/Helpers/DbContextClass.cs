@@ -119,7 +119,6 @@ namespace PawnShopBE.Infrastructure.Helpers
             {
                 entity.ToTable("PawnableProduct");
                 entity.HasKey(p => p.PawnableProductId);
-                //entity.Property(p => p.PawnableProductId).ValueGeneratedOnAdd();
             });
 
             modelBuilder.Entity<Attribute>(entity =>
@@ -173,7 +172,8 @@ namespace PawnShopBE.Infrastructure.Helpers
             {
                 entity.ToTable("Ransom");
                 entity.HasKey(r => r.RansomId);
-                entity.HasOne(r => r.Contract).WithOne(c => c.Ransom).HasForeignKey<Contract>(r => r.ContractId).IsRequired(true);  
+                entity.HasOne(r => r.Contract).WithOne(c => c.Ransom).HasForeignKey<Ransom>(r => r.ContractId).IsRequired(true);
+
             });
         }
 

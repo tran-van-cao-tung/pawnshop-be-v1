@@ -84,7 +84,10 @@ namespace PawnShopBE.Infrastructure.Migrations
             modelBuilder.Entity("PawnShopBE.Core.Models.Contract", b =>
                 {
                     b.Property<int>("ContractId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContractId"));
 
                     b.Property<DateTime?>("ActualEndDate")
                         .HasColumnType("datetime2");
@@ -543,11 +546,11 @@ namespace PawnShopBE.Infrastructure.Migrations
 
             modelBuilder.Entity("PawnShopBE.Core.Models.Ransom", b =>
                 {
-                    b.Property<int?>("RansomId")
+                    b.Property<int>("RansomId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("RansomId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RansomId"));
 
                     b.Property<int>("ContractId")
                         .HasColumnType("int");
@@ -577,6 +580,9 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("RansomId");
+
+                    b.HasIndex("ContractId")
+                        .IsUnique();
 
                     b.ToTable("Ransom", (string)null);
                 });
@@ -737,12 +743,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PawnShopBE.Core.Models.Ransom", "Ransom")
-                        .WithOne("Contract")
-                        .HasForeignKey("PawnShopBE.Core.Models.Contract", "ContractId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("PawnShopBE.Core.Models.Customer", "Customer")
                         .WithMany("Contracts")
                         .HasForeignKey("CustomerId")
@@ -762,8 +762,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Package");
-
-                    b.Navigation("Ransom");
                 });
 
             modelBuilder.Entity("PawnShopBE.Core.Models.ContractAsset", b =>
@@ -862,6 +860,17 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Navigation("Contract");
                 });
 
+            modelBuilder.Entity("PawnShopBE.Core.Models.Ransom", b =>
+                {
+                    b.HasOne("PawnShopBE.Core.Models.Contract", "Contract")
+                        .WithOne("Ransom")
+                        .HasForeignKey("PawnShopBE.Core.Models.Ransom", "ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
+                });
+
             modelBuilder.Entity("PawnShopBE.Core.Models.RefeshToken", b =>
                 {
                     b.HasOne("PawnShopBE.Core.Models.User", "user")
@@ -904,6 +913,8 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Navigation("InterestDiaries");
 
                     b.Navigation("Liquidtation");
+
+                    b.Navigation("Ransom");
                 });
 
             modelBuilder.Entity("PawnShopBE.Core.Models.ContractAsset", b =>
@@ -938,11 +949,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Navigation("Attributes");
 
                     b.Navigation("ContractAssets");
-                });
-
-            modelBuilder.Entity("PawnShopBE.Core.Models.Ransom", b =>
-                {
-                    b.Navigation("Contract");
                 });
 
             modelBuilder.Entity("PawnShopBE.Core.Models.Role", b =>

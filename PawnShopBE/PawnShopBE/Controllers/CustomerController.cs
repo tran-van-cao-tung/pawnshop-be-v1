@@ -79,12 +79,12 @@ namespace PawnShopBE.Controllers
         [HttpGet("customer/{id}")]
         public async Task<IActionResult> GetCustomerById(Guid id)
         {
-            var listCustomer= await _customer.GetCustomerById(id);
-            if(listCustomer == null)
+            var customer= await _customer.GetCustomerById(id);
+            if(customer == null)
             {
                 return NotFound();
             }
-            return Ok();
+            return Ok(customer);
         }
 
         [HttpDelete("customer/{id}")]

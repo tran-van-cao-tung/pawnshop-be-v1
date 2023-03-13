@@ -21,7 +21,7 @@ namespace Services.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<bool> CreateContract(Contract contract)
+        public async Task<Contract> CreateContract(Contract contract)
         {
             if (contract != null)
             {
@@ -60,12 +60,12 @@ namespace Services.Services
 
                 var result = _unitOfWork.Save();
 
-                if (result > 0)
-                    return true;
-                else
-                    return false;
+                //if (result > 0)
+                //    return true;
+                //else
+                //    return false;
             }
-            return false;
+            return contract;
         }
 
         public async Task<bool> DeleteContract(int contractId)

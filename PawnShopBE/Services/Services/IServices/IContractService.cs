@@ -9,7 +9,7 @@ namespace Services.Services.IServices
 {
     public interface IContractService
     {
-        Task<bool> CreateContract(Contract contract);
+        Task<Contract> CreateContract(Contract contract);
 
         Task<IEnumerable<Contract>> GetAllContracts(int num);
 
