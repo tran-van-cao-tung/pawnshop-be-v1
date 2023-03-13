@@ -8,7 +8,8 @@ namespace PawnShopBE.Core.Const
 {
     public enum InterestDiaryConsts
     {
-        PAID = 1,
-        NOT_PAID = 2
+        NOT_PAID = 1,
+        PAID = 2
+        
     }
 }

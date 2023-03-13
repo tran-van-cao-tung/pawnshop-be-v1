@@ -55,7 +55,7 @@ namespace Services.Services
                         interest = contract.InterestRecommend * 0.01;
                     }
                     interest = package.PackageInterest * 0.01;
-                    contract.TotalProfit = (contract.Loan * (decimal)interest + fee) * period;                   
+                    contract.TotalProfit = (contract.Loan * (decimal)interest) + (fee * period);                   
                 }
                 contract.ContractStartDate = DateTime.Now;
                 contract.ContractEndDate = contract.ContractStartDate.AddDays((double)package.Day -1);

@@ -62,7 +62,7 @@ namespace PawnShopBE.Controllers
             contract.ContractAssetId = contractAsset.ContractAssetId;
             contract.CustomerId = customer.CustomerId;
             var contractSuccess = await _contractService.CreateContract(contract);
-            var interestDiarySuccess = await _interesDiaryService.CreateInteresDiary(contract);
+            var interestDiarySuccess = await _interesDiaryService.CreateInterestDiary(contract);
             
             if (interestDiarySuccess == true && interestDiarySuccess == true)
             {

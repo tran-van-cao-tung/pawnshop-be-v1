@@ -42,9 +42,9 @@ namespace PawnShopBE.Controllers
         [HttpPost("pawnable")]
         public async Task<IActionResult> CreatePawnable(PawnableDTO pawnableDTO)
         {
-            var attribure = _mapper.Map<ICollection<Attribute>>(pawnableDTO.AttributeDTOs);
+            var attribute = _mapper.Map<ICollection<Attribute>>(pawnableDTO.AttributeDTOs);
             var pawnable = _mapper.Map<PawnableProduct>(pawnableDTO);
-            pawnable.Attributes = attribure;
+            pawnable.Attributes = attribute;
             var respone = await _pawnableProductService.CreatePawnableProduct(pawnable);
 
             if (respone != null)

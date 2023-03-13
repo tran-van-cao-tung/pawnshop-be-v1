@@ -39,6 +39,8 @@ namespace PawnShopBE.Infrastructure.Helpers
         public DbSet<Job> Job { get; set; }
         public DbSet<CustomerRelativeRelationship> CustomerRelativeRelationship { get; set; }
         public DbSet<Kyc> Kyc { get; set; }
+        public DbSet<Ransom> Ransom { get; set; }
+
         #endregion
 
 

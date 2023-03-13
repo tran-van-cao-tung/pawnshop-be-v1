@@ -28,7 +28,7 @@ namespace Services.Services
             _interestDiaryRepository = interestDiaryRepository;
 
         }
-        public async Task<bool> CreateInteresDiary(Contract contract)
+        public async Task<bool> CreateInterestDiary(Contract contract)
         {
             if (contract != null)
             {
@@ -51,14 +51,13 @@ namespace Services.Services
                     interestDiary.ContractId = contract.ContractId;
                     interestDiary.DueDate = period.Item1;
                     interestDiary.NextDueDate = period.Item2;
+
                     interestDiary.Status = (int)InterestDiaryConsts.NOT_PAID;
                     interestDiary.TotalPay = payment;
-
-                    if (period.Item2 == endDate)
-                    {
-                        interestDiary.TotalPay = payment + contract.Loan;
-                    }
-                        _dbContextClass.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.InterestDiary ON;");
+                    interestDiary.Penalty = 0;
+                    interestDiary.PaidMoney = 0;
+                    interestDiary.InterestDebt = 0;
+                    _dbContextClass.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.InterestDiary ON;");
                         interestDiaries.Add(interestDiary);        
                         await _unit.InterestDiaries.AddList(interestDiaries);
                         _dbContextClass.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.InterestDiary OFF;");
@@ -113,16 +112,17 @@ namespace Services.Services
                 (interestDiary, j => j.InterestDiaryId == interestDiary.InterestDiaryId);
             if (diaryUpdate != null)
             {
-                diaryUpdate.Payment = interestDiary.Payment;
-                diaryUpdate.Penalty = interestDiary.Penalty;
-                diaryUpdate.TotalPay = interestDiary.TotalPay;
+                //diaryUpdate.TotalPay = diaryUpdate.Penalty + diaryUpdate.Payment;
                 diaryUpdate.PaidMoney = interestDiary.PaidMoney;
-                diaryUpdate.DueDate = interestDiary.DueDate;
-                diaryUpdate.NextDueDate = interestDiary.NextDueDate;
-                diaryUpdate.PaidDate = interestDiary.PaidDate;
-                diaryUpdate.Status = interestDiary.Status;
+                diaryUpdate.InterestDebt = diaryUpdate.TotalPay - interestDiary.PaidMoney;
+                diaryUpdate.PaidDate = DateTime.Now;
+
+                if (diaryUpdate.TotalPay == interestDiary.PaidMoney)
+                {
+                    diaryUpdate.Status = (int) InterestDiaryConsts.PAID;
+                }
                 diaryUpdate.Description = interestDiary.Description;
-                diaryUpdate.ProofImg = interestDiary.Description;
+                diaryUpdate.ProofImg = interestDiary.ProofImg;
                 _unit.InterestDiaries.Update(diaryUpdate);
                 var result = _unit.Save();
                 if (result > 0)

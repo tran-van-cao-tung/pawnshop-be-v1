@@ -47,6 +47,8 @@ namespace PawnShopBE.Infrastructure.Repositories
 
         public ICustomerRelativeRelationshipRepository CustomersRelativeRelationships { get; }
 
+        public IRansomRepository Ransoms { get; }
+
         public UnitOfWork(  DbContextClass dbContext,
                             IUserRepository userRepository, 
                             IBranchRepository branchRepository,
