@@ -21,6 +21,7 @@ namespace PawnShopBE.Controllers
         private readonly IContractAssetService _contractAssetService;
         private readonly IPackageService _packageService;
         private readonly IInteresDiaryService _interesDiaryService;
+        private readonly IRansomService _ransomService;
 
         private readonly IMapper _mapper;
 
@@ -30,6 +31,7 @@ namespace PawnShopBE.Controllers
             IContractAssetService contractAssetService, 
             IPackageService packageService,
             IInteresDiaryService interestDiaryService,
+            IRansomService ransomService,
             IMapper mapper)
         {
             _contractService = contractService;
@@ -37,6 +39,7 @@ namespace PawnShopBE.Controllers
             _contractAssetService = contractAssetService;
             _packageService = packageService;
             _interesDiaryService = interestDiaryService;
+            _ransomService = ransomService;
             _mapper = mapper;
         }
         private Validation<ContractDTO> _validation;
@@ -45,11 +48,11 @@ namespace PawnShopBE.Controllers
         public async Task<IActionResult> CreateContract(ContractDTO request)
         {
             //Check Validation
-            var checkValidation = await _validation.CheckValidation(request);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
+            //var checkValidation = await _validation.CheckValidation(request);
+            //if (checkValidation != null)
+            //{
+            //    return BadRequest(checkValidation);
+            //}
             StringBuilder sb = new StringBuilder();
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
             {            
@@ -57,8 +60,8 @@ namespace PawnShopBE.Controllers
             }       
             //Get package
             Package package = await _packageService.GetPackageById(request.PackageId, request.InterestRecommend);
-            //Get customer
-            var customer = await _customerService.getCustomerByCCCD(request.cccd); 
+            //Get customer 
+            var customer = await _customerService.getCustomerByCCCD(request.CCCD); 
             
             //Create asset
             var contractAsset = _mapper.Map<ContractAsset>(request);
@@ -69,10 +72,11 @@ namespace PawnShopBE.Controllers
             var contract = _mapper.Map<Contract>(request);
             contract.ContractAssetId = contractAsset.ContractAssetId;
             contract.CustomerId = customer.CustomerId;
-            var contractSuccess = await _contractService.CreateContract(contract);
-            var interestDiarySuccess = await _interesDiaryService.CreateInterestDiary(contract);
+            var contractCreated = await _contractService.CreateContract(contract);
+            var ransomSuccess = await _ransomService.CreateRansom(contractCreated);
+            var interestDiarySuccess = await _interesDiaryService.CreateInterestDiary(contractCreated);
             
-            if (interestDiarySuccess == true && interestDiarySuccess == true)
+            if (interestDiarySuccess == true)
             {
                 return Ok(interestDiarySuccess); 
             }

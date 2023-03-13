@@ -1,4 +1,5 @@
-﻿using PawnShopBE.Core.Interfaces;
+﻿using PawnShopBE.Core.Const;
+using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
 using System;
@@ -18,11 +19,19 @@ namespace Services.Services
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<bool> CreateRansom(Ransom ransom)
+        public async Task<bool> CreateRansom(Contract contract)
         {
-            if (ransom != null)
+            if (contract != null)
             {
-
+                var ransom = new Ransom();
+                ransom.ContractId = contract.ContractId;
+                ransom.Payment = contract.Loan + contract.TotalProfit;
+                ransom.Penalty = 0;
+                ransom.PaidMoney = 0;
+                ransom.PaidDate = null;
+                ransom.Status = (int) RansomConsts.ON_TIME;
+                ransom.Description = null;
+                ransom.ProofImg = null;
                 await _unitOfWork.Ransoms.Add(ransom);
 
                 var result = _unitOfWork.Save();
@@ -36,3 +45,4 @@ namespace Services.Services
         }
     }
 }
+

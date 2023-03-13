@@ -9,6 +9,6 @@ namespace Services.Services.IServices
 {
     public interface IRansomService
     {
-        Task<bool> CreateRansom(Ransom ransom);
+        Task<bool> CreateRansom(Contract contract);
     }
 }
