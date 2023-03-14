@@ -448,6 +448,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                 {
                     RansomId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ContractId = table.Column<int>(type: "int", nullable: false),
                     Payment = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Penalty = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalPay = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
@@ -455,8 +456,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                     PaidDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProofImg = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ContractId = table.Column<int>(type: "int", nullable: false)
+                    ProofImg = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

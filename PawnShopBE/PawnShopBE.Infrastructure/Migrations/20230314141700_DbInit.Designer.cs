@@ -12,7 +12,7 @@ using PawnShopBE.Infrastructure.Helpers;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContextClass))]
-    [Migration("20230313125312_DbInit")]
+    [Migration("20230314141700_DbInit")]
     partial class DbInit
     {
         /// <inheritdoc />
