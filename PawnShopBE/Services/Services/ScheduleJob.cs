@@ -56,15 +56,16 @@ namespace Services.Services
 
             // Ransom overdue date
             var ransomOverDueDate = _contextClass.Ransom
-                        .Where(r => r.PaidDate == null && r.Contract.ContractEndDate < DateTime.Today)
+                        .Where(r => r.PaidDate == null && r.Contract.ContractEndDate < DateTime.Today && r.Status != (int)RansomConsts.LATE)
                         .ToList();
-          
+
             foreach (var ransom in ransomOverDueDate)
-            {     
-                var package = await _packageService.GetPackageById(ransom.Contract.PackageId, ransom.Contract.InterestRecommend);
+            {
                 var contract = await _contractService.GetContractById(ransom.ContractId);
+                var package = await _packageService.GetPackageById(contract.PackageId, contract.InterestRecommend);
+
                 // Calculate how many days that overdue
-                TimeSpan timeDifference = DateTime.Now - ransom.Contract.ContractEndDate;
+                TimeSpan timeDifference = DateTime.Now - contract.ContractEndDate;
                 double totalDays = timeDifference.TotalDays;
 
                 decimal paymentFee = (contract.Loan + (contract.Loan * package.PackageInterest)) * (1 + package.PackageInterest);
@@ -73,33 +74,28 @@ namespace Services.Services
                 if (package.PunishDay2 != 0)
                 {
                     // Overdue punish day 1
-                    if (totalDays == (double) package.PunishDay1)
+                    if (totalDays == (double)package.PunishDay1 || totalDays < (double)package.PunishDay2)
                     {
                         ransom.Penalty = paymentFee;
                     }
                     // Overdue punish day 2
-                    else if (totalDays == package.PunishDay2)
+                    if (totalDays == (double)package.PunishDay2 || totalDays < (double)package.LiquitationDay)
                     {
                         ransom.Penalty = paymentFee * (1 + package.PackageInterest);
-                    }
-                    // Over liquidation day
-                    else if (totalDays == package.LiquitationDay)
-                    {
-                        contract.Status = (int)ContractConst.LIQUIDATION;
                     }
                 }
                 // Penalty between 1 month to 3 month
                 else
                 {
-                    if (totalDays == (double)package.PunishDay1)
+                    if (totalDays == (double) package.PunishDay1 || totalDays < (double)package.LiquitationDay)
                     {
                         ransom.Penalty = paymentFee;
                     }
-                    // Over liquidation day
-                    else if (totalDays == package.LiquitationDay)
-                    {
-                        contract.Status = (int)ContractConst.LIQUIDATION;
-                    }
+                }
+                // Over liquidation day                
+                if (totalDays == package.LiquitationDay || totalDays > (double)package.LiquitationDay)
+                {
+                    contract.Status = (int)ContractConst.LIQUIDATION;
                 }
                 ransom.Status = (int)RansomConsts.LATE;
             }

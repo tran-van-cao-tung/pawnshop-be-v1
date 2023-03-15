@@ -7,8 +7,6 @@ using Services.Services.IServices;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Hangfire;
-using Hangfire.SqlServer;
 using PawnShopBE.Helpers;
 using System.Configuration;
 using Quartz;
@@ -97,11 +95,11 @@ builder.Services.AddSwaggerGen(c => {
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 app.UseAuthentication();

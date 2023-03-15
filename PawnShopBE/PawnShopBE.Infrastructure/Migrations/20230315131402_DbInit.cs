@@ -344,6 +344,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                     ContractId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PackageId = table.Column<int>(type: "int", nullable: false),
                     BranchId = table.Column<int>(type: "int", nullable: false),
                     ContractAssetId = table.Column<int>(type: "int", nullable: false),
@@ -387,6 +388,12 @@ namespace PawnShopBE.Infrastructure.Migrations
                         column: x => x.PackageId,
                         principalTable: "Package",
                         principalColumn: "PackageId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Contract_User_UserId",
+                        column: x => x.UserId,
+                        principalTable: "User",
+                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -495,6 +502,11 @@ namespace PawnShopBE.Infrastructure.Migrations
                 column: "PackageId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Contract_UserId",
+                table: "Contract",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ContractAsset_PawnableProductId",
                 table: "ContractAsset",
                 column: "PawnableProductId");
@@ -597,9 +609,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                 name: "Contract");
 
             migrationBuilder.DropTable(
-                name: "User");
-
-            migrationBuilder.DropTable(
                 name: "ContractAsset");
 
             migrationBuilder.DropTable(
@@ -609,10 +618,7 @@ namespace PawnShopBE.Infrastructure.Migrations
                 name: "Package");
 
             migrationBuilder.DropTable(
-                name: "Branch");
-
-            migrationBuilder.DropTable(
-                name: "Role");
+                name: "User");
 
             migrationBuilder.DropTable(
                 name: "PawnableProduct");
@@ -622,6 +628,12 @@ namespace PawnShopBE.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Kyc");
+
+            migrationBuilder.DropTable(
+                name: "Branch");
+
+            migrationBuilder.DropTable(
+                name: "Role");
         }
     }
 }
