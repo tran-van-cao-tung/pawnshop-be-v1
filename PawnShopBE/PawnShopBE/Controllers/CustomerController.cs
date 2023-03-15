@@ -43,9 +43,9 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<CustomerDTO> _validation;
+        private Validation<CustomerDTO> _validation=new Validation<CustomerDTO>();
       
-         [HttpPost("customer/{id}")]
+        [HttpPost("customer")]
         public async Task<IActionResult> CreateCustomer(CustomerDTO customer)
         {
             //Check Validation

@@ -21,6 +21,8 @@ namespace PawnShopBE.Core.DTOs
         public string Address { get; set; }
 
         [Phone]
+        [StringLength(11, MinimumLength = 10,
+            ErrorMessage = "Số điện thoại phải từ 10-11 số")]
         public string PhoneNumber { get; set; }
 
         [Range(1000,10000000000,ErrorMessage ="Tiền nhập phải từ 1000 - 10 Tỷ")]

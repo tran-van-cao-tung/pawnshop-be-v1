@@ -29,7 +29,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<LiquidationDTO> _validation;
+        private Validation<LiquidationDTO> _validation=new Validation<LiquidationDTO>();
         
     [HttpPost("liquidation")]
         public async Task<IActionResult> CreateLiquidation(LiquidationDTO liquidation)

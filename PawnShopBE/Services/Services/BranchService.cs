@@ -69,7 +69,7 @@ namespace Services.Services
             }
             return branchDetail;
         }
-        private int getContractId(IEnumerable<PawnShopBE.Core.Models.Contract> contract)
+        private int getContractId(IEnumerable<Contract> contract)
         {
             var getContractId = from c in contract select c.ContractId;
             var contractId = getContractId.First();

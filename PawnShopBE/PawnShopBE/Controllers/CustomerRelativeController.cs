@@ -29,7 +29,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<CustomerRelativeDTO> _validation;
+        private Validation<CustomerRelativeDTO> _validation=new Validation<CustomerRelativeDTO>();
        
     [HttpPost("customerRelative")]
         public async Task<IActionResult> CreateCustomerRelative(CustomerRelativeDTO customerRelative)

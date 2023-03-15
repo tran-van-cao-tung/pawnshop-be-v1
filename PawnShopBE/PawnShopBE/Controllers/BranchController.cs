@@ -21,7 +21,7 @@ namespace PawnShopBE.Controllers
             _branchService = branchService;
             _mapper = mapper;
         }
-        private Validation<BranchDTO> _validation;
+        private Validation<BranchDTO> _validation=new Validation<BranchDTO>();
         [Authorize]
         [HttpPost("branch")]
         public async Task<IActionResult> CreateBranch(BranchDTO request)
