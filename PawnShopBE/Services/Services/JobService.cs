@@ -17,9 +17,11 @@ namespace Services.Services
     {
         private readonly IUnitOfWork _unit;
         private readonly Job job;
+        private readonly IServiceProvider _serviceProvider;
 
-        public JobService(IUnitOfWork unitOfWork) { 
+        public JobService(IUnitOfWork unitOfWork, IServiceProvider serviceProvider) { 
               _unit=unitOfWork;
+            _serviceProvider=serviceProvider;
         }
         public async Task<bool> CreateJob(Job job)
         {
@@ -37,13 +39,14 @@ namespace Services.Services
         }
         private async Task<bool> plusPoint(Job job)
         {
-            var customerList = await GetAllCustomer(0);
+            var cus = _serviceProvider.GetService(typeof(ICustomerService)) as ICustomerService;
+            var customerList = await cus.GetAllCustomer(0);
             var customerIenumerable = from c in customerList where c.CustomerId == job.CustomerId select c;
             var customer = new Customer();
             customer = customerIenumerable.FirstOrDefault();
             //plus point
             customer.Point += 50;
-            if( await UpdateCustomer(customer))
+            if( await cus.UpdateCustomer(customer))
             {
                 return true;
             }else

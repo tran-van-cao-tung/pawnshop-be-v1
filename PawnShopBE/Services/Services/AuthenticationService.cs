@@ -48,7 +48,7 @@ namespace Services.Services
                     new Claim("Id", user.UserId.ToString()),
                 }),
 
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyByte),
                 SecurityAlgorithms.HmacSha512Signature)
             };

@@ -23,7 +23,7 @@ namespace Services.Services
         {
             _unitOfWork = unitOfWork;
         }
-
+     
         public async Task<Contract> CreateContract(Contract contract)
         {
             if (contract != null)

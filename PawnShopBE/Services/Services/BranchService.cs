@@ -63,6 +63,7 @@ namespace Services.Services
                 branchDetail.contractCode = x.ContractCode;
                 branchDetail.statusContract = x.Status;
             }
+            // nợ khách cần trả
             foreach (var x in diary)
             {
                 branchDetail.debtCustomers = x.TotalPay - x.PaidMoney;
