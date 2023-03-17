@@ -96,7 +96,7 @@ namespace PawnShopBE.Controllers
             return Ok(listContracts);
         }
 
-        [HttpGet("contracts/")]
+        [HttpGet("contracts")]
         public async Task<IActionResult> GetAllContracts()
         {
             var listContracts = await _contractService.GetAllContracts();
@@ -119,10 +119,21 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpGet("contract/detail{id}")]
-        public async Task<IActionResult> GetContractDetail(int id)
+        [HttpGet("contract/detail{contractId}")]
+        public async Task<IActionResult> GetContractDetail(int contractId)
         {
-            var contractDetail = await _contractService.GetContractDetail(id);
+            var contractDetail = await _contractService.GetContractDetail(contractId);
+            if (contractDetail == null)
+            {
+                return NotFound();
+            }
+            return Ok(contractDetail);
+        }
+
+        [HttpGet("contract/{contractId}")]
+        public async Task<IActionResult> GetContractById(int contractId)
+        {
+            var contractDetail = await _contractService.GetContractById(contractId);
             if (contractDetail == null)
             {
                 return NotFound();
