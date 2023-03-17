@@ -7,7 +7,6 @@ using PawnShopBE.Core.Models;
 using PawnShopBE.Infrastructure.Helpers;
 using PawnShopBE.Infrastructure.Repositories;
 using Services.Services.IServices;
-using Services.Services.IThirdInterface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,22 +15,26 @@ using System.Threading.Tasks;
 
 namespace Services.Services
 {
-    public class ContractService : ICustomer_Contract
+    public class ContractService : IContractService
     {
         public IUnitOfWork _unitOfWork;
         public IContractAssetService _iContractAssetService;
         public IPackageService _iPackageService;
         public IInteresDiaryService _iInterestDiaryService;
         public IContractRepository _iContractRepository;
-        public ContractService(IUnitOfWork unitOfWork, IContractRepository iContractRepository, IContractAssetService contractAssetService, IPackageService packageService, IInteresDiaryService interesDiaryService)
+        private IServiceProvider _serviceProvider;
+        public ContractService(IUnitOfWork unitOfWork, IContractRepository iContractRepository,
+            IContractAssetService contractAssetService, IPackageService packageService,
+            IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider)
         {
             _unitOfWork = unitOfWork;
             _iContractRepository = iContractRepository;
             _iContractAssetService = contractAssetService;
             _iPackageService = packageService;
             _iInterestDiaryService = interesDiaryService;
+            _serviceProvider = serviceProvider;
         }
-     
+
         public async Task<Contract> CreateContract(Contract contract)
         {
             if (contract != null)
@@ -45,46 +48,47 @@ namespace Services.Services
                 if (contractList != null)
                 {
                     count = contractList.Count();
-                }                               
+                }
                 contract.ContractCode = "CĐ-" + (count + 1).ToString();
                 var package = await _unitOfWork.Packages.GetById(contract.PackageId);
-                
+
                 if (package != null)
                 {
-                    
+
                     var fee = contract.InsuranceFee + contract.StorageFee;
                     var period = package.Day / package.PaymentPeriod;
                     double interest = 0;
-                    
+
                     // Use recommend interest if input
                     if (contract.InterestRecommend != 0)
                     {
                         interest = contract.InterestRecommend * 0.01;
                     }
                     interest = package.PackageInterest * 0.01;
-                    contract.TotalProfit = (contract.Loan * (decimal)interest) + (fee * period);                   
+                    contract.TotalProfit = (contract.Loan * (decimal)interest) + (fee * period);
                 }
                 contract.ContractStartDate = DateTime.Now;
-                contract.ContractEndDate = contract.ContractStartDate.AddDays((double)package.Day -1);
+                contract.ContractEndDate = contract.ContractStartDate.AddDays((double)package.Day - 1);
                 contract.Status = (int)ContractConst.IN_PROGRESS;
                 await _unitOfWork.Contracts.Add(contract);
 
                 var result = _unitOfWork.Save();
 
-                if(await plusPoint(contract))
+                if (await plusPoint(contract))
                     return contract;
             }
             return null;
         }
         private async Task<bool> plusPoint(Contract contract)
         {
-            var customerList = await GetAllCustomer(0);
-            var customerIenumerable=from c in customerList where c.CustomerId== contract.CustomerId select c;
+            var provider= _serviceProvider.GetService(typeof(ICustomerService)) as ICustomerService;
+            var customerList = await provider.GetAllCustomer(0);
+            var customerIenumerable = from c in customerList where c.CustomerId == contract.CustomerId select c;
             var customer = new Customer();
-            customer=customerIenumerable.FirstOrDefault();
+            customer = customerIenumerable.FirstOrDefault();
             //plus point
             customer.Point += 100;
-            if (await UpdateCustomer(customer))
+            if (await provider.UpdateCustomer(customer))
                 return true;
             else
                 return false;
@@ -116,7 +120,7 @@ namespace Services.Services
             {
                 return contractList;
             }
-            var result= await _unitOfWork.Contracts.TakePage(num,contractList);
+            var result = await _unitOfWork.Contracts.TakePage(num, contractList);
             return result;
         }
 
@@ -163,7 +167,7 @@ namespace Services.Services
 
                     contractUpdate.StorageFee = contract.StorageFee;
                     contractUpdate.InsuranceFee = contract.InsuranceFee;
-                    contractUpdate.Loan = contract.Loan;                          
+                    contractUpdate.Loan = contract.Loan;
                     contractUpdate.ContractVerifyImg = contract.ContractVerifyImg;
                     contractUpdate.UpdateDate = DateTime.Now;
 
@@ -204,11 +208,11 @@ namespace Services.Services
                 var contract = await _unitOfWork.Contracts.GetById(contractId);
                 var customer = await _unitOfWork.Customers.GetById(contract.CustomerId);
                 var package = await _iPackageService.GetPackageById(contract.PackageId, contract.InterestRecommend);
-                List<InterestDiary> interestDiaries = (List<InterestDiary>) await _iInterestDiaryService.GetInteresDiariesByContractId(contractId);
+                List<InterestDiary> interestDiaries = (List<InterestDiary>)await _iInterestDiaryService.GetInteresDiariesByContractId(contractId);
 
                 decimal interestPaid = 0;
                 decimal interestDebt = 0;
-                foreach(InterestDiary interestDiary in interestDiaries)
+                foreach (InterestDiary interestDiary in interestDiaries)
                 {
                     interestPaid = interestPaid + interestDiary.PaidMoney;
                     interestDebt = interestDebt + interestDiary.InterestDebt;
@@ -247,81 +251,7 @@ namespace Services.Services
                 return true;
             else
                 return false;
-
-        public Task<bool> CreateCustomer(Customer customer)
-        {
-            throw new NotImplementedException();
         }
-
-        public async Task<IEnumerable<Customer>> GetAllCustomer(int num)
-        {
-            var listCustomer = await _unitOfWork.Customers.GetAll();
-            if (num == 0)
-            {
-                return listCustomer;
-            }
-            var result = await _unitOfWork.Customers.TakePage(num, listCustomer);
-            return result;
-        }
-
-        public Task<Customer> GetCustomerById(Guid idCus)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> UpdateCustomer(Customer customer)
-        {
-            if (customer != null)
-            {
-                var customerUpdate = _unitOfWork.Customers.SingleOrDefault(customer, en => en.CustomerId == customer.CustomerId);
-                if (customerUpdate != null)
-                {
-                    // customerUpdate = customer;
-                    customerUpdate.Status = customer.Status;
-                    customerUpdate.Point = customer.Point;
-                    customerUpdate.CCCD = customer.CCCD;
-                    customerUpdate.Phone = customer.Phone;
-                    customerUpdate.Address = customer.Address;
-                    customerUpdate.FullName = customer.FullName;
-                    customerUpdate.UpdateDate = DateTime.Now;
-                    _unitOfWork.Customers.Update(customerUpdate);
-                    var result = _unitOfWork.Save();
-                    if (result > 0)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public Task<bool> DeleteCustomer(Guid customerId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Customer> getCustomerByCCCD(string cccd)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<CustomerDTO> getRelative(Guid idCus)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> createRelative(Guid idCus, CustomerDTO customer)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<DisplayCustomer>> getCustomerHaveBranch(IEnumerable<DisplayCustomer> respone, IEnumerable<Customer> listCustomer)
-        {
-            throw new NotImplementedException();
         }
     }
-}
+

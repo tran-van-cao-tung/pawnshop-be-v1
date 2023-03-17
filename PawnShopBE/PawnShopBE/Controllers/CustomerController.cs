@@ -48,12 +48,12 @@ namespace PawnShopBE.Controllers
         [HttpPost("customer")]
         public async Task<IActionResult> CreateCustomer(CustomerDTO customer)
         {
-            //Check Validation
-            //var checkValidation = await _validation.CheckValidation(customer);
-            //if (checkValidation != null)
-            //{
-            //    return BadRequest(checkValidation);
-            //}
+          //  Check Validation
+            var checkValidation = await _validation.CheckValidation(customer);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var customerMap= _mapper.Map<Customer>(customer);
             var respone=await _customer.CreateCustomer(customerMap);
             if (respone)
