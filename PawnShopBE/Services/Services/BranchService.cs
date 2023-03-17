@@ -2,6 +2,7 @@
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Requests;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
@@ -153,11 +154,11 @@ namespace Services.Services
             return null;
         }
 
-        public async Task<bool> UpdateBranch(Branch branch)
+        public async Task<bool> UpdateBranch(int id, BranchRequest branch)
         {
             if (branch != null)
             {
-                var branchUpdate = await _unitOfWork.Branches.GetById(branch.BranchId);
+                var branchUpdate = await _unitOfWork.Branches.GetById(id);
                 if (branchUpdate != null)
                 {
                     branchUpdate.BranchName = branch.BranchName;

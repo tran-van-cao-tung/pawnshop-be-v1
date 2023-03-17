@@ -1,7 +1,10 @@
-﻿using PawnShopBE.Core.Const;
+﻿using Google.Protobuf.WellKnownTypes;
+using PawnShopBE.Core.Const;
+using PawnShopBE.Core.Display;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using PawnShopBE.Infrastructure.Helpers;
+using PawnShopBE.Infrastructure.Repositories;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
@@ -14,11 +17,17 @@ namespace Services.Services
     public class ContractService : IContractService
     {
         public IUnitOfWork _unitOfWork;
-        public ContractAssetService _contractAssetService;
-
-        public ContractService(IUnitOfWork unitOfWork)
+        public IContractAssetService _iContractAssetService;
+        public IPackageService _iPackageService;
+        public IInteresDiaryService _iInterestDiaryService;
+        public IContractRepository _iContractRepository;
+        public ContractService(IUnitOfWork unitOfWork, IContractRepository iContractRepository, IContractAssetService contractAssetService, IPackageService packageService, IInteresDiaryService interesDiaryService)
         {
             _unitOfWork = unitOfWork;
+            _iContractRepository = iContractRepository;
+            _iContractAssetService = contractAssetService;
+            _iPackageService = packageService;
+            _iInterestDiaryService = interesDiaryService;
         }
 
         public async Task<Contract> CreateContract(Contract contract)
@@ -98,6 +107,17 @@ namespace Services.Services
             return result;
         }
 
+        public async Task<IEnumerable<Contract>> GetAllContracts()
+        {
+            var contractList = await _unitOfWork.Contracts.GetAll();
+            if (contractList != null)
+            {
+                return contractList;
+
+            }
+            return null;
+        }
+
         public async Task<Contract> GetContractById(int contractId)
         {
             if (contractId != null)
@@ -111,18 +131,17 @@ namespace Services.Services
             return null;
         }
 
-        public async Task<bool> UpdateContract(Contract contract)
+        public async Task<bool> UpdateContract(string contractCode, Contract contract)
         {
             if (contract != null)
             {
-                var contractUpdate = await _unitOfWork.Contracts.GetById(contract.ContractId);
-
-                if (contractUpdate != null)
+                var contractUpdate = await _iContractRepository.getContractByContractCode(contractCode);
+                if (contractUpdate.ContractId == contract.ContractId)
                 {
                     // Update Asset
                     if (contract.ContractAsset != null)
                     {
-                        var assetUpdate = await _contractAssetService.UpdateContractAsset(contract.ContractAsset);
+                        var assetUpdate = await _iContractAssetService.UpdateContractAsset(contract.ContractAsset);
                         if (assetUpdate == false)
                         {
                             return false;
@@ -164,6 +183,57 @@ namespace Services.Services
                 }
             }
             return false;
+        }
+        public async Task<DisplayContractDetail> GetContractDetail(int contractId)
+        {
+            if (contractId != null)
+            {
+                var contract = await _unitOfWork.Contracts.GetById(contractId);
+                var customer = await _unitOfWork.Customers.GetById(contract.CustomerId);
+                var package = await _iPackageService.GetPackageById(contract.PackageId, contract.InterestRecommend);
+                List<InterestDiary> interestDiaries = (List<InterestDiary>) await _iInterestDiaryService.GetInteresDiariesByContractId(contractId);
+
+                decimal interestPaid = 0;
+                decimal interestDebt = 0;
+                foreach(InterestDiary interestDiary in interestDiaries)
+                {
+                    interestPaid = interestPaid + interestDiary.PaidMoney;
+                    interestDebt = interestDebt + interestDiary.InterestDebt;
+                }
+                var contractDetail = new DisplayContractDetail();
+                contractDetail.CustomerName = customer.FullName;
+                contractDetail.Phone = contract.Customer.Phone;
+                contractDetail.Loan = contract.Loan;
+                contractDetail.ContractStartDate = contract.ContractStartDate;
+                contractDetail.ContractEndDate = contract.ContractEndDate;
+                contractDetail.PackageInterest = package.PackageInterest;
+                contractDetail.InterestPaid = interestPaid;
+                contractDetail.InterestDebt = interestDebt;
+                contractDetail.Status = contract.Status;
+
+                if (contract != null)
+                {
+                    return contractDetail;
+                }
+            }
+            return null;
+        }
+
+        public async Task<bool> UploadContractImg(int contractId, string customerImg, string contractImg)
+        {
+            var contract = await _unitOfWork.Contracts.GetById(contractId);
+            if (contract != null && (customerImg != null || contractImg != null))
+            {
+                contract.CustomerVerifyImg = customerImg;
+                contract.ContractVerifyImg = contractImg;
+            }
+            _unitOfWork.Contracts.Update(contract);
+            var result = _unitOfWork.Save();
+
+            if (result > 0)
+                return true;
+            else
+                return false;
         }
     }
 }

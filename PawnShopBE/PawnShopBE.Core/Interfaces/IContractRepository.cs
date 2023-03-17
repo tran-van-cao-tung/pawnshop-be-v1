@@ -9,5 +9,7 @@ namespace PawnShopBE.Core.Interfaces
 {
     public interface IContractRepository : IGenericRepository<Contract>
     {
+        Task<Contract> getContractByContractCode(string contractCode);
+
     }
 }
