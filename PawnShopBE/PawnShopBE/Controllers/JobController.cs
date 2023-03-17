@@ -29,7 +29,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<JobDTO> _validation;
+        private Validation<JobDTO> _validation=new Validation<JobDTO>();
         
         [HttpPost("job")]
         public async Task<IActionResult> CreateJob(JobDTO job)
