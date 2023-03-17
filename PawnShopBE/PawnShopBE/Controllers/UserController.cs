@@ -33,7 +33,7 @@ namespace PawnShopBE.Controllers
         }
         private Validation<UserDTO> _validation=new Validation<UserDTO>();
        
-     //   [Authorize]
+        [Authorize]
         [HttpPost("user")]
         public async Task<IActionResult> CreateUser(UserDTO request)
         {
