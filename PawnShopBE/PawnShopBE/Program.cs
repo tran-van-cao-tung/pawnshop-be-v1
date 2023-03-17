@@ -81,6 +81,7 @@ builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IAttributeService, AttributeService>();
 builder.Services.AddScoped<IInteresDiaryService, InterestDiaryService>();
 builder.Services.AddScoped<IRansomService, RansomService>();
+builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
