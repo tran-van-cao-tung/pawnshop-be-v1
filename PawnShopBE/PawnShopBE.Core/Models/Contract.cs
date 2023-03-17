@@ -12,6 +12,7 @@ namespace PawnShopBE.Core.Models
     {
         public int ContractId { get; set; }
         public Guid CustomerId { get; set; }
+        public Guid UserId { get; set; }
         public int PackageId { get; set; }
         public int BranchId { get; set; }
         public int ContractAssetId { get; set; }
@@ -25,6 +26,7 @@ namespace PawnShopBE.Core.Models
         public decimal StorageFee { get; set; } = 0;
         public decimal TotalProfit { get; set; }
         public string? ContractVerifyImg { get; set; }
+        public string? CustomerVerifyImg { get; set; }
         public DateTime? UpdateDate { get; set; }
         public string? Description { get; set; }
         public int Status { get; set; }
@@ -36,6 +38,7 @@ namespace PawnShopBE.Core.Models
         public virtual ContractAsset? ContractAsset { get; set; }
         public virtual Liquidtation? Liquidtation { get; set; }
         public virtual Ransom? Ransom { get; set; }
+        public virtual User? User { get; set; }
 
         public ICollection<InterestDiary>? InterestDiaries { get; set; }
         public Contract()

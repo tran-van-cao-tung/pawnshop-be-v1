@@ -14,7 +14,7 @@ namespace PawnShopBE.Core.DTOs
 
         [Required(ErrorMessage = "Tên chi nhánh không được để trống")]
         [StringLength(30, MinimumLength = 6, 
-            ErrorMessage = "Tên chi nhánh phải dài từ 6 - 30 ký tự")]
+           ErrorMessage = "Tên chi nhánh phải dài từ 6 - 30 ký tự")]
         public string BranchName { get; set; }
 
         [Required(ErrorMessage = "Địa chỉ chi nhánh không được để trống")]

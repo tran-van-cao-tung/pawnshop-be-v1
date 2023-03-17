@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Requests;
 using PawnShopBE.Core.Validation;
 using Services.Services.IServices;
 
@@ -28,11 +29,11 @@ namespace PawnShopBE.Controllers
         public async Task<IActionResult> CreateBranch(BranchDTO request)
         {
             //Check Validation
-            var checkValidation = await _validation.CheckValidation(request);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
+            //var checkValidation = await _validation.CheckValidation(request);
+            //if (checkValidation != null)
+            //{
+            //    return BadRequest(checkValidation);
+            //}
             var branch = _mapper.Map<Branch>(request);
             var response = await _branchService.CreateBranch(branch);
 
@@ -96,12 +97,12 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("branch/{id}")]
-        public async Task<IActionResult> UpdateBranch(int id, Branch request)
+        public async Task<IActionResult> UpdateBranch(int id, BranchRequest request)
         {
-            if (id == request.BranchId)
+            if (id != null)
             {
                // var branch = _mapper.Map<Branch>(request);
-                var response = await _branchService.UpdateBranch(request);
+                var response = await _branchService.UpdateBranch(id, request);
                 if (response)
                 {
                     return Ok(response);
