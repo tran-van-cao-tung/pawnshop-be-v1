@@ -19,15 +19,16 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        //[HttpGet("interestDiary{contractId}")]
-        //public async Task<IActionResult> GetAllinterestDiary(int contractId) {
-        //    var respone =await _interestDiaryService.GetInteresDiaryByContractId(contractId);
-        //    if (respone != null)
-        //    {
-        //        return Ok(respone);
-        //    }
-        //    return BadRequest();
-        //}
+        [HttpGet("interestDiaries{contractId}")]
+        public async Task<IActionResult> GetInterestDiariesByContractId(int contractId)
+        {
+            var respone = await _interestDiaryService.GetInteresDiariesByContractId(contractId);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
 
         //[HttpPost("interestDiary")]
         //public async Task<IActionResult> CreateinterestDiary(InterestDiaryDTO diary)

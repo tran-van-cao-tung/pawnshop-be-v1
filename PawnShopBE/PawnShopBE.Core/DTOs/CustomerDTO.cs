@@ -14,7 +14,7 @@ namespace PawnShopBE.Core.DTOs
 
         [Required(ErrorMessage = "Tên khách hàng không được để trống")]
         [StringLength(50, MinimumLength = 6,
-          ErrorMessage = "Tên khách hàng phải dài từ 6 - 50 ký tự")]
+         ErrorMessage = "Tên khách hàng phải dài từ 6 - 50 ký tự")]
         public string FullName { get; set; }
 
         [Required(ErrorMessage = "Căn cước công dân không được để trống")]
