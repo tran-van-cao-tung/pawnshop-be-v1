@@ -14,7 +14,6 @@ namespace PawnShopBE.Core.Data.DescriptionAttribute
             this.description = description;
         }
 
-        public string ccccc { get; set; }
         public string description { get; set; }
     }
 }

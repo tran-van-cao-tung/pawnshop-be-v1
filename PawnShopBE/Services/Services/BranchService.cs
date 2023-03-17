@@ -60,7 +60,7 @@ namespace Services.Services
             foreach (var x in contract)
             {
                 branchDetail.loanContract = x.Loan;
-                branchDetail.interestRecommend = x.TotalProfit;
+                branchDetail.expectProfit= x.TotalProfit;
                 branchDetail.contractCode = x.ContractCode;
                 branchDetail.statusContract = x.Status;
             }
