@@ -15,6 +15,7 @@ namespace PawnShopBE.Core.Display
         public string CCCD { get; set; }
         public string Address { get; set; }
         public string Phone { get; set; }
+        public int Point { get; set; }
         public DateTime CreatedDate { get; set; }
     }
 }

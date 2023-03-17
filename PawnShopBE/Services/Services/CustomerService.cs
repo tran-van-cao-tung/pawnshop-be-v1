@@ -25,13 +25,19 @@ namespace Services.Services
         private readonly ICustomerRelativeService _relative;
         private readonly IDependentService _dependent;
 
+
+        public CustomerService(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
         public CustomerService(IUnitOfWork unitOfWork, IKycService kycService, ICustomerRepository customerRepository, IContractService contract,
            IBranchService branch, IJobService job, ICustomerRelativeService relativeService,
            IDependentService dependent)
         {
             _unitOfWork = unitOfWork;
-            _kycService= kycService;
-            _customerRepository= customerRepository;
+            _kycService = kycService;
+            _customerRepository = customerRepository;
             _branch = branch;
             _contract = contract;
             _job = job;

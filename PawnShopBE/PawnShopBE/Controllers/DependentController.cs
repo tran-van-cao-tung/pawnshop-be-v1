@@ -29,7 +29,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<DependentPeopleDTO> _validation;
+        private Validation<DependentPeopleDTO> _validation=new Validation<DependentPeopleDTO>();
        
         [HttpPost("dependent")]
         public async Task<IActionResult> CreateDependent(DependentPeopleDTO dependent)

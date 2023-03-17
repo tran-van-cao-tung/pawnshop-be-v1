@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
 using Microsoft.AspNetCore.Mvc;
+using PawnShopBE.Core.Data.DescriptionAttribute;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
@@ -37,13 +38,14 @@ namespace PawnShopBE.Controllers
         [HttpGet("warehouse/{numPage}")]
         public async Task<IActionResult> GetAllWareHouse(int numPage) {
             var respone =await _wareHouseService.GetWareHouse(numPage);
+          
             if (respone != null)
             {
-                return Ok(respone);
+                return Ok(respone) ;
             }
             return BadRequest();
         }
-         private Validation<WareHouseDTO> _validation;
+         private Validation<WareHouseDTO> _validation=new Validation<WareHouseDTO>();
         [HttpPost("warehouse")]
         public async Task<IActionResult> CreateWareHouse(WareHouseDTO wareHouse)
         {

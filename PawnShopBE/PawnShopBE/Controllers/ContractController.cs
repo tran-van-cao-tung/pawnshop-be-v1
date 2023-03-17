@@ -22,7 +22,6 @@ namespace PawnShopBE.Controllers
         private readonly IPackageService _packageService;
         private readonly IInteresDiaryService _interesDiaryService;
         private readonly IRansomService _ransomService;
-
         private readonly IMapper _mapper;
 
         public ContractController(
@@ -42,17 +41,17 @@ namespace PawnShopBE.Controllers
             _ransomService = ransomService;
             _mapper = mapper;
         }
-        private Validation<ContractDTO> _validation;
+        private Validation<ContractDTO> _validation=new Validation<ContractDTO>();
        
     [HttpPost("contract")]
         public async Task<IActionResult> CreateContract(ContractDTO request)
         {
             //Check Validation
-            //var checkValidation = await _validation.CheckValidation(request);
-            //if (checkValidation != null)
-            //{
-            //    return BadRequest(checkValidation);
-            //}
+            var checkValidation = await _validation.CheckValidation(request);
+            if (checkValidation != null)    
+            {
+                return BadRequest(checkValidation);
+            }
             StringBuilder sb = new StringBuilder();
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
             {            
@@ -76,7 +75,7 @@ namespace PawnShopBE.Controllers
             var ransomSuccess = await _ransomService.CreateRansom(contractCreated);
             var interestDiarySuccess = await _interesDiaryService.CreateInterestDiary(contractCreated);
             
-            if (interestDiarySuccess == true)
+            if (interestDiarySuccess == true)  
             {
                 return Ok(interestDiarySuccess); 
             }
@@ -97,16 +96,50 @@ namespace PawnShopBE.Controllers
             return Ok(listContracts);
         }
 
-        [HttpPut("contract")]
-        public async Task<IActionResult> UpdateContract(ContractDTO request)
+        [HttpGet("contracts/")]
+        public async Task<IActionResult> GetAllContracts()
+        {
+            var listContracts = await _contractService.GetAllContracts();
+            if (listContracts == null)
+            {
+                return NotFound();
+            }
+            return Ok(listContracts);
+        }
+
+        [HttpPut("contract/{contractCode}")]
+        public async Task<IActionResult> UpdateContract(string contractCode, ContractDTO request)
         {       
                 var contract = _mapper.Map<Contract>(request);
-                var response = await _contractService.UpdateContract(contract);
+                var response = await _contractService.UpdateContract(contractCode, contract);
                 if (response)
                 {
                     return Ok(response);
                 }         
             return BadRequest();
+        }
+
+        [HttpGet("contract/detail{id}")]
+        public async Task<IActionResult> GetContractDetail(int id)
+        {
+            var contractDetail = await _contractService.GetContractDetail(id);
+            if (contractDetail == null)
+            {
+                return NotFound();
+            }
+            return Ok(contractDetail);
+        }
+
+        [HttpPost("contract/{contractId}/{customerImg}/{contractImg}")]
+        public async Task<IActionResult> UploadContractImg(int contractId, string customerImg, string contractImg)
+        {
+            
+            var uploadContract = await _contractService.UploadContractImg(contractId, customerImg, contractImg);
+            if (uploadContract)
+                return Ok(uploadContract);
+            else
+                return BadRequest(uploadContract);
+             
         }
     }
 }

@@ -30,7 +30,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<ContractAssetDTO> _validation;
+        private Validation<ContractAssetDTO> _validation=new Validation<ContractAssetDTO>();
         
     [HttpPost("contractAsset")]
         public async Task<IActionResult> CreateContractAsset(ContractAssetDTO contractAsset)
