@@ -1,6 +1,7 @@
 ﻿using PawnShopBE.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -26,11 +27,13 @@ namespace PawnShopBE.Core.DTOs
             ErrorMessage = "Tên tài sản phải dài từ 6 - 50 ký tự")]
         public string ContractAssetName { get; set; }
 
+        [DefaultValue(0)]
         [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
         public decimal InsuranceFee { get; set; }
 
         public decimal StorageFee { get; set; }
 
+        [DefaultValue(0)]
         [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
         public decimal Loan { get; set; }
         public decimal TotalProfit { get; set; }

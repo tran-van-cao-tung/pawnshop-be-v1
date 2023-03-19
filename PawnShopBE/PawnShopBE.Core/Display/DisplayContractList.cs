@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace PawnShopBE.Core.Display
+{
+    public class DisplayContractList
+    {
+        public string ContractCode { get; set; }
+        public string CustomerName { get; set; }
+        public string CommodityCode { get; set; }
+        public string ContractAssetName { get; set; }
+        public string Loan { get; set; }
+        public DateTime ContractStartDate { get; set; }
+        public DateTime ContractEndDate { get; set; }
+
+    }
+}

@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/report")]
     [ApiController]
     public class ReportController : ControllerBase
     {
@@ -24,7 +24,7 @@ namespace PawnShopBE.Controllers
         _report= report;
             _mapper=mapper;
         }
-        [HttpGet("report/transaction/{numPage}")]
+        [HttpGet("getAll/transaction/{numPage}")]
         public async Task<IActionResult> GetAllReportTransaction(int numPage) {
             var respone =await _report.getReportTransaction(numPage);
           

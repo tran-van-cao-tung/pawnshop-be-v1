@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.WellKnownTypes;
+using Microsoft.EntityFrameworkCore;
 using PawnShopBE.Core.Const;
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
@@ -22,10 +23,11 @@ namespace Services.Services
         public IPackageService _iPackageService;
         public IInteresDiaryService _iInterestDiaryService;
         public IContractRepository _iContractRepository;
+        private DbContextClass _dbContextClass;
         private IServiceProvider _serviceProvider;
         public ContractService(IUnitOfWork unitOfWork, IContractRepository iContractRepository,
             IContractAssetService contractAssetService, IPackageService packageService,
-            IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider)
+            IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider, DbContextClass dbContextClass)
         {
             _unitOfWork = unitOfWork;
             _iContractRepository = iContractRepository;
@@ -33,6 +35,7 @@ namespace Services.Services
             _iPackageService = packageService;
             _iInterestDiaryService = interesDiaryService;
             _serviceProvider = serviceProvider;
+            _dbContextClass = dbContextClass;
         }
 
         public async Task<Contract> CreateContract(Contract contract)
@@ -252,6 +255,64 @@ namespace Services.Services
             else
                 return false;
         }
+
+        public async Task<bool> CreateContractExpiration(int contractId)
+        {
+            var contract = await _unitOfWork.Contracts.GetById(contractId);
+            //using var transaction = await _dbContextClass.Database.BeginTransactionAsync();
+            //try
+            //{
+                if (contract != null)
+                {
+                    contract.ContractId = 0;
+                    var contractList = await GetAllContracts(0);
+                    var count = 0;
+                    if (contractList != null)
+                    {
+                        count = contractList.Count();
+                    }
+                    contract.ContractCode = "CĐ-" + (count + 1).ToString();
+                    var package = await _unitOfWork.Packages.GetById(contract.PackageId);
+
+                    if (package != null)
+                    {
+                        var fee = contract.InsuranceFee + contract.StorageFee;
+                        var period = package.Day / package.PaymentPeriod;
+                        double interest = 0;
+
+                        // Use recommend interest if input
+                        if (contract.InterestRecommend != 0)
+                        {
+                            interest = contract.InterestRecommend * 0.01;
+                        }
+                        interest = package.PackageInterest * 0.01;
+                        contract.TotalProfit = (contract.Loan * (decimal)interest) + (fee * period);
+                    }
+                    contract.ContractStartDate = DateTime.Now;
+                    contract.ContractEndDate = contract.ContractStartDate.AddDays((double)package.Day - 1);
+                    contract.Status = (int)ContractConst.IN_PROGRESS;
+                    await _unitOfWork.Contracts.Add(contract);
+                    var createContractresult = _unitOfWork.Save();
+                    if (createContractresult > 0)
+                    {
+                        var ransomProvider = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
+                        var createRansom = await ransomProvider.CreateRansom(contract);
+                        var interestProvider = _serviceProvider.GetService(typeof(IInteresDiaryService)) as IInteresDiaryService;
+                        var createInterestDiary = await interestProvider.CreateInterestDiary(contract);                      
+                        return true;
+                    }
+                    //// If everything succeeded, commit the transaction
+                    //await transaction.CommitAsync();
+                }
+            //} catch (Exception e)
+            //{
+            //    // If an error occurred, rollback the transaction
+            //    await transaction.RollbackAsync();
+            //    throw;
+            //}
+            
+            return false;
         }
     }
+}
 
