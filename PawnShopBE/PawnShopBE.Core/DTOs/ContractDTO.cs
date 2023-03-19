@@ -21,25 +21,26 @@ namespace PawnShopBE.Core.DTOs
        
      //   public string ContractCode { get; set; }
 
-        [Required(ErrorMessage = "Tên tài sản không được để trống")]
-        [StringLength(50, MinimumLength = 6,
-            ErrorMessage = "Tên tài sản phải dài từ 6 - 50 ký tự")]
-        public string ContractAssetName { get; set; }
+        //[Required(ErrorMessage = "Tên tài sản không được để trống")]
+        //[StringLength(50, MinimumLength = 6,  
+        //    ErrorMessage = "Tên tài sản phải dài từ 6 - 50 ký tự")]
+        public string? ContractAssetName { get; set; }
 
-        [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
+       // [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
         public decimal InsuranceFee { get; set; }
 
         public decimal StorageFee { get; set; }
 
-        [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
+       // [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
         public decimal Loan { get; set; }
         public decimal TotalProfit { get; set; }
 
-        public string AssetImg { get; set; }
+        public string? AssetImg { get; set; }
+        public DateTime? ActualEndDate { get; set; }
         public ICollection<AttributeDTO>? PawnableAttributeDTOs { get; set; }
 
         //[Required(ErrorMessage = "Căn cước công dân không được để trống")]
-       public string CCCD { get; set; }
+       public string? CCCD { get; set; }
         //[Phone(ErrorMessage = "Nhập đúng định dạng số điện thoại")]
         //[StringLength(11, MinimumLength = 10,
         //    ErrorMessage = "Số điện thoại phải từ 10-11 số")]

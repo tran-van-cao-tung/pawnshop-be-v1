@@ -124,16 +124,6 @@ namespace Services.Services
             return result;
         }
 
-        public async Task<IEnumerable<Contract>> GetAllContracts()
-        {
-            var contractList = await _unitOfWork.Contracts.GetAll();
-            if (contractList != null)
-            {
-                return contractList;
-
-            }
-            return null;
-        }
 
         public async Task<Contract> GetContractById(int contractId)
         {
@@ -169,6 +159,7 @@ namespace Services.Services
                     contractUpdate.InsuranceFee = contract.InsuranceFee;
                     contractUpdate.Loan = contract.Loan;
                     contractUpdate.ContractVerifyImg = contract.ContractVerifyImg;
+                    contractUpdate.ActualEndDate = contract.ActualEndDate;
                     contractUpdate.UpdateDate = DateTime.Now;
 
                     var package = await _unitOfWork.Packages.GetById(contract.PackageId);

@@ -41,17 +41,17 @@ namespace PawnShopBE.Controllers
             _ransomService = ransomService;
             _mapper = mapper;
         }
-        private Validation<ContractDTO> _validation=new Validation<ContractDTO>();
+       // private Validation<ContractDTO> _validation=new Validation<ContractDTO>();
        
-    [HttpPost("contract")]
+        [HttpPost("contract")]
         public async Task<IActionResult> CreateContract(ContractDTO request)
         {
-            //Check Validation
-            var checkValidation = await _validation.CheckValidation(request);
-            if (checkValidation != null)    
-            {
-                return BadRequest(checkValidation);
-            }
+            ////Check Validation
+            //var checkValidation = await _validation.CheckValidation(request);
+            //if (checkValidation != null)    
+            //{
+            //    return BadRequest(checkValidation);
+            //}
             StringBuilder sb = new StringBuilder();
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
             {            
@@ -96,17 +96,6 @@ namespace PawnShopBE.Controllers
             return Ok(listContracts);
         }
 
-        [HttpGet("contracts/")]
-        public async Task<IActionResult> GetAllContracts()
-        {
-            var listContracts = await _contractService.GetAllContracts();
-            if (listContracts == null)
-            {
-                return NotFound();
-            }
-            return Ok(listContracts);
-        }
-
         [HttpPut("contract/{contractCode}")]
         public async Task<IActionResult> UpdateContract(string contractCode, ContractDTO request)
         {       
@@ -116,7 +105,7 @@ namespace PawnShopBE.Controllers
                 {
                     return Ok(response);
                 }         
-            return BadRequest();
+            return Ok();
         }
 
         [HttpGet("contract/detail{id}")]

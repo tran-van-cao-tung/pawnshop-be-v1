@@ -34,6 +34,18 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-       
+
+        [HttpGet("report/month")]
+        public async Task<IActionResult> GetAllReportMonth()
+        {
+            var respone = await _report.getReportMonth();
+
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
+
     }
 }
