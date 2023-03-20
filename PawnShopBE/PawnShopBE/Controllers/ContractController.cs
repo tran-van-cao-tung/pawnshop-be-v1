@@ -41,17 +41,17 @@ namespace PawnShopBE.Controllers
             _ransomService = ransomService;
             _mapper = mapper;
         }
-       // private Validation<ContractDTO> _validation=new Validation<ContractDTO>();
+        private Validation<ContractDTO> _validation=new Validation<ContractDTO>();
        
         [HttpPost("contract")]
         public async Task<IActionResult> CreateContract(ContractDTO request)
         {
-            ////Check Validation
-            //var checkValidation = await _validation.CheckValidation(request);
-            //if (checkValidation != null)    
-            //{
-            //    return BadRequest(checkValidation);
-            //}
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(request);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             StringBuilder sb = new StringBuilder();
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
             {            
