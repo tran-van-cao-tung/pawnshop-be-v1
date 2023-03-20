@@ -226,6 +226,7 @@ namespace Services.Services
                     contractUpdate.InsuranceFee = contract.InsuranceFee;
                     contractUpdate.Loan = contract.Loan;
                     contractUpdate.ContractVerifyImg = contract.ContractVerifyImg;
+                    contractUpdate.ActualEndDate = contract.ActualEndDate;
                     contractUpdate.UpdateDate = DateTime.Now;
 
                     var package = await _unitOfWork.Packages.GetById(contract.PackageId);

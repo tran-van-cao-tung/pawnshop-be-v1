@@ -13,6 +13,9 @@ namespace PawnShopBE.Helpers
             // Mapping tu DTO sang entity
 
             #region Customer
+            //Mapping from relarive_job to DisplayCus
+            CreateMap<Customer, Relative_Job_DependentDTO>().ReverseMap();
+
             // Mapping from Customer to Display Customer
             CreateMap<Customer,DisplayCustomer>().ReverseMap();
 
