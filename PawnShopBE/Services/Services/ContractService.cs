@@ -38,14 +38,10 @@ namespace Services.Services
             _dbContextClass = dbContextClass;
         }
 
-        public async Task<Contract> CreateContract(Contract contract)
+        public async Task<bool> CreateContract(Contract contract)
         {
             if (contract != null)
             {
-                contract.Branch = null;
-                contract.Package = null;
-                contract.Customer = null;
-                contract.ContractAsset = null;
                 var contractList = await GetAllContracts(0);
                 var count = 0;
                 if (contractList != null)
@@ -53,11 +49,10 @@ namespace Services.Services
                     count = contractList.Count();
                 }
                 contract.ContractCode = "CĐ-" + (count + 1).ToString();
-                var package = await _unitOfWork.Packages.GetById(contract.PackageId);
+                var package = await _iPackageService.GetPackageById(contract.PackageId, contract.InterestRecommend);
 
                 if (package != null)
                 {
-
                     var fee = contract.InsuranceFee + contract.StorageFee;
                     var period = package.Day / package.PaymentPeriod;
                     double interest = 0;
@@ -76,11 +71,18 @@ namespace Services.Services
                 await _unitOfWork.Contracts.Add(contract);
 
                 var result = _unitOfWork.Save();
-
+                if (result > 0)
+                {
+                    var ransomProvider = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
+                    var createRansom = await ransomProvider.CreateRansom(contract);
+                    var interestProvider = _serviceProvider.GetService(typeof(IInteresDiaryService)) as IInteresDiaryService;
+                    var createInterestDiary = await interestProvider.CreateInterestDiary(contract);
+                    return true;
+                }
                 if (await plusPoint(contract))
-                    return contract;
+                    return true;
             }
-            return null;
+            return false;
         }
         private async Task<bool> plusPoint(Contract contract)
         {
@@ -115,7 +117,6 @@ namespace Services.Services
             }
             return false;
         }
-
         public async Task<IEnumerable<Contract>> GetAllContracts(int num)
         {
             var contractList = await _unitOfWork.Contracts.GetAll();
@@ -124,6 +125,59 @@ namespace Services.Services
                 return contractList;
             }
             var result = await _unitOfWork.Contracts.TakePage(num, contractList);
+            return result;
+        }
+
+        public async Task<ICollection<DisplayContractList>> GetAllDisplayContracts(int num)
+        {
+            var contractList = await _unitOfWork.Contracts.GetAll();
+            //var contractJoinCustomerAndAsset = _dbContextClass.Contract
+            //    .Include(c => c.Customer)
+            //    .Include(c => c.ContractAsset)
+            //    .ToListAsync();
+
+            var contractJoinCustomerJoinAsset = from contract in _dbContextClass.Contract
+                         join customer in _dbContextClass.Customer
+                         on contract.CustomerId equals customer.CustomerId
+                         join contractAsset in _dbContextClass.ContractAsset
+                         on contract.ContractAssetId equals contractAsset.ContractAssetId
+                         join pawnableProduct in _dbContextClass.PawnableProduct
+                         on contractAsset.PawnableProductId equals pawnableProduct.PawnableProductId
+                         join warehouse in _dbContextClass.Warehouse
+                         on contractAsset.WarehouseId equals warehouse.WarehouseId
+                         select new
+                         {
+                             ContractCode = contract.ContractCode,
+                             CustomerName = customer.FullName,
+                             CommodityCode = pawnableProduct.CommodityCode,
+                             ContractAssetName = contractAsset.ContractAssetName,
+                             ContractLoan = contract.Loan,
+                             ContractStartDate = contract.ContractStartDate,
+                             ContractEndDate = contract.ContractEndDate,
+                             WarehouseName = warehouse.WarehouseName,
+                             Status = contract.Status
+                         };
+
+            List<DisplayContractList> displayContractList = new List<DisplayContractList>();
+            foreach (var row in contractJoinCustomerJoinAsset)
+            {
+                DisplayContractList displayContract = new DisplayContractList();
+                displayContract.ContractCode = row.ContractCode;
+                displayContract.CustomerName = row.CustomerName;
+                displayContract.CommodityCode = row.CommodityCode;
+                displayContract.ContractAssetName = row.ContractAssetName;
+                displayContract.Loan = row.ContractLoan;
+                displayContract.ContractStartDate = row.ContractStartDate;
+                displayContract.ContractEndDate = row.ContractEndDate;
+                displayContract.WarehouseName = row.WarehouseName;
+                displayContract.Status = row.Status;
+                displayContractList.Add(displayContract);
+            }
+            List<DisplayContractList> result = await _iContractRepository.displayContractListTakePage(num, displayContractList);        
+            if (num == 0)
+            {
+                return displayContractList;
+            }
             return result;
         }
 
@@ -313,6 +367,8 @@ namespace Services.Services
             
             return false;
         }
+
+        
     }
 }
 

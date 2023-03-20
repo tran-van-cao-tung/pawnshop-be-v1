@@ -12,9 +12,11 @@ namespace PawnShopBE.Core.Display
         public string CustomerName { get; set; }
         public string CommodityCode { get; set; }
         public string ContractAssetName { get; set; }
-        public string Loan { get; set; }
+        public decimal Loan { get; set; }
         public DateTime ContractStartDate { get; set; }
         public DateTime ContractEndDate { get; set; }
+        public string WarehouseName { get; set; }
+        public int Status { get; set; }
 
     }
 }

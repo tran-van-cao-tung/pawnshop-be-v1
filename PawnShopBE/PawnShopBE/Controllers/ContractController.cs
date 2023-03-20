@@ -57,11 +57,6 @@ namespace PawnShopBE.Controllers
             {            
                 sb.Append(attributes.Description + "/");              
             }       
-            //Get package
-            Package package = await _packageService.GetPackageById(request.PackageId, request.InterestRecommend);
-            //Get customer 
-            var customer = await _customerService.getCustomerByCCCD(request.CCCD); 
-            
             //Create asset
             var contractAsset = _mapper.Map<ContractAsset>(request);
                 contractAsset.Description = sb.ToString();
@@ -70,19 +65,10 @@ namespace PawnShopBE.Controllers
             // Create contract
             var contract = _mapper.Map<Contract>(request);
             contract.ContractAssetId = contractAsset.ContractAssetId;
-            contract.CustomerId = customer.CustomerId;
-            var contractCreated = await _contractService.CreateContract(contract);
-            var ransomSuccess = await _ransomService.CreateRansom(contractCreated);
-            var interestDiarySuccess = await _interesDiaryService.CreateInterestDiary(contractCreated);
-            
-            if (interestDiarySuccess == true)  
-            {
-                return Ok(interestDiarySuccess); 
-            }
-            else
-            {
-                return BadRequest();
-            }
+            var result = await _contractService.CreateContract(contract);
+            return result ? Ok(result) : BadRequest();
+
+
         }
 
         [HttpPost("createContractExpiration/{contractId}")]
@@ -100,7 +86,7 @@ namespace PawnShopBE.Controllers
         [HttpGet("getAll/{numPage}")]
         public async Task<IActionResult> GetAllContracts(int numPage)
         {
-            var listContracts = await _contractService.GetAllContracts(numPage);
+            var listContracts = await _contractService.GetAllDisplayContracts(numPage);
             if (listContracts == null)
             {
                 return NotFound();
