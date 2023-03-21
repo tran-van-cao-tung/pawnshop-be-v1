@@ -283,13 +283,13 @@ namespace Services.Services
             // lấy branch id mà customer đang ở
             var branch = listCustomer.Join(listContract, p => p.CustomerId, c => c.CustomerId
                     , (p, c) => { return c.BranchId; });
-            var branchtId = branch.First();
+            var branchtId = branch.FirstOrDefault();
             // lấy danh sách branch
             var listBranch = await _branch.GetAllBranch(0);
             // lấy branchname
             var branchName = listContract.Join(listBranch, c => c.BranchId, b => b.BranchId,
                 (c, b) => { return b.BranchName; });
-            var name = branchName.First().ToString();
+            var name = branchName.FirstOrDefault().ToString();
             return name;
         }
         public async Task<Customer> GetCustomerById(Guid idCus)
