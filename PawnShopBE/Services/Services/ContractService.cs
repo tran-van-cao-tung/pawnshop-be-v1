@@ -1,4 +1,5 @@
-﻿using Google.Protobuf.WellKnownTypes;
+﻿using AutoMapper.Execution;
+using Google.Protobuf.WellKnownTypes;
 using PawnShopBE.Core.Const;
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
@@ -18,14 +19,22 @@ namespace Services.Services
     public class ContractService : IContractService
     {
         public IUnitOfWork _unitOfWork;
-        public IContractAssetService _iContractAssetService;
         public IPackageService _iPackageService;
         public IInteresDiaryService _iInterestDiaryService;
         public IContractRepository _iContractRepository;
         private IServiceProvider _serviceProvider;
+        //interface xài cho api homepage
+        private ILedgerService _ledger;
+        private IContractAssetService _iContractAssetService;
+        private IBranchService _branch;
+        private IRansomService _ransom;
+        private ICustomerService _customer;
+        private IPawnableProductService _pawnable;
+        private IWareHouseService _wareHouse;
         public ContractService(IUnitOfWork unitOfWork, IContractRepository iContractRepository,
             IContractAssetService contractAssetService, IPackageService packageService,
-            IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider)
+            IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider,
+            ILedgerService ledger, IPawnableProductService pawnable, IWareHouseService wareHouse)
         {
             _unitOfWork = unitOfWork;
             _iContractRepository = iContractRepository;
@@ -33,6 +42,146 @@ namespace Services.Services
             _iPackageService = packageService;
             _iInterestDiaryService = interesDiaryService;
             _serviceProvider = serviceProvider;
+            _ledger = ledger;
+            _pawnable = pawnable;
+            _wareHouse = wareHouse;
+            getParameter();
+        }
+        private void getParameter()
+        {
+         _branch = _serviceProvider.GetService(typeof(IBranchService)) as IBranchService;
+         _ransom = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
+         _customer = _serviceProvider.GetService(typeof(ICustomerService)) as ICustomerService;
+        }
+        public async Task<IEnumerable<DisplayContractHomePage>> getAllContractHomepage(int numpage)
+        {
+            //get all List
+            var branchList = await _branch.GetAllBranch(0);
+            var customerList = await _customer.GetAllCustomer(0);
+            var ledgerList = await _ledger.GetLedger();
+            var assetList = await _iContractAssetService.GetAllContractAssets();
+            var contractList = await GetAllContracts(0);
+            var pawnableList = await _pawnable.GetAllPawnableProducts(0);
+            var wareHouseList = await _wareHouse.GetWareHouse(0);
+            //var ransomList=await _ransom.GetRansom();
+            // khai báo filed hiển thị chung 
+            decimal fund = 0;
+            decimal loanLedger  = 0;
+            decimal recveivedInterest  = 0;
+            decimal totalProfit  = 0;
+            decimal ransomTotal  = 0;
+            //get displayHomePage
+            List<DisplayContractHomePage> listDipslay =new List<DisplayContractHomePage>();
+            DisplayContractHomePage display = new DisplayContractHomePage();
+            foreach (var contract in contractList)
+            {
+                var contractId = contract.ContractId;
+                display.contractCode = contract.ContractCode;
+                display.customerName = getCustomerName(customerList, contract.CustomerId);
+                display.assestCode = getAsset(contract.ContractAssetId, assetList, pawnableList,wareHouseList, 1);
+                display.assetName = getAsset(contract.ContractAssetId, assetList, pawnableList,wareHouseList,2);
+                display.loanContract = contract.Loan;
+                display.startDate = contract.ContractStartDate;
+                display.endDate=contract.ContractEndDate;
+                display.wareName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 3);
+                display.status= contract.Status;
+                //get field hiển thị chung
+                if (fund == 0) {
+                    fund = decimal.Parse(getBranchName(contract.BranchId, branchList, false));
+                }
+                totalProfit += contract.TotalProfit;
+                loanLedger += getLedger(ledgerList, contract.BranchId, true);
+                recveivedInterest += getLedger(ledgerList, contract.BranchId, false);
+               // ransomTotal += getRansom(ransomList, contract.ContractId);
+               //add list
+               listDipslay.Add(display);
+            }
+            //để field hiển thị chung gắn vào phần từ đầu trong list
+            foreach(var x in listDipslay)
+            {
+                //add field hiển thị chung
+                x.totalProfit = totalProfit;
+                x.loanLedger= loanLedger;
+                x.fund= fund;
+                x.recveivedInterest= recveivedInterest;
+                x.ransomTotal= ransomTotal;
+                break;
+            }
+            //phân trang
+            if (numpage == 0)
+            {
+                return listDipslay;
+            }
+            var result = await TakePage(numpage, listDipslay);
+            return result;
+           
+        }
+         private async Task<IEnumerable<DisplayContractHomePage>> TakePage
+            (int number, IEnumerable<DisplayContractHomePage> list)
+        {
+            var numPage = (int)NumberPage.numPage;
+            var skip = (numPage * number) - numPage;
+            return list.Skip(skip).Take(numPage);
+        }
+        private decimal getRansom(IEnumerable<Ransom> ransomList, int contractId)
+        {
+            var ransomIenumerable= from r in ransomList where r.ContractId== contractId select r;   
+            var ransom= ransomIenumerable.FirstOrDefault();
+            return ransom.TotalPay;
+        }
+
+        private decimal getLedger(IEnumerable<Ledger> ledgerList, int branchId, bool v)
+        {
+            var ledgerIenumerable= from l in ledgerList where l.BranchId== branchId select l;
+            var ledger=ledgerIenumerable.FirstOrDefault();
+            // true => get loan, false => get receiveInterest (lãi đã nhận)
+            if (v)
+                return ledger.Loan;
+            else
+                return ledger.RecveivedInterest;
+        }
+
+        private string getBranchName(int branchId, IEnumerable<Branch> branchList,bool v)
+        {
+            var branchIenumerable= from b in branchList where b.BranchId == branchId select b;
+            var branch = branchIenumerable.FirstOrDefault();
+            // true => get branch Name, false => get fund
+            if (v)
+                return branch.BranchName;
+            else
+                return branch.Fund.ToString();
+        }
+
+        private string getAsset(int contractAssetId, IEnumerable<ContractAsset> assetList, 
+            IEnumerable<PawnableProduct> pawnableList,IEnumerable<Warehouse> warehouseList, int num)
+        {
+            //get list contract asset
+            var assetIenumerable= from a in assetList where a.ContractAssetId== contractAssetId select a;
+            var asset = assetIenumerable.FirstOrDefault();
+            // 1 => get code Asset, 2 => get name Asset, 3 => get ware name
+            switch (num) {
+                case 1:
+                    var pawnableIenumerable = from p in pawnableList where
+                                          p.PawnableProductId == asset.PawnableProductId select p;
+                    var pawnable= pawnableIenumerable.FirstOrDefault();
+                    return pawnable.CommodityCode;
+
+                case 2:
+                    return asset.ContractAssetName;
+
+                case 3:
+                    var wareIenumerable = from w in warehouseList where w.WarehouseId == asset.WarehouseId select w;
+                    var wareHouse=wareIenumerable.FirstOrDefault();
+                    return wareHouse.WarehouseName;
+            }
+            return null;
+        }
+
+        private string getCustomerName(IEnumerable<Customer> customerList, Guid customerId)
+        {
+           var customerIenumerable= from c in customerList where c.CustomerId== customerId select c;
+            var customer = customerIenumerable.FirstOrDefault();
+            return customer.FullName;
         }
 
         public async Task<Contract> CreateContract(Contract contract)
