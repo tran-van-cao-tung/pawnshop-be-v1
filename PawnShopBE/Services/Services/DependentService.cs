@@ -28,9 +28,12 @@ namespace Services.Services
             {
                 await _unit.DependentPeople.Add(dependent);
                 var result = _unit.Save();
-                if (await plusPoint(dependent))
+                if (result > 0)
                 {
-                    return true;
+                    if (await plusPoint(dependent))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;

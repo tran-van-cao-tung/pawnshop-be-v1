@@ -8,7 +8,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/ramsom")]
     [ApiController]
     public class RansomController : ControllerBase
     {
@@ -21,6 +21,16 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("ransom")]
+        public async Task<IActionResult> GetAllRansom()
+        {
+            var respone = await _ranSomeservices.GetRansom();
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
         //[HttpPut("ransomeBeforeEndDate/{id}")]
         //public async Task<IActionResult> RansomeBeforeEndDate(PawnableDTO request)
         //{

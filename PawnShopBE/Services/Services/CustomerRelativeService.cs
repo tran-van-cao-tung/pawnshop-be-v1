@@ -29,13 +29,12 @@ namespace Services.Services
             {
                 await _unitOfWork.CustomersRelativeRelationships.Add(customerRelative);
                 var result = _unitOfWork.Save();
-                if (await plusPoint(customerRelative))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
+                if (result > 0) 
+                { 
+                  if (await plusPoint(customerRelative))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
