@@ -1,5 +1,6 @@
-﻿using Google.Protobuf.WellKnownTypes;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper.Execution;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.EntityFrameworkCore.Scaffolding;
 using PawnShopBE.Core.Const;
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
@@ -10,24 +11,32 @@ using PawnShopBE.Infrastructure.Repositories;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Excel = Microsoft.Office.Interop.Excel;
 namespace Services.Services
 {
     public class ContractService : IContractService
     {
         public IUnitOfWork _unitOfWork;
-        public IContractAssetService _iContractAssetService;
         public IPackageService _iPackageService;
         public IInteresDiaryService _iInterestDiaryService;
         public IContractRepository _iContractRepository;
-        private DbContextClass _dbContextClass;
         private IServiceProvider _serviceProvider;
+        //interface xài cho api homepage
+        private ILedgerService _ledger;
+        private IContractAssetService _iContractAssetService;
+        private IBranchService _branch;
+        private IRansomService _ransom;
+        private ICustomerService _customer;
+        private IPawnableProductService _pawnable;
+        private IWareHouseService _wareHouse;
         public ContractService(IUnitOfWork unitOfWork, IContractRepository iContractRepository,
             IContractAssetService contractAssetService, IPackageService packageService,
-            IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider, DbContextClass dbContextClass)
+            IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider,
+            ILedgerService ledger, IPawnableProductService pawnable, IWareHouseService wareHouse)
         {
             _unitOfWork = unitOfWork;
             _iContractRepository = iContractRepository;
@@ -35,7 +44,244 @@ namespace Services.Services
             _iPackageService = packageService;
             _iInterestDiaryService = interesDiaryService;
             _serviceProvider = serviceProvider;
-            _dbContextClass = dbContextClass;
+            _ledger = ledger;
+            _pawnable = pawnable;
+            _wareHouse = wareHouse;
+           
+        }
+        private void getParameter()
+        {
+            _branch = _serviceProvider.GetService(typeof(IBranchService)) as IBranchService;
+            _ransom = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
+            _customer = _serviceProvider.GetService(typeof(ICustomerService)) as ICustomerService;
+        }
+        public async Task exporteExcel()
+        {
+            var listContract = await getAllContractHomepage(0);
+            //set cấu hình excel
+            Excel.Application exApp = new Excel.Application();
+            Excel.Workbook exBook = exApp.Workbooks.Add(Excel.XlWBATemplate.xlWBATWorksheet);
+            Excel.Worksheet exSheet = (Excel.Worksheet)exBook.Worksheets[1];
+            //setting content title
+            exSheet.Range["E1"].Font.Size = 20;
+            exSheet.Range["E1"].Font.Bold = true;
+            exSheet.Range["E1"].Font.Color = Color.Red;
+            exSheet.Range["E1"].Value = "HỢP ĐỒNG CẦM ĐỒ";
+            //setting thông tin chung
+            exSheet.Range["A3:J3"].Font.Size = 16;
+            exSheet.Range["A3:J3"].Font.Bold = true;
+            exSheet.Range["A3:J3"].Font.Color = Color.DeepSkyBlue;
+            exSheet.Range["A3:J3"].Font.Background = Color.Gray;
+            exSheet.Range["A3"].Value = "#";
+            exSheet.Range["B3"].Value = "Mã HĐ";
+            exSheet.Range["C3"].Value = "Khách Hàng";
+            exSheet.Range["D3"].Value = "Mã TS";
+            exSheet.Range["E3"].Value = "Tài Sản";
+            exSheet.Range["F3"].Value = "Tiền Cầm";
+            exSheet.Range["G3"].Value = "Ngày Cầm";
+            exSheet.Range["H3"].Value = "Ngày Đến Hạn";
+            exSheet.Range["I3"].Value = "Kho";
+            exSheet.Range["J3"].Value = "Tình Trạng";
+            //Setting column width
+            //exSheet.Range["B3"].ColumnWidth = 9;
+            //exSheet.Range["C3"].ColumnWidth = 16;
+            //exSheet.Range["A3"].ColumnWidth = 2;
+            //exSheet.Range["D3"].ColumnWidth = 9;
+            //exSheet.Range["E3"].ColumnWidth = 15;
+            //exSheet.Range["F3"].ColumnWidth = 12;
+            //exSheet.Range["G3"].ColumnWidth = 13;
+            //exSheet.Range["H3"].ColumnWidth = 18;
+            //exSheet.Range["I3"].ColumnWidth = 6;
+            //exSheet.Range["J3"].ColumnWidth = 14;
+            //--------
+            exSheet.Range["B3"].Columns.AutoFit();
+            exSheet.Range["C3"].Columns.AutoFit();
+            exSheet.Range["A3"].Columns.AutoFit();
+            exSheet.Range["E3"].Columns.AutoFit();
+            exSheet.Range["F3"].Columns.AutoFit();
+            exSheet.Range["G3"].Columns.AutoFit();
+            exSheet.Range["H3"].Columns.AutoFit();
+            exSheet.Range["J3"].Columns.AutoFit();
+            exSheet.Range["I3"].Columns.AutoFit();
+            //setting nội dung từng contract
+            int number = 1;
+            foreach (var x in listContract)
+            {
+                int i = 4;
+                exSheet.Range["A" + i.ToString() + ":J" + i.ToString()].Font.Size = 12;
+                exSheet.Range["A" + i.ToString()].Value = number.ToString();
+                exSheet.Range["B" + i.ToString()].Value = x.contractCode;
+                exSheet.Range["C" + i.ToString()].Value = x.customerName;
+                exSheet.Range["D" + i.ToString()].Value = x.assestCode;
+                exSheet.Range["E" + i.ToString()].Value = x.assetName;
+                exSheet.Range["F" + i.ToString()].Value = x.loanContract.ToString();
+                exSheet.Range["G" + i.ToString()].Value = x.startDate.ToString();
+                exSheet.Range["H" + i.ToString()].Value = x.endDate.ToString();
+                exSheet.Range["I" + i.ToString()].Value = x.wareName;
+                exSheet.Range["J" + i.ToString()].Value = getStatusContract(x.status);
+                i++;
+                number++;
+            }
+            exSheet.Name = "Report";
+            exApp.Visible = true;
+            exBook.Activate();
+            //save Excel
+            exBook.SaveAs("C:\\file.xls", Excel.XlFileFormat.xlWorkbookNormal,
+                null, null, false, false,
+                Excel.XlSaveAsAccessMode.xlExclusive,
+                false, false, false, false, false);
+            exApp.Quit();
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(exBook);
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(exApp);
+        }
+
+        private string getStatusContract(int status)
+        {
+            switch(status)
+            {
+                case 1:
+                    return ContractConst.IN_PROGRESS.ToString();
+                case 2:
+                    return ContractConst.OVER_DUE.ToString();
+                case 3:
+                    return ContractConst.LIQUIDATION.ToString();
+                case 4:
+                    return ContractConst.CLOSE.ToString();
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<DisplayContractHomePage>> getAllContractHomepage(int numpage)
+        {
+            getParameter();
+            //get all List
+            var branchList = await _branch.GetAllBranch(0);
+            var customerList = await _customer.GetAllCustomer(0);
+            var ledgerList = await _ledger.GetLedger();
+            var assetList = await _iContractAssetService.GetAllContractAssets();
+            var contractList = await GetAllContracts(0);
+            var pawnableList = await _pawnable.GetAllPawnableProducts(0);
+            var wareHouseList = await _wareHouse.GetWareHouse(0);
+            var ransomList=await _ransom.GetRansom();
+            // khai báo filed hiển thị chung 
+            decimal fund = 0;
+            decimal loanLedger = 0;
+            decimal recveivedInterest = 0;
+            decimal totalProfit = 0;
+            decimal ransomTotal = 0;
+            //get displayHomePage
+            List<DisplayContractHomePage> listDipslay = new List<DisplayContractHomePage>();
+            DisplayContractHomePage display = new DisplayContractHomePage();
+            foreach (var contract in contractList)
+            {
+                var contractId = contract.ContractId;
+                display.contractCode = contract.ContractCode;
+                display.customerName = getCustomerName(customerList, contract.CustomerId);
+                display.assestCode = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 1);
+                display.assetName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 2);
+                display.loanContract = contract.Loan;
+                display.startDate = contract.ContractStartDate;
+                display.endDate = contract.ContractEndDate;
+                display.wareName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 3);
+                display.status = contract.Status;
+                //get field hiển thị chung
+                if (fund == 0)
+                {
+                    fund = decimal.Parse(getBranchName(contract.BranchId, branchList, false));
+                }
+                totalProfit += contract.TotalProfit;
+                loanLedger += getLedger(ledgerList, contract.BranchId, true);
+                recveivedInterest += getLedger(ledgerList, contract.BranchId, false);
+                ransomTotal += getRansom(ransomList, contract.ContractId);
+                //add list
+                listDipslay.Add(display);
+            }
+            //để field hiển thị chung gắn vào phần từ đầu trong list
+            foreach (var x in listDipslay)
+            {
+                //add field hiển thị chung
+                x.totalProfit = totalProfit;
+                x.loanLedger = loanLedger;
+                x.fund = fund;
+                x.recveivedInterest = recveivedInterest;
+                x.ransomTotal = ransomTotal;
+                break;
+            }
+            //phân trang
+            if (numpage == 0)
+            {
+                return listDipslay;
+            }
+            var result = await TakePage(numpage, listDipslay);
+            return result;
+
+        }
+        private async Task<IEnumerable<DisplayContractHomePage>> TakePage
+            (int number, IEnumerable<DisplayContractHomePage> list)
+        {
+            var numPage = (int)NumberPage.numPage;
+            var skip = (numPage * number) - numPage;
+            return list.Skip(skip).Take(numPage);
+        }
+        private decimal getRansom(IEnumerable<Ransom> ransomList, int contractId)
+        {
+            var ransomIenumerable= from r in ransomList where r.ContractId== contractId select r;   
+            var ransom= ransomIenumerable.FirstOrDefault();
+            return ransom.TotalPay;
+        }
+
+        private decimal getLedger(IEnumerable<Ledger> ledgerList, int branchId, bool v)
+        {
+            var ledgerIenumerable= from l in ledgerList where l.BranchId== branchId select l;
+            var ledger=ledgerIenumerable.FirstOrDefault();
+            // true => get loan, false => get receiveInterest (lãi đã nhận)
+            if (v)
+                return ledger.Loan;
+            else
+                return ledger.RecveivedInterest;
+        }
+
+        private string getBranchName(int branchId, IEnumerable<Branch> branchList,bool v)
+        {
+            var branchIenumerable= from b in branchList where b.BranchId == branchId select b;
+            var branch = branchIenumerable.FirstOrDefault();
+            // true => get branch Name, false => get fund
+            if (v)
+                return branch.BranchName;
+            else
+                return branch.Fund.ToString();
+        }
+
+        private string getAsset(int contractAssetId, IEnumerable<ContractAsset> assetList, 
+            IEnumerable<PawnableProduct> pawnableList,IEnumerable<Warehouse> warehouseList, int num)
+        {
+            //get list contract asset
+            var assetIenumerable= from a in assetList where a.ContractAssetId== contractAssetId select a;
+            var asset = assetIenumerable.FirstOrDefault();
+            // 1 => get code Asset, 2 => get name Asset, 3 => get ware name
+            switch (num) {
+                case 1:
+                    var pawnableIenumerable = from p in pawnableList where
+                                          p.PawnableProductId == asset.PawnableProductId select p;
+                    var pawnable= pawnableIenumerable.FirstOrDefault();
+                    return pawnable.CommodityCode;
+
+                case 2:
+                    return asset.ContractAssetName;
+
+                case 3:
+                    var wareIenumerable = from w in warehouseList where w.WarehouseId == asset.WarehouseId select w;
+                    var wareHouse=wareIenumerable.FirstOrDefault();
+                    return wareHouse.WarehouseName;
+            }
+            return null;
+        }
+
+        private string getCustomerName(IEnumerable<Customer> customerList, Guid customerId)
+        {
+           var customerIenumerable= from c in customerList where c.CustomerId== customerId select c;
+            var customer = customerIenumerable.FirstOrDefault();
+            return customer.FullName;
         }
 
         public async Task<bool> CreateContract(Contract contract)
@@ -384,5 +630,4 @@ namespace Services.Services
             return null;
         }
     }
-}
 
