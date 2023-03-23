@@ -45,14 +45,9 @@ namespace PawnShopBE.Controllers
         [HttpGet("contract/excel")]
         public async Task<IActionResult> exportFileExcel()
         {
-            var respone = await _contractService.exporteExcel();
-            if (respone)
-            {
-                return Ok("Xuất File Excel Success");
-            }
-            return BadRequest();
+            await _contractService.exporteExcel();
+            return Ok();
         }
-
         [HttpGet("contract/homepage/{numPage}")]
         public async Task<IActionResult> GetAllContractHomePage(int numPage)
         {
