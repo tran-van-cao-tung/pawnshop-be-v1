@@ -1,4 +1,7 @@
-﻿using PawnShopBE.Core.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PawnShopBE.Core.Const;
+using PawnShopBE.Core.Display;
+using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using PawnShopBE.Infrastructure.Helpers;
 using System;
@@ -15,6 +18,13 @@ namespace PawnShopBE.Infrastructure.Repositories
         public ContractRepository(DbContextClass dbContext) : base(dbContext)
         {
             _dbContextClass = dbContext;
+        }
+
+        public async Task<List<DisplayContractList>> displayContractListTakePage(int number, List<DisplayContractList> list)
+        {
+            var numPage = (int)NumberPage.numPage;
+            var skip = (numPage * number) - numPage;
+            return list.Skip(skip).Take(numPage).ToList();          
         }
 
         public async Task<Contract> getContractByContractCode(string contractCode)
