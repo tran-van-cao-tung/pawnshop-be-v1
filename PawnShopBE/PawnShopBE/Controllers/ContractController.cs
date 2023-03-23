@@ -42,16 +42,12 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
         private Validation<ContractDTO> _validation=new Validation<ContractDTO>();
-        //[HttpGet("contract/excel")]
-        //public async Task<IActionResult> exportFileExcel()
-        //{
-            
-        //    if (listContracts == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return Ok(listContracts);
-        //}
+        [HttpGet("contract/excel")]
+        public async Task<IActionResult> exportFileExcel()
+        {
+            await _contractService.exporteExcel();
+            return Ok();
+        }
         [HttpGet("contract/homepage/{numPage}")]
         public async Task<IActionResult> GetAllContractHomePage(int numPage)
         {
