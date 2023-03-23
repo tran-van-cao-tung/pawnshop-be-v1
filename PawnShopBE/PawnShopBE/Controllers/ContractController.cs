@@ -43,6 +43,27 @@ namespace PawnShopBE.Controllers
         }
         private Validation<ContractDTO> _validation=new Validation<ContractDTO>();
        
+        //[HttpGet("contract/excel")]
+        //public async Task<IActionResult> exportFileExcel()
+        //{
+            
+        //    if (listContracts == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return Ok(listContracts);
+        //}
+        [HttpGet("contract/homepage/{numPage}")]
+        public async Task<IActionResult> GetAllContractHomePage(int numPage)
+        {
+            var listContracts = await _contractService.getAllContractHomepage(numPage);
+            if (listContracts == null)
+            {
+                return NotFound();
+            }
+            return Ok(listContracts);
+        }
+
         [HttpPost("createContract")]
         public async Task<IActionResult> CreateContract(ContractDTO request)
         {

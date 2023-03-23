@@ -25,6 +25,11 @@ namespace Services.Services
             _package = package;
             _customer = customer;
         }
+        public async Task<IEnumerable<Ransom>> GetRansom()
+        {
+            var result = await _unitOfWork.Ransoms.GetAll();
+            return result;
+        }
         public async Task<bool> CreateRansom(Contract contract)
         {
             if (contract != null)
