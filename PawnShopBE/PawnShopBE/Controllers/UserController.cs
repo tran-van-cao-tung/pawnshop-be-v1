@@ -10,7 +10,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/user")]
+    [Route("api/v1")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -21,7 +21,7 @@ namespace PawnShopBE.Controllers
             _userService = userService;
             _mapper = mapper;
         }
-        [HttpPost("recoverPassword")]
+        [HttpPost("user/recoverPassword")]
         public async Task<IActionResult> recoverPass(UserDTO user)
         {
             var respone = await _userService.sendEmail(user);
@@ -34,7 +34,7 @@ namespace PawnShopBE.Controllers
         private Validation<UserDTO> _validation=new Validation<UserDTO>();
        
         [Authorize]
-        [HttpPost("createUser")]
+        [HttpPost("user")]
         public async Task<IActionResult> CreateUser(UserDTO request)
         {
             //Check Validation
@@ -56,7 +56,7 @@ namespace PawnShopBE.Controllers
             }
         }
         [Authorize]
-        [HttpGet("getAll/{numPage}")]
+        [HttpGet("user/{numPage}")]
         public async Task<IActionResult> getUserList(int numPage)
         {
             var userList = await _userService.GetAllUsers(numPage);
@@ -67,7 +67,7 @@ namespace PawnShopBE.Controllers
             return Ok(userList);
         }
 
-        [HttpGet("getUserById/{userId:guid}")]
+        [HttpGet("user/{id:guid}")]
         public async Task<IActionResult> GetUserById(Guid userId)
         {
             var user = await _userService.GetUserById(userId);
@@ -82,7 +82,7 @@ namespace PawnShopBE.Controllers
             }
         }
         [Authorize]
-        [HttpPut("updateUser/{userId:guid}")]
+        [HttpPut("user/{id:guid}")]
         public async Task<IActionResult> UpdateUser(Guid id, UserDTO request)
         {
           
@@ -102,7 +102,7 @@ namespace PawnShopBE.Controllers
             }
         }
         [Authorize]
-        [HttpDelete("deleteUser/{userId:guid}")]
+        [HttpDelete("user/{id:guid}")]
         public async Task<IActionResult> DeleteUser(Guid userId)
         {
             var isUserCreated = await _userService.DeleteUser(userId);

@@ -11,7 +11,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/customer")]
+    [Route("api/v1")]
     [ApiController]
     public class CustomerController : ControllerBase
     {
@@ -23,7 +23,7 @@ namespace PawnShopBE.Controllers
             _customer = customer;
             _mapper = mapper;
         }
-        [HttpGet("getRelative/{id}")]
+        [HttpGet("customer/getRelative/{id}")]
         public async Task<IActionResult> getCustomerRelative(Guid id)
         {
             var respone= await _customer.getRelative(id);
@@ -34,7 +34,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPost("createRelative/{id}")]
+        [HttpPost("customer/createRelative/{id}")]
         public async Task<IActionResult> createCustomerRelative(Guid id, Relative_Job_DependentDTO customer)
         {
             var respone = await _customer.createRelative(id,customer);
@@ -45,8 +45,8 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
         private Validation<CustomerDTO> _validation=new Validation<CustomerDTO>();
-
-        [HttpPost("createCustomer")]
+      
+        [HttpPost("customer")]
         public async Task<IActionResult> CreateCustomer(CustomerDTO customer)
         {
           //  Check Validation
@@ -67,7 +67,7 @@ namespace PawnShopBE.Controllers
             return BadRequest(respone);
         }
 
-        [HttpGet("getAll/{numPage}")]
+        [HttpGet("customer/activelist/{numPage}")]
         public async Task<IActionResult> GetAllCustomers(int numPage)
         {
             var listCustomer = await _customer.GetAllCustomer(numPage);
@@ -80,7 +80,7 @@ namespace PawnShopBE.Controllers
             }
             return NotFound();
         }
-        [HttpGet("getAllBlackList/{numPage}")]
+        [HttpGet("customer/blacklist/{numPage}")]
         public async Task<IActionResult> GetAllCustomersBlackList(int numPage)
         {
             var listCustomer = await _customer.GetAllCustomer(numPage);
@@ -94,7 +94,7 @@ namespace PawnShopBE.Controllers
             return NotFound();
         }
 
-        [HttpGet("getById/{id}")]
+        [HttpGet("customer/{id}")]
         public async Task<IActionResult> GetCustomerById(Guid id)
         {
             var customer= await _customer.GetCustomerById(id);
@@ -105,7 +105,7 @@ namespace PawnShopBE.Controllers
             return Ok(customer);
         }
 
-        [HttpDelete("deleteCustomer/{id}")]
+        [HttpDelete("customer/{id}")]
         public async Task<IActionResult> DeleteCustomer(Guid id)
         {
             var listCustomer=await _customer.DeleteCustomer(id);
@@ -116,7 +116,7 @@ namespace PawnShopBE.Controllers
             return Ok(listCustomer);
         }
 
-        [HttpPut("updateCustomer/{id}")]
+        [HttpPut("customer/{id}")]
         public async Task<IActionResult> UpdateCustomer(Guid id, Customer customer)
         {
             if (customer != null)
@@ -131,7 +131,7 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
         }
 
-        [HttpGet("getByCCCD/{cccd}")]
+        [HttpGet("customer/cccd/{cccd}")]
         public async Task<IActionResult> GetCustomerByCCCD(string cccd)
         {
             var customer = await _customer.getCustomerByCCCD(cccd);
@@ -139,7 +139,7 @@ namespace PawnShopBE.Controllers
             {
                 return NotFound();
             }
-            return Ok(customer);
+            return Ok();
         }
     }
 }

@@ -22,7 +22,14 @@ namespace PawnShopBE.Helpers
             // Mapping from Customer to Contract
             CreateMap<Contract, Customer>().
                 ForMember(customer => customer.CustomerId,
-                contract => contract.MapFrom(src => src.CustomerId));        
+                contract => contract.MapFrom(src => src.CustomerId));
+
+            // Mapping from ContractDTO to CustomerDTO
+            CreateMap<ContractDTO, CustomerDTO>()
+                .ForMember(
+                dest => dest.CCCD,
+                opt => opt.MapFrom(src => src.CCCD));
+
             // Mapping from CustomerDTO to Customer
             CreateMap<CustomerDTO, Customer>()
                 .ForMember(

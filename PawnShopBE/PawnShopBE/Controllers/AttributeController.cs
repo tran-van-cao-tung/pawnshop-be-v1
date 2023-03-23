@@ -7,7 +7,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/attribute")]
+    [Route("api/v1")]
     [ApiController]
     public class AttributeController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("getById/{id}")]
+        [HttpGet("attribute/{id}")]
         public async Task<IActionResult> GetAttributesById(int id)
         {
             var attributes = await _attributeService.GetAttributeByPawnableId(id);

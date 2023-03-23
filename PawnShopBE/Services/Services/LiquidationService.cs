@@ -23,7 +23,6 @@ namespace Services.Services
         {
             if (liquidtation != null)
             {
-                liquidtation.liquidationDate = DateTime.Now;
                 await _unit.Liquidations.Add(liquidtation);
                 var result = _unit.Save();
                 if (result > 0)

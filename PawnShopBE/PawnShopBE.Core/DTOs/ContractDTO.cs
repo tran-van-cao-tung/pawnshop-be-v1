@@ -1,7 +1,6 @@
 ﻿using PawnShopBE.Core.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -19,22 +18,42 @@ namespace PawnShopBE.Core.DTOs
         public int PawnableProductId { get; set; }
         public int ContractAssetId { get; }
         public int PackageId { get; set; }
-        [Required(ErrorMessage = "Tên tài sản không được để trống")]
-        [StringLength(50, MinimumLength = 6, ErrorMessage = "Tên tài sản phải dài từ 6 - 50 ký tự")]
-        public string ContractAssetName { get; set; }
-        [DefaultValue(0)]
-        [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
+       
+     //   public string ContractCode { get; set; }
+
+        //[Required(ErrorMessage = "Tên tài sản không được để trống")]
+        //[StringLength(50, MinimumLength = 6,  
+        //    ErrorMessage = "Tên tài sản phải dài từ 6 - 50 ký tự")]
+        public string? ContractAssetName { get; set; }
+
+       // [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
         public decimal InsuranceFee { get; set; }
+
         public decimal StorageFee { get; set; }
-        [DefaultValue(0)]
-        [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
+
+       // [Range(1000, 100000000, ErrorMessage = "Tiền nhập phải từ 1000 - 100Tr")]
         public decimal Loan { get; set; }
         public decimal TotalProfit { get; set; }
-        public string AssetImg { get; set; }
+
+        public string? AssetImg { get; set; }
+        public DateTime? ActualEndDate { get; set; }
         public ICollection<AttributeDTO>? PawnableAttributeDTOs { get; set; }
+
+        //[Required(ErrorMessage = "Căn cước công dân không được để trống")]
+       public string? CCCD { get; set; }
+        //[Phone(ErrorMessage = "Nhập đúng định dạng số điện thoại")]
+        //[StringLength(11, MinimumLength = 10,
+        //    ErrorMessage = "Số điện thoại phải từ 10-11 số")]
+       // public string CustomerPhoneNumber { get; set; }
+       // [Required(ErrorMessage = "Địa chỉ khách hàng không được để trống")]
+        //public string CustomerAddress { get; set; }
         public int InterestRecommend { get; set; }
         public string? Description { get; set; }
 
+        //[StringLength(50, MinimumLength = 6,
+        //    ErrorMessage = "Tên khách hàng phải dài từ 6 - 50 ký tự")]
+        //[Required(ErrorMessage = "Tên khách hàng không được để trống")]
+        //public string CustomerName { get; set; }
         public ContractDTO()
         {
             InsuranceFee = 0;
