@@ -8,7 +8,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/contractAsset")]
+    [Route("api/v1")]
     [ApiController]
     public class ContractAssetController : ControllerBase
     {
@@ -21,7 +21,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("contractAsset")]
         public async Task<IActionResult> GetAllContractAsset() {
             var respone =await _contractAssetService.GetAllContractAssets();
             if (respone != null)
@@ -32,7 +32,7 @@ namespace PawnShopBE.Controllers
         }
         private Validation<ContractAssetDTO> _validation=new Validation<ContractAssetDTO>();
         
-    [HttpPost("createContractAsset")]
+    [HttpPost("contractAsset")]
         public async Task<IActionResult> CreateContractAsset(ContractAssetDTO contractAsset)
         {
             //Check Validation
@@ -49,7 +49,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpDelete("deleteContractAsset/{id}")]
+        [HttpDelete("contractAsset/{id}")]
         public async Task<IActionResult> DeleteContractAsset(int id)
         {
             var respone = await _contractAssetService.DeleteContractAsset(id);
@@ -59,7 +59,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpPut("updateContractAsset/{id}")]
+        [HttpPut("contractAsset/{id}")]
         public async Task<IActionResult> UpdateContractAsset(int id,ContractAssetDTO contractAsset)
         {
             var contractAssetUpdate=_mapper.Map<ContractAsset>(contractAsset);

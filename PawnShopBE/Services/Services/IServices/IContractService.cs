@@ -10,21 +10,16 @@ namespace Services.Services.IServices
 {
     public interface IContractService
     {
-        Task<bool> CreateContract(Contract contract);
+        Task<Contract> CreateContract(Contract contract);
 
         Task<IEnumerable<Contract>> GetAllContracts(int num);
-
-        Task<ICollection<DisplayContractList>> GetAllDisplayContracts(int num);
-        Task<IEnumerable<Contract>> GetAllContracts();
         Task<Contract> GetContractById(int contractId);
-        Task<Contract> GetContractByContractCode(string contractCode);
         Task<DisplayContractDetail> GetContractDetail(int contractId);
         Task<bool> UpdateContract(string contractCode, Contract contract);
         Task<bool> DeleteContract(int contractId);
         Task<bool> UploadContractImg(int contractId, string customerImg, string contractImg);
-        Task exporteExcel();
-        Task<IEnumerable<DisplayContractHomePage>> getAllContractHomepage(int numpage);
-        Task<bool> CreateContractExpiration(int contractId);
+        Task<bool> exporteExcel();
+        Task<DisplayContractHomePage> getAllContractHomepage(int numpage);
 
     }
 }

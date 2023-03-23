@@ -7,7 +7,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/dependentPeople")]
+    [Route("api/v1")]
     [ApiController]
     public class DependentController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("dependent")]
         public async Task<IActionResult> GetAllDependent() {
             var respone =await _dependentService.GetDependent();
             if (respone != null)
@@ -31,7 +31,7 @@ namespace PawnShopBE.Controllers
         }
         private Validation<DependentPeopleDTO> _validation=new Validation<DependentPeopleDTO>();
        
-        [HttpPost("createDependentPeople")]
+        [HttpPost("dependent")]
         public async Task<IActionResult> CreateDependent(DependentPeopleDTO dependent)
         {
             //Check Validation
@@ -49,7 +49,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("deleteDependentPeople/{id}")]
+        [HttpDelete("dependent/{id}")]
         public async Task<IActionResult> DeleteDependent(Guid id)
         {
             var respone = await _dependentService.DeleteDependent(id);
@@ -60,7 +60,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("updateDependentPeople/{id}")]
+        [HttpPut("dependent/{id}")]
         public async Task<IActionResult> UpdateDependent(Guid id,DependentPeopleDTO dependent)
         {
             var dependentMapper=_mapper.Map<DependentPeople>(dependent);

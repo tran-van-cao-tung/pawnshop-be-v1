@@ -6,7 +6,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/package")]
+    [Route("api/v1")]
     [ApiController]
     public class PackageController : ControllerBase
     {
@@ -19,8 +19,8 @@ namespace PawnShopBE.Controllers
         }
 
 
-        [HttpGet("getPackageById/{id}")]
-        public async Task<IActionResult> GetPackageById(int packageId, int interestRecommend)
+        [HttpGet("package/{id}")]
+        public async Task<IActionResult> GetPackagehById(int packageId, int interestRecommend)
         {
             var package = await _packageService.GetPackageById(packageId, interestRecommend);
 
@@ -34,7 +34,7 @@ namespace PawnShopBE.Controllers
             }
         }
 
-        [HttpGet("getAll/{numPage}")]
+        [HttpGet("packages/{numPage}")]
         public async Task<IActionResult> GetAllPackages(int numPage)
         {
             var packageList = await _packageService.GetAllPackages(numPage);

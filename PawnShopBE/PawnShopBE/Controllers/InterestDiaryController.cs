@@ -6,7 +6,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/interestDiary")]
+    [Route("api/v1")]
     [ApiController]
     public class InterestDiaryController : ControllerBase
     {
@@ -19,7 +19,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("getInterestDiariesByContractId{contractId}")]
+        [HttpGet("interestDiaries{contractId}")]
         public async Task<IActionResult> GetInterestDiariesByContractId(int contractId)
         {
             var respone = await _interestDiaryService.GetInteresDiariesByContractId(contractId);
@@ -30,7 +30,19 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("deleteInterestDiary/{id}")]
+        //[HttpPost("interestDiary")]
+        //public async Task<IActionResult> CreateinterestDiary(InterestDiaryDTO diary)
+        //{
+        //    var diaryMapper = _mapper.Map<InterestDiary>(diary);
+        //    var respone = await _interestDiaryService.CreateInteresDiary(diaryMapper);
+        //    if (respone != null)
+        //    {
+        //        return Ok(respone);
+        //    }
+        //    return BadRequest();
+        //}
+
+        [HttpDelete("interestDiary/{id}")]
         public async Task<IActionResult> DeleteInterestDiary(int id)
         {
             var respone = await _interestDiaryService.DeleteInteresDiary(id);
@@ -41,7 +53,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("updateInterestDiary/{id}")]
+        [HttpPut("interestDiary/{id}")]
         public async Task<IActionResult> UpdateInterestDiary(int id, InterestDiaryDTO diary)
         {
             var diaryUpdate=_mapper.Map<InterestDiary>(diary);

@@ -7,7 +7,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/ledger")]
+    [Route("api/v1")]
     [ApiController]
     public class LedgerController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("ledger")]
         public async Task<IActionResult> GetAllLedger() {
             var respone =await _ledgerService.GetLedger();
             if (respone != null)
@@ -31,7 +31,7 @@ namespace PawnShopBE.Controllers
         }
         private Validation<LedgerDTO> _validation=new Validation<LedgerDTO>();
         
-    [HttpPost("createLedger")]
+    [HttpPost("ledger")]
         public async Task<IActionResult> CreateLedger(LedgerDTO ledger)
         {
             //Check Validation
@@ -49,7 +49,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("deleteLedger/{id}")]
+        [HttpDelete("ledger/{id}")]
         public async Task<IActionResult> DeleteLedger(int id)
         {
             var respone = await _ledgerService.DeleteLedger(id);
@@ -60,7 +60,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("updateLedger/{id}")]
+        [HttpPut("ledger/{id}")]
         public async Task<IActionResult> UpdateLedger(int id,LedgerDTO ledger)
         {
             var ledgerUpdate=_mapper.Map<Ledger>(ledger);

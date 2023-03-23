@@ -7,7 +7,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/customerRelative")]
+    [Route("api/v1")]
     [ApiController]
     public class CustomerRelativeController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("getAll")]
+        [HttpGet("customerRelative")]
         public async Task<IActionResult> GetAllCustomerRelative() {
             var respone =await _customerRelative.GetCustomerRelative();
             if (respone != null)
@@ -31,7 +31,7 @@ namespace PawnShopBE.Controllers
         }
         private Validation<CustomerRelativeDTO> _validation=new Validation<CustomerRelativeDTO>();
        
-    [HttpPost("createCustomerRelative")]
+    [HttpPost("customerRelative")]
         public async Task<IActionResult> CreateCustomerRelative(CustomerRelativeDTO customerRelative)
         {
             //Check Validation
@@ -49,7 +49,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("deleteCustomerRelative/{id}")]
+        [HttpDelete("customerRelative/{id}")]
         public async Task<IActionResult> DeleteCustomerRelative(Guid id)
         {
             var respone = await _customerRelative.DeleteCustomerRelative(id);
@@ -60,7 +60,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("updateCustomerRelative/{id}")]
+        [HttpPut("customerRelative/{id}")]
         public async Task<IActionResult> UpdateCustomerRelative(Guid id,CustomerRelativeDTO customerRelative)
         {
             var customerRelativeMapper = _mapper.Map<CustomerRelativeRelationship>(customerRelative);
