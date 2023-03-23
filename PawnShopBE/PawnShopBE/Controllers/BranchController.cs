@@ -11,7 +11,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/branch")]
     [ApiController]
     public class BranchController : ControllerBase
     {
@@ -25,15 +25,15 @@ namespace PawnShopBE.Controllers
         private Validation<BranchDTO> _validation=new Validation<BranchDTO>();
 
         [Authorize]
-        [HttpPost("branch")]
+        [HttpPost("CreateBranch")]
         public async Task<IActionResult> CreateBranch(BranchDTO request)
         {
             //Check Validation
-            //var checkValidation = await _validation.CheckValidation(request);
-            //if (checkValidation != null)
-            //{
-            //    return BadRequest(checkValidation);
-            //}
+            var checkValidation = await _validation.CheckValidation(request);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
             var branch = _mapper.Map<Branch>(request);
             var response = await _branchService.CreateBranch(branch);
 
@@ -46,7 +46,7 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-        [HttpGet("branch/detail/{id}")]
+        [HttpGet("getDetailById/{id}")]
         public async Task<IActionResult> GetBranchDetail(int id)
         {
             var branchList = await _branchService.GetBranchById(id);
@@ -58,7 +58,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpGet("branch/chain")]
+        [HttpGet("getChain")]
         public async Task<IActionResult> GetBranchChain()
         {
             var branchList = await _branchService.GetAllBranch(0);
@@ -70,7 +70,7 @@ namespace PawnShopBE.Controllers
             }
             return NotFound();
         }
-        [HttpGet("branch/list/{numPage}")]
+        [HttpGet("getAll/{numPage}")]
         public async Task<IActionResult> GetBranchList(int numPage)
         {
             var branchList = await _branchService.GetAllBranch(numPage);
@@ -81,7 +81,7 @@ namespace PawnShopBE.Controllers
             return Ok(branchList);
         }
 
-        [HttpGet("branch/{id}")]
+        [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetBranchById(int id)
         {
             var branch = await _branchService.GetBranchById(id);
@@ -96,7 +96,7 @@ namespace PawnShopBE.Controllers
             }
         }
 
-        [HttpPut("branch/{id}")]
+        [HttpPut("updateBranch/{id}")]
         public async Task<IActionResult> UpdateBranch(int id, BranchRequest request)
         {
             if (id != null)
@@ -111,10 +111,10 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
         [Authorize]
-        [HttpDelete("branch/{id}")]
-        public async Task<IActionResult> DeleteBranch(int branchId)
+        [HttpDelete("deleteBranch/{id}")]
+        public async Task<IActionResult> DeleteBranch(int id)
         {
-            var isBranchCreated = await _branchService.DeleteBranch(branchId);
+            var isBranchCreated = await _branchService.DeleteBranch(id);
 
             if (isBranchCreated)
             {
