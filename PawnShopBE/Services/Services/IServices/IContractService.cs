@@ -17,6 +17,7 @@ namespace Services.Services.IServices
         Task<ICollection<DisplayContractList>> GetAllDisplayContracts(int num);
         Task<IEnumerable<Contract>> GetAllContracts();
         Task<Contract> GetContractById(int contractId);
+        Task<Contract> GetContractByContractCode(string contractCode);
         Task<DisplayContractDetail> GetContractDetail(int contractId);
         Task<bool> UpdateContract(string contractCode, Contract contract);
         Task<bool> DeleteContract(int contractId);

@@ -12,7 +12,7 @@ using PawnShopBE.Core.Validation;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/contract")]
     [ApiController]
     public class ContractController : ControllerBase
     {
@@ -43,7 +43,7 @@ namespace PawnShopBE.Controllers
         }
         private Validation<ContractDTO> _validation=new Validation<ContractDTO>();
        
-        [HttpPost("contract")]
+        [HttpPost("createContract")]
         public async Task<IActionResult> CreateContract(ContractDTO request)
         {
             //Check Validation
@@ -71,7 +71,7 @@ namespace PawnShopBE.Controllers
 
         }
 
-        [HttpGet("contracts/{numPage}")]
+        [HttpGet("getAll/{numPage}")]
         public async Task<IActionResult> GetAllContracts(int numPage)
         {
             var listContracts = await _contractService.GetAllDisplayContracts(numPage);
@@ -82,7 +82,7 @@ namespace PawnShopBE.Controllers
             return Ok(listContracts);
         }
 
-        [HttpPut("contract/{contractCode}")]
+        [HttpPut("updateContract/{contractCode}")]
         public async Task<IActionResult> UpdateContract(string contractCode, ContractDTO request)
         {       
                 var contract = _mapper.Map<Contract>(request);
@@ -94,7 +94,7 @@ namespace PawnShopBE.Controllers
             return Ok();
         }
 
-        [HttpGet("contract/detail{id}")]
+        [HttpGet("getContractDetail{id}")]
         public async Task<IActionResult> GetContractDetail(int id)
         {
             var contractDetail = await _contractService.GetContractDetail(id);
@@ -105,7 +105,14 @@ namespace PawnShopBE.Controllers
             return Ok(contractDetail);
         }
 
-        [HttpPost("contract/{contractId}/{customerImg}/{contractImg}")]
+        [HttpGet("getByContractCode/{contractCode}")]
+        public async Task<IActionResult> GetContractByContractCode(string contractCode)
+        {
+            var contract = await _contractService.GetContractByContractCode(contractCode);
+            return (contract != null) ? Ok(contract) : NotFound();
+        }
+
+        [HttpPost("uploadContractImg/{contractId}/{customerImg}/{contractImg}")]
         public async Task<IActionResult> UploadContractImg(int contractId, string customerImg, string contractImg)
         {
             
@@ -115,6 +122,17 @@ namespace PawnShopBE.Controllers
             else
                 return BadRequest(uploadContract);
              
+        }
+
+        [HttpPost("createContractExpiration/{contractId}")]
+        public async Task<IActionResult> CreateContractExpiration(int contractId)
+        {
+            var contractExpiration = await _contractService.CreateContractExpiration(contractId);
+            if (contractExpiration != null)
+            {
+                return Ok(contractExpiration);
+            }
+            return BadRequest();
         }
     }
 }

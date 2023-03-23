@@ -351,9 +351,14 @@ namespace Services.Services
                     if (createContractresult > 0)
                     {
                         var ransomProvider = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
-                        var createRansom = await ransomProvider.CreateRansom(contract);
+                        await ransomProvider.CreateRansom(contract);
                         var interestProvider = _serviceProvider.GetService(typeof(IInteresDiaryService)) as IInteresDiaryService;
-                        var createInterestDiary = await interestProvider.CreateInterestDiary(contract);                      
+                        await interestProvider.CreateInterestDiary(contract);
+                        var oldContract = await _unitOfWork.Contracts.GetById(contractId);
+                        oldContract.Status = (int)ContractConst.CLOSE;
+                        oldContract.ActualEndDate = DateTime.Now;
+                        _unitOfWork.Contracts.Update(oldContract);
+                        _unitOfWork.Save();
                         return true;
                     }
                     //// If everything succeeded, commit the transaction
@@ -369,7 +374,15 @@ namespace Services.Services
             return false;
         }
 
-        
+        public async Task<Contract> GetContractByContractCode(string contractCode)
+        {
+            if (contractCode != null)
+            {
+                var contract = await _iContractRepository.getContractByContractCode(contractCode);
+                return contract;
+            }
+            return null;
+        }
     }
 }
 
