@@ -23,7 +23,7 @@ namespace Services.Services.IServices
         Task<bool> DeleteContract(int contractId);
         Task<bool> UploadContractImg(int contractId, string customerImg, string contractImg);
         Task exporteExcel();
-        Task<IEnumerable<DisplayContractHomePage>> getAllContractHomepage(int numpage);
+        Task<DisplayContractHomePage> getAllContractHomepage();
         Task<bool> CreateContractExpiration(int contractId);
 
     }

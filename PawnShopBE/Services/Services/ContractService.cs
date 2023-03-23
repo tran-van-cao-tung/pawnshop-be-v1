@@ -58,7 +58,7 @@ namespace Services.Services
         }
         public async Task exporteExcel()
         {
-            var listContract = await getAllContractHomepage(0);
+            var listContract = await GetAllDisplayContracts(0);
             //set cấu hình excel
             Excel.Application exApp = new Excel.Application();
             Excel.Workbook exBook = exApp.Workbooks.Add(Excel.XlWBATemplate.xlWBATWorksheet);
@@ -71,8 +71,8 @@ namespace Services.Services
             //setting thông tin chung
             exSheet.Range["A3:J3"].Font.Size = 16;
             exSheet.Range["A3:J3"].Font.Bold = true;
-            exSheet.Range["A3:J3"].Font.Color = Color.DeepSkyBlue;
-            exSheet.Range["A3:J3"].Font.Background = Color.Gray;
+            exSheet.Range["A3:J3"].Font.Color = Color.DarkBlue;
+            //exSheet.Range["A3:J3"].Font.Background = Color.Gray;
             exSheet.Range["A3"].Value = "#";
             exSheet.Range["B3"].Value = "Mã HĐ";
             exSheet.Range["C3"].Value = "Khách Hàng";
@@ -84,42 +84,42 @@ namespace Services.Services
             exSheet.Range["I3"].Value = "Kho";
             exSheet.Range["J3"].Value = "Tình Trạng";
             //Setting column width
-            //exSheet.Range["B3"].ColumnWidth = 9;
-            //exSheet.Range["C3"].ColumnWidth = 16;
-            //exSheet.Range["A3"].ColumnWidth = 2;
-            //exSheet.Range["D3"].ColumnWidth = 9;
-            //exSheet.Range["E3"].ColumnWidth = 15;
-            //exSheet.Range["F3"].ColumnWidth = 12;
-            //exSheet.Range["G3"].ColumnWidth = 13;
-            //exSheet.Range["H3"].ColumnWidth = 18;
-            //exSheet.Range["I3"].ColumnWidth = 6;
-            //exSheet.Range["J3"].ColumnWidth = 14;
+            exSheet.Range["B3"].ColumnWidth = 9;
+            exSheet.Range["C3"].ColumnWidth = 16;
+            exSheet.Range["A3"].ColumnWidth = 4;
+            exSheet.Range["D3"].ColumnWidth = 9;
+            exSheet.Range["E3"].ColumnWidth = 15;
+            exSheet.Range["F3"].ColumnWidth = 12;
+            exSheet.Range["G3"].ColumnWidth = 18;
+            exSheet.Range["H3"].ColumnWidth = 18;
+            exSheet.Range["I3"].ColumnWidth = 9;
+            exSheet.Range["J3"].ColumnWidth = 18;
             //--------
-            exSheet.Range["B3"].Columns.AutoFit();
-            exSheet.Range["C3"].Columns.AutoFit();
-            exSheet.Range["A3"].Columns.AutoFit();
-            exSheet.Range["E3"].Columns.AutoFit();
-            exSheet.Range["F3"].Columns.AutoFit();
-            exSheet.Range["G3"].Columns.AutoFit();
-            exSheet.Range["H3"].Columns.AutoFit();
-            exSheet.Range["J3"].Columns.AutoFit();
-            exSheet.Range["I3"].Columns.AutoFit();
+            //exSheet.Range["B3"].Columns.AutoFit();
+            //exSheet.Range["C3"].Columns.AutoFit();
+            //exSheet.Range["A3"].Columns.AutoFit();
+            //exSheet.Range["E3"].Columns.AutoFit();
+            //exSheet.Range["F3"].Columns.AutoFit();
+            //exSheet.Range["G3"].Columns.AutoFit();
+            //exSheet.Range["H3"].Columns.AutoFit();
+            //exSheet.Range["J3"].Columns.AutoFit();
+            //exSheet.Range["I3"].Columns.AutoFit();
             //setting nội dung từng contract
             int number = 1;
+            int i = 4;
             foreach (var x in listContract)
             {
-                int i = 4;
                 exSheet.Range["A" + i.ToString() + ":J" + i.ToString()].Font.Size = 12;
                 exSheet.Range["A" + i.ToString()].Value = number.ToString();
-                exSheet.Range["B" + i.ToString()].Value = x.contractCode;
-                exSheet.Range["C" + i.ToString()].Value = x.customerName;
-                exSheet.Range["D" + i.ToString()].Value = x.assestCode;
-                exSheet.Range["E" + i.ToString()].Value = x.assetName;
-                exSheet.Range["F" + i.ToString()].Value = x.loanContract.ToString();
-                exSheet.Range["G" + i.ToString()].Value = x.startDate.ToString();
-                exSheet.Range["H" + i.ToString()].Value = x.endDate.ToString();
-                exSheet.Range["I" + i.ToString()].Value = x.wareName;
-                exSheet.Range["J" + i.ToString()].Value = getStatusContract(x.status);
+                exSheet.Range["B" + i.ToString()].Value = x.ContractCode;
+                exSheet.Range["C" + i.ToString()].Value = x.CustomerName;
+                exSheet.Range["D" + i.ToString()].Value = x.CommodityCode;
+                exSheet.Range["E" + i.ToString()].Value = x.ContractAssetName;
+                exSheet.Range["F" + i.ToString()].Value = x.Loan.ToString();
+                exSheet.Range["G" + i.ToString()].Value = x.ContractStartDate.ToString();
+                exSheet.Range["H" + i.ToString()].Value = x.ContractEndDate.ToString();
+                exSheet.Range["I" + i.ToString()].Value = x.WarehouseName;
+                exSheet.Range["J" + i.ToString()].Value = getStatusContract(x.Status);
                 i++;
                 number++;
             }
@@ -127,10 +127,10 @@ namespace Services.Services
             exApp.Visible = true;
             exBook.Activate();
             //save Excel
-            exBook.SaveAs("C:\\file.xls", Excel.XlFileFormat.xlWorkbookNormal,
-                null, null, false, false,
-                Excel.XlSaveAsAccessMode.xlExclusive,
-                false, false, false, false, false);
+            //exBook.SaveAs("C:\\file.xls", Excel.XlFileFormat.xlWorkbookNormal,
+            //    null, null, false, false,
+            //    Excel.XlSaveAsAccessMode.xlExclusive,
+            //    false, false, false, false, false);
             exApp.Quit();
             System.Runtime.InteropServices.Marshal.ReleaseComObject(exBook);
             System.Runtime.InteropServices.Marshal.ReleaseComObject(exApp);
@@ -141,29 +141,29 @@ namespace Services.Services
             switch (status)
             {
                 case 1:
-                    return ContractConst.IN_PROGRESS.ToString();
+                    return "Đang Tiến Hành";
                 case 2:
-                    return ContractConst.OVER_DUE.ToString();
+                    return "Quá Hạn";
                 case 3:
-                    return ContractConst.LIQUIDATION.ToString();
+                    return "Thanh Lý";
                 case 4:
-                    return ContractConst.CLOSE.ToString();
+                    return "Đã Đóng";
             }
             return null;
         }
 
-        public async Task<IEnumerable<DisplayContractHomePage>> getAllContractHomepage(int numpage)
+        public async Task<DisplayContractHomePage> getAllContractHomepage()
         {
             getParameter();
             //get all List
             var branchList = await _branch.GetAllBranch(0);
-            var customerList = await _customer.GetAllCustomer(0);
             var ledgerList = await _ledger.GetLedger();
-            var assetList = await _iContractAssetService.GetAllContractAssets();
             var contractList = await GetAllContracts(0);
-            var pawnableList = await _pawnable.GetAllPawnableProducts(0);
-            var wareHouseList = await _wareHouse.GetWareHouse(0);
             var ransomList = await _ransom.GetRansom();
+            //var customerList = await _customer.GetAllCustomer(0);
+            //var assetList = await _iContractAssetService.GetAllContractAssets();
+            //var pawnableList = await _pawnable.GetAllPawnableProducts(0);
+            //var wareHouseList = await _wareHouse.GetWareHouse(0);
             // khai báo filed hiển thị chung 
             decimal fund = 0;
             decimal loanLedger = 0;
@@ -171,20 +171,19 @@ namespace Services.Services
             decimal totalProfit = 0;
             decimal ransomTotal = 0;
             //get displayHomePage
-            List<DisplayContractHomePage> listDipslay = new List<DisplayContractHomePage>();
-            DisplayContractHomePage display = new DisplayContractHomePage();
+           // List<DisplayContractHomePage> listDipslay = new List<DisplayContractHomePage>();
             foreach (var contract in contractList)
             {
                 var contractId = contract.ContractId;
-                display.contractCode = contract.ContractCode;
-                display.customerName = getCustomerName(customerList, contract.CustomerId);
-                display.assestCode = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 1);
-                display.assetName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 2);
-                display.loanContract = contract.Loan;
-                display.startDate = contract.ContractStartDate;
-                display.endDate = contract.ContractEndDate;
-                display.wareName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 3);
-                display.status = contract.Status;
+                //display.contractCode = contract.ContractCode;
+                //display.customerName = getCustomerName(customerList, contract.CustomerId);
+                //display.assestCode = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 1);
+                //display.assetName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 2);
+                //display.loanContract = contract.Loan;
+                //display.startDate = contract.ContractStartDate;
+                //display.endDate = contract.ContractEndDate;
+                //display.wareName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 3);
+                //display.status = contract.Status;
                 //get field hiển thị chung
                 if (fund == 0)
                 {
@@ -195,27 +194,17 @@ namespace Services.Services
                 recveivedInterest += getLedger(ledgerList, contract.BranchId, false);
                 ransomTotal += getRansom(ransomList, contract.ContractId);
                 //add list
-                listDipslay.Add(display);
+                //listDipslay.Add(display);
             }
-            //để field hiển thị chung gắn vào phần từ đầu trong list
-            foreach (var x in listDipslay)
-            {
+                DisplayContractHomePage x = new DisplayContractHomePage();
                 //add field hiển thị chung
                 x.totalProfit = totalProfit;
                 x.loanLedger = loanLedger;
                 x.fund = fund;
                 x.recveivedInterest = recveivedInterest;
                 x.ransomTotal = ransomTotal;
-                break;
-            }
-            //phân trang
-            if (numpage == 0)
-            {
-                return listDipslay;
-            }
-            var result = await TakePage(numpage, listDipslay);
-            return result;
-
+           
+                return x;
         }
         private async Task<IEnumerable<DisplayContractHomePage>> TakePage
             (int number, IEnumerable<DisplayContractHomePage> list)
