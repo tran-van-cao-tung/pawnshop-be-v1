@@ -110,10 +110,10 @@ namespace PawnShopBE.Controllers
             return Ok();
         }
 
-        [HttpGet("getContractDetail{id}")]
-        public async Task<IActionResult> GetContractDetail(int id)
+        [HttpGet("getContractDetail/{idContract}")]
+        public async Task<IActionResult> GetContractDetail(int idContract)
         {
-            var contractDetail = await _contractService.GetContractDetail(id);
+            var contractDetail = await _contractService.GetContractDetail(idContract);
             if (contractDetail == null)
             {
                 return NotFound();
