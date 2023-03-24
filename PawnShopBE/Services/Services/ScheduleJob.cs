@@ -32,7 +32,7 @@ namespace Services.Services
         }
         public async Task Execute(IJobExecutionContext context)
         {
-            // IN_PROGRESS turn into OVER_DUE contracts
+            // Contracts IN_PROGRESS turn into OVER_DUE 
             var overdueContracts = _contextClass.Contract
                         .Where(c => c.Status == (int) ContractConst.IN_PROGRESS && c.ContractEndDate < DateTime.Today)
                         .ToList();
@@ -40,9 +40,7 @@ namespace Services.Services
             {
                 contract.Status = (int)ContractConst.OVER_DUE;
             }
-            var diaries = _contextClass.InterestDiary
-                        .ToList().Count();
-
+         
             // Ransom on time
             var ramsomsOnTime = _contextClass.Ransom
                         .Where(r => r.Status == (int) RansomConsts.SOON && r.Contract.ContractEndDate == DateTime.Today)
@@ -129,8 +127,6 @@ namespace Services.Services
             //        // access the entity's properties               
             //    }
             //}
-
-
             var overdueDiaries = _contextClass.InterestDiary
                         .Where(d => d.Status == (int)InterestDiaryConsts.NOT_PAID && d.NextDueDate < DateTime.Today)
                         .ToList();

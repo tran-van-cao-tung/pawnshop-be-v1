@@ -165,6 +165,6 @@ namespace PawnShopBE.Controllers
                 return Ok(contractExpiration);
             }
             return BadRequest();
-        }
+        }      
     }
 }

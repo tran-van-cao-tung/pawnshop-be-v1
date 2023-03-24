@@ -30,7 +30,8 @@ namespace PawnShopBE.Core.Display
         public DateTime ContractStartDate { get; set; }
         public int PackageInterest { get; set; }
         public int InterestRecommend { get; set; }
+        public decimal TotalProfit { get; set; }
+        public decimal TotalRecived { get; set; }
         public string WarehouseName { get; set; }
-
     }
 }

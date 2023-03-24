@@ -5,6 +5,7 @@ using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
 using Services.Services;
 using Services.Services.IServices;
+using System.Threading.Tasks;
 
 namespace PawnShopBE.Controllers
 {
@@ -31,20 +32,17 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        //[HttpPut("ransomeBeforeEndDate/{id}")]
-        //public async Task<IActionResult> RansomeBeforeEndDate(PawnableDTO request)
-        //{
+        [HttpGet("ransombyid/{contractId}")]
+        public async Task<IActionResult> ransombyContractId(int contractId)
+        {
 
-        //    var pawnableProduct = _mapper.Map<PawnableProduct>(request);
-        //    pawnableProduct.PawnableProductId = id;
+            var response = await _ranSomeservices.GetRansomByContractId(contractId);
+            if (response!= null)
+            {
+                return Ok(response);
+            }
 
-        //    var response = await _ranSomeservices.(pawnableProduct);
-        //    if (response)
-        //    {
-        //        return Ok(response);
-        //    }
-
-        //    return BadRequest();
-        //}
+            return BadRequest();
+        }
     }
 }
