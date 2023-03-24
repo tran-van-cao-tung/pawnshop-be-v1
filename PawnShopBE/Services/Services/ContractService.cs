@@ -11,10 +11,12 @@ using PawnShopBE.Infrastructure.Repositories;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Contract = PawnShopBE.Core.Models.Contract;
 using Excel = Microsoft.Office.Interop.Excel;
 namespace Services.Services
 {
@@ -288,20 +290,15 @@ namespace Services.Services
                     count = contractList.Count();
                 }
                 contract.ContractCode = "CĐ-" + (count + 1).ToString();
-                var package = await _iPackageService.GetPackageById(contract.PackageId, contract.InterestRecommend);
+                var package = await _iPackageService.GetPackageById(contract.PackageId);
 
                 if (package != null)
                 {
                     var fee = contract.InsuranceFee + contract.StorageFee;
                     var period = package.Day / package.PaymentPeriod;
-                    double interest = 0;
 
                     // Use recommend interest if input
-                    if (contract.InterestRecommend != 0)
-                    {
-                        interest = contract.InterestRecommend * 0.01;
-                    }
-                    interest = package.PackageInterest * 0.01;
+                    double interest = (contract.InterestRecommend != 0) ? contract.InterestRecommend * 0.01 : package.PackageInterest * 0.01;                
                     contract.TotalProfit = (contract.Loan * (decimal)interest) + (fee * period);
                 }
                 contract.ContractStartDate = DateTime.Now;
@@ -370,11 +367,6 @@ namespace Services.Services
         public async Task<ICollection<DisplayContractList>> GetAllDisplayContracts(int num)
         {
             var contractList = await _unitOfWork.Contracts.GetAll();
-            //var contractJoinCustomerAndAsset = _dbContextClass.Contract
-            //    .Include(c => c.Customer)
-            //    .Include(c => c.ContractAsset)
-            //    .ToListAsync();
-
             var contractJoinCustomerJoinAsset = from contract in _dbContextClass.Contract
                                                 join customer in _dbContextClass.Customer
                                                 on contract.CustomerId equals customer.CustomerId
@@ -444,48 +436,21 @@ namespace Services.Services
             return null;
         }
 
-        public async Task<bool> UpdateContract(string contractCode, Contract contract)
+        public async Task<bool> UpdateContract(int contractId, Contract contract)
         {
             if (contract != null)
             {
-                var contractUpdate = await _iContractRepository.getContractByContractCode(contractCode);
+                var contractUpdate = await _unitOfWork.Contracts.GetById(contractId);
                 if (contractUpdate.ContractId == contract.ContractId)
                 {
                     // Update Asset
                     if (contract.ContractAsset != null)
                     {
                         var assetUpdate = await _iContractAssetService.UpdateContractAsset(contract.ContractAsset);
-                        if (assetUpdate == false)
-                        {
-                            return false;
-                        }
                     }
-
-                    contractUpdate.StorageFee = contract.StorageFee;
-                    contractUpdate.InsuranceFee = contract.InsuranceFee;
-                    contractUpdate.Loan = contract.Loan;
+                    contractUpdate.CustomerVerifyImg = contract.CustomerVerifyImg;
                     contractUpdate.ContractVerifyImg = contract.ContractVerifyImg;
-                    contractUpdate.ActualEndDate = contract.ActualEndDate;
                     contractUpdate.UpdateDate = DateTime.Now;
-
-                    var package = await _unitOfWork.Packages.GetById(contract.PackageId);
-
-                    if (package != null)
-                    {
-
-                        var fee = contractUpdate.InsuranceFee + contractUpdate.StorageFee;
-                        var period = package.Day / package.PaymentPeriod;
-                        double interest = 0;
-
-                        // Use recommend interest if input
-                        if (contractUpdate.InterestRecommend != 0)
-                        {
-                            interest = contractUpdate.InterestRecommend * 0.01;
-                        }
-                        interest = package.PackageInterest * 0.01;
-                        contractUpdate.TotalProfit = (contractUpdate.Loan * (decimal)interest + fee) * period;
-                    }
-
                     _unitOfWork.Contracts.Update(contractUpdate);
 
                     var result = _unitOfWork.Save();
@@ -504,7 +469,7 @@ namespace Services.Services
             {
                 var contract = await _unitOfWork.Contracts.GetById(contractId);
                 var customer = await _unitOfWork.Customers.GetById(contract.CustomerId);
-                var package = await _iPackageService.GetPackageById(contract.PackageId, contract.InterestRecommend);
+                var package = await _iPackageService.GetPackageById(contract.PackageId);
                 List<InterestDiary> interestDiaries = (List<InterestDiary>)await _iInterestDiaryService.GetInteresDiariesByContractId(contractId);
 
                 decimal interestPaid = 0;
@@ -572,14 +537,8 @@ namespace Services.Services
                 {
                     var fee = contract.InsuranceFee + contract.StorageFee;
                     var period = package.Day / package.PaymentPeriod;
-                    double interest = 0;
-
                     // Use recommend interest if input
-                    if (contract.InterestRecommend != 0)
-                    {
-                        interest = contract.InterestRecommend * 0.01;
-                    }
-                    interest = package.PackageInterest * 0.01;
+                    double interest = (contract.InterestRecommend != 0) ? contract.InterestRecommend * 0.01 : package.PackageInterest * 0.01;
                     contract.TotalProfit = (contract.Loan * (decimal)interest) + (fee * period);
                 }
                 contract.ContractStartDate = DateTime.Now;
@@ -623,5 +582,78 @@ namespace Services.Services
             return null;
         }
 
+        public async Task<DisplayContractInfo> GetContractInfoByContractId(int contractId)
+        {
+            //var contract = await _iContractRepository.getContractByContractCode(contractCode);
+            //var package = await _iPackageService.GetPackageById(contract.PackageId);
+            //var warehouse = await _wareHouse.GetWareHouseById(contract)
+
+            var contractJoinPackageJoinAssetJoinCustomerJoinUser = from contract in _dbContextClass.Contract
+                                                                   join customer in _dbContextClass.Customer
+                                                                   on contract.CustomerId equals customer.CustomerId
+                                                                   join user in _dbContextClass.User
+                                                                   on contract.UserId equals user.UserId
+                                                                   join contractAsset in _dbContextClass.ContractAsset
+                                                                   on contract.ContractAssetId equals contractAsset.ContractAssetId
+                                                                   join pawnableProduct in _dbContextClass.PawnableProduct
+                                                                   on contractAsset.PawnableProductId equals pawnableProduct.PawnableProductId
+                                                                   join warehouse in _dbContextClass.Warehouse
+                                                                   on contractAsset.WarehouseId equals warehouse.WarehouseId
+                                                                   join package in _dbContextClass.Package
+                                                                   on contract.PackageId equals package.PackageId
+                                                                   where contract.ContractId == contractId
+                                                                   select new
+                                                                   {
+                                                                       ContractCode = contract.ContractCode,
+                                                                       CustomerName = customer.FullName,
+                                                                       CCCD = customer.CCCD,
+                                                                       PhoneNumber = customer.Phone,
+                                                                       Address = customer.Address,
+                                                                       TypeOfProduct = pawnableProduct.TypeOfProduct,
+                                                                       ContractAssetName = contractAsset.ContractAssetName,
+                                                                       InsuranceFee = contract.InsuranceFee,
+                                                                       StorageFee = contract.StorageFee,
+                                                                       ContractLoan = contract.Loan,
+                                                                       UserName = user.UserName,
+                                                                       ContractStartDate = contract.ContractStartDate,
+                                                                       Description = contractAsset.Description,
+                                                                       AssetImg = contractAsset.Image,
+                                                                       PackageName = package.PackageName,
+                                                                       PaymentPeriod = package.PaymentPeriod,
+                                                                       PackageInterest = package.PackageInterest,
+                                                                       InterestRecomend = contract.InterestRecommend,
+                                                                       WarehouseName = warehouse.WarehouseName,
+                                                                   };
+            var displayContractInfo = new DisplayContractInfo();         
+            if (contractJoinPackageJoinAssetJoinCustomerJoinUser != null)
+            {
+                foreach (var row in contractJoinPackageJoinAssetJoinCustomerJoinUser)
+                {
+                    displayContractInfo.ContractCode = row.ContractCode;
+                    displayContractInfo.ContractStartDate = row.ContractStartDate;
+                    displayContractInfo.Loan = row.ContractLoan;
+                    displayContractInfo.InsuranceFee = row.InsuranceFee;
+                    displayContractInfo.StorageFee = row.StorageFee;
+                    displayContractInfo.PackageName = row.PackageName;
+                    displayContractInfo.PaymentPeriod = row.PaymentPeriod;
+                    displayContractInfo.PackageInterest = row.PackageInterest;
+                    displayContractInfo.InterestRecommend = row.InterestRecomend;
+                    displayContractInfo.CustomerName = row.CustomerName;
+                    displayContractInfo.CCCD = row.CCCD;
+                    displayContractInfo.PhoneNumber = row.PhoneNumber;
+                    displayContractInfo.Address = row.Address;
+                    displayContractInfo.TypeOfProduct = row.TypeOfProduct;
+                    displayContractInfo.AssetName = row.ContractAssetName;
+                    displayContractInfo.WarehouseName = row.WarehouseName;
+                    displayContractInfo.UserName = row.UserName;
+                    displayContractInfo.AssetImg = row.AssetImg;
+                    var attribute = row.Description;
+                    string[] attributes = attribute.Split("/");
+                    displayContractInfo.AttributeInfos = attributes;
+                }
+                
+            }
+            return displayContractInfo;
+        }
     }
 }

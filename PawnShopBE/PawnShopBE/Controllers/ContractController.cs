@@ -69,9 +69,18 @@ namespace PawnShopBE.Controllers
                 return BadRequest(checkValidation);
             }
             StringBuilder sb = new StringBuilder();
+            var count = 1;
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
-            {            
-                sb.Append(attributes.Description + "/");              
+            {
+                if (request.PawnableAttributeDTOs.Count > count)
+                {
+                    sb.Append(attributes.Description + "/");
+                    count++;
+                }
+                else
+                {
+                    sb.Append(attributes.Description);
+                }
             }       
             //Create asset
             var contractAsset = _mapper.Map<ContractAsset>(request);
@@ -98,11 +107,11 @@ namespace PawnShopBE.Controllers
             return Ok(listContracts);
         }
 
-        [HttpPut("updateContract/{contractCode}")]
-        public async Task<IActionResult> UpdateContract(string contractCode, ContractDTO request)
+        [HttpPut("updateContract/{contractId}")]
+        public async Task<IActionResult> UpdateContract(int contractId, ContractDTO request)
         {       
                 var contract = _mapper.Map<Contract>(request);
-                var response = await _contractService.UpdateContract(contractCode, contract);
+                var response = await _contractService.UpdateContract(contractId, contract);
                 if (response)
                 {
                     return Ok(response);
@@ -110,7 +119,7 @@ namespace PawnShopBE.Controllers
             return Ok();
         }
 
-        [HttpGet("getContractDetail{id}")]
+        [HttpGet("getContractDetail/{id}")]
         public async Task<IActionResult> GetContractDetail(int id)
         {
             var contractDetail = await _contractService.GetContractDetail(id);
@@ -121,10 +130,17 @@ namespace PawnShopBE.Controllers
             return Ok(contractDetail);
         }
 
-        [HttpGet("getByContractCode/{contractCode}")]
-        public async Task<IActionResult> GetContractByContractCode(string contractCode)
+        [HttpGet("getByContractId/{contractId}")]
+        public async Task<IActionResult> GetContractByContractId(int contractId)
         {
-            var contract = await _contractService.GetContractByContractCode(contractCode);
+            var contract = await _contractService.GetContractById(contractId);
+            return (contract != null) ? Ok(contract) : NotFound();
+        }
+
+        [HttpGet("getContractInfoByContractId/{contractId}")]
+        public async Task<IActionResult> GetContractInfoByContractId(int contractId)
+        {
+            var contract = await _contractService.GetContractInfoByContractId(contractId);
             return (contract != null) ? Ok(contract) : NotFound();
         }
 

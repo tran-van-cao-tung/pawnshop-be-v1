@@ -62,7 +62,7 @@ namespace Services.Services
             foreach (var ransom in ransomOverDueDate)
             {
                 var contract = await _contractService.GetContractById(ransom.ContractId);
-                var package = await _packageService.GetPackageById(contract.PackageId, contract.InterestRecommend);
+                var package = await _packageService.GetPackageById(contract.PackageId);
 
                 // Calculate how many days that overdue
                 TimeSpan timeDifference = DateTime.Now - contract.ContractEndDate;

@@ -71,12 +71,7 @@ namespace Services.Services
                 (contractAsset, j => j.ContractAssetId == contractAsset.ContractAssetId);
             if (contractAssetUpdate != null)
             {
-                contractAssetUpdate.ContractAssetName = contractAsset.ContractAssetName;
                 contractAssetUpdate.WarehouseId = contractAsset.WarehouseId;
-                contractAssetUpdate.PawnableProductId = contractAsset.PawnableProductId;
-                contractAssetUpdate.Description = contractAsset.Description;
-                contractAssetUpdate.Image = contractAsset.Image;
-                contractAssetUpdate.Status = contractAsset.Status;
                 _unitOfWork.ContractAssets.Update(contractAssetUpdate);
                 var result = _unitOfWork.Save();
                 if (result > 0)
