@@ -98,17 +98,16 @@ namespace Services.Services
             return customer;
         }
        
-        public async Task<IEnumerable<DisplayReportMonth>> getReportMonth()
+        public async Task<IEnumerable<DisplayReportMonth>> getReportMonth(int branchId)
         {
             var listReport= new List<DisplayReportMonth>();
-            //get Ledger
+            //get List all
             var ledgerList = await _ledger.GetLedger();
-            //get branch 
             var branchList = await _branch.GetAllBranch(0);
-            //get liquidation
             var liquidationList= await _liquidation.GetLiquidation();
-            //get contract
             var contractList = await _contract.GetAllContracts(0);
+            //branch theo id, 
+            var branchIenumerable=from b in branchList where b.BranchId == branchId select b;
             int month = 1;
             for (int i = 0; i < 12; i++)
             {
@@ -122,21 +121,25 @@ namespace Services.Services
                 else
                 {
                     var report = new DisplayReportMonth();
-                    foreach (var ledger in ledgerMonth)
-                    {
-                        report.receiveInterest = ledger.RecveivedInterest;
-                        report.receivedPrincipal = ledger.ReceivedPrincipal;
-                        report.loan = ledger.Loan;
-                        report.balance = ledger.Balance;
-                    }
                     //ger branch
-                    var branch = getBranch(branchList, ledgerMonth);
-                    report.fund = branch.Fund;
-                    //get money
-                    report.liquidationMoney = getLiquiMoney(branch.BranchId, contractList, liquidationList, month);
-                    report.month = month;
-                    //add report
-                    listReport.Add(report);
+                    var branch = getBranch(branchIenumerable, ledgerMonth);
+                    if (branch != null)
+                    {
+                        report.branchName = branch.BranchName;
+                        report.fund = branch.Fund;
+                        //get money
+                        report.liquidationMoney = getLiquiMoney(branch.BranchId, contractList, liquidationList, month);
+                        report.month = month;
+                        foreach (var ledger in ledgerMonth)
+                        {
+                            report.receiveInterest += ledger.RecveivedInterest;
+                            report.receivedPrincipal += ledger.ReceivedPrincipal;
+                            report.loan += ledger.Loan;
+                            report.balance += ledger.Balance;
+                        }
+                        //add report
+                        listReport.Add(report);
+                    }
                     month++;
                 }
             }
@@ -154,6 +157,7 @@ namespace Services.Services
                 //get liquidation
                 var liquidationIenumerable = from l in liquidationList where l.ContractId == contract.ContractId select l;
                 var liquidation= liquidationIenumerable.FirstOrDefault();
+                if(liquidation != null)
                 money += liquidation.LiquidationMoney;
             }
             return money;

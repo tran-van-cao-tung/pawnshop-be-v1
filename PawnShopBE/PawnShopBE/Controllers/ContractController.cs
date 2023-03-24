@@ -69,18 +69,9 @@ namespace PawnShopBE.Controllers
                 return BadRequest(checkValidation);
             }
             StringBuilder sb = new StringBuilder();
-            var count = 1;
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
-            {
-                if (request.PawnableAttributeDTOs.Count > count)
-                {
-                    sb.Append(attributes.Description + "/");
-                    count++;
-                }
-                else
-                {
-                    sb.Append(attributes.Description);
-                }
+            {            
+                sb.Append(attributes.Description + "/");              
             }       
             //Create asset
             var contractAsset = _mapper.Map<ContractAsset>(request);
@@ -107,11 +98,11 @@ namespace PawnShopBE.Controllers
             return Ok(listContracts);
         }
 
-        [HttpPut("updateContract/{contractId}")]
-        public async Task<IActionResult> UpdateContract(int contractId, ContractDTO request)
+        [HttpPut("updateContract/{contractCode}")]
+        public async Task<IActionResult> UpdateContract(string contractCode, ContractDTO request)
         {       
                 var contract = _mapper.Map<Contract>(request);
-                var response = await _contractService.UpdateContract(contractId, contract);
+                var response = await _contractService.UpdateContract(contractCode, contract);
                 if (response)
                 {
                     return Ok(response);
@@ -119,10 +110,10 @@ namespace PawnShopBE.Controllers
             return Ok();
         }
 
-        [HttpGet("getContractDetail/{id}")]
-        public async Task<IActionResult> GetContractDetail(int id)
+        [HttpGet("getContractDetail/{idContract}")]
+        public async Task<IActionResult> GetContractDetail(int idContract)
         {
-            var contractDetail = await _contractService.GetContractDetail(id);
+            var contractDetail = await _contractService.GetContractDetail(idContract);
             if (contractDetail == null)
             {
                 return NotFound();
@@ -130,17 +121,10 @@ namespace PawnShopBE.Controllers
             return Ok(contractDetail);
         }
 
-        [HttpGet("getByContractId/{contractId}")]
-        public async Task<IActionResult> GetContractByContractId(int contractId)
+        [HttpGet("getByContractCode/{contractCode}")]
+        public async Task<IActionResult> GetContractByContractCode(string contractCode)
         {
-            var contract = await _contractService.GetContractById(contractId);
-            return (contract != null) ? Ok(contract) : NotFound();
-        }
-
-        [HttpGet("getContractInfoByContractId/{contractId}")]
-        public async Task<IActionResult> GetContractInfoByContractId(int contractId)
-        {
-            var contract = await _contractService.GetContractInfoByContractId(contractId);
+            var contract = await _contractService.GetContractByContractCode(contractCode);
             return (contract != null) ? Ok(contract) : NotFound();
         }
 
