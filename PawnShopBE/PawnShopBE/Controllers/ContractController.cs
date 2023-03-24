@@ -98,11 +98,11 @@ namespace PawnShopBE.Controllers
             return Ok(listContracts);
         }
 
-        [HttpPut("updateContract/{contractCode}")]
-        public async Task<IActionResult> UpdateContract(string contractCode, ContractDTO request)
+        [HttpPut("updateContract/{contractId}")]
+        public async Task<IActionResult> UpdateContract(int contractId, ContractDTO request)
         {       
                 var contract = _mapper.Map<Contract>(request);
-                var response = await _contractService.UpdateContract(contractCode, contract);
+                var response = await _contractService.UpdateContract(contractId, contract);
                 if (response)
                 {
                     return Ok(response);

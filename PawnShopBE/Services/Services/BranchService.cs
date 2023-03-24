@@ -31,7 +31,7 @@ namespace Services.Services
         public async Task<DisplayBranchDetail> getDisplayBranchDetail(DisplayBranchDetail branchDetail)
         {
             //get all list
-            var _ledgerList = await _ledger.GetLedger();
+            var _ledgerList = await _ledgerService.GetLedger();
             var _contractList = await _contract.GetAllContracts(0);
             var _diaryList = await _diary.GetInteresDiary();
             //get branch id
