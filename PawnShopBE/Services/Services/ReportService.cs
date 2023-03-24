@@ -16,7 +16,7 @@ namespace Services.Services
         private ICustomerService _customer;
         private IContractAssetService _asset;
         private IPawnableProductService _pawnable;
-        private ILedgerService _ledger;
+        private ILedgerService _ledgerService;
         private ILiquidationService _liquidation;
         private IBranchService _branch;
 
@@ -28,7 +28,7 @@ namespace Services.Services
             _customer = customer;
             _asset = asset;
             _pawnable = pawnable;
-            _ledger = ledger;
+            _ledgerService = ledger;
             _liquidation = liquidation;
             _branch = branch;
         }
@@ -102,7 +102,7 @@ namespace Services.Services
         {
             var listReport= new List<DisplayReportMonth>();
             //get List all
-            var ledgerList = await _ledger.GetLedger();
+            var ledgerList = await _ledgerService.GetLedger();
             var branchList = await _branch.GetAllBranch(0);
             var liquidationList= await _liquidation.GetLiquidation();
             var contractList = await _contract.GetAllContracts(0);

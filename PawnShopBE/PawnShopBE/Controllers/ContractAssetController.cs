@@ -71,5 +71,16 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
+
+        [HttpGet("assets/{warehouseId}")]
+        public async Task<IActionResult> GetAssetByWarehouseId(int warehouseId)
+        {
+            var respone = await _contractAssetService.GetContractAssetsByWarehouseId(warehouseId);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
     }
 }

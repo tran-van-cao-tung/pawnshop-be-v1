@@ -17,13 +17,15 @@ namespace Services.Services
         private IContractService _contract;
         private IPackageService _package;
         private ICustomerService _customer;
+        private IRansomRepository _ransomRepository;
 
-        public RansomService(IUnitOfWork unitOfWork, IContractService contract, IPackageService package, ICustomerService customer)
+        public RansomService(IUnitOfWork unitOfWork, IContractService contract, IPackageService package, ICustomerService customer, IRansomRepository ransomRepository)
         {
             _unitOfWork = unitOfWork;
             _contract = contract;
             _package = package;
             _customer = customer;
+            _ransomRepository = ransomRepository;
         }
         public async Task<IEnumerable<Ransom>> GetRansom()
         {
@@ -127,6 +129,11 @@ namespace Services.Services
             return false;
         }
 
+        public Task<Ransom> GetRansomByContractId(int contractId)
+        {
+            var ransom = _ransomRepository.GetRanSomByContractId(contractId);
+            return ransom;
+        }
     }
 }
 
