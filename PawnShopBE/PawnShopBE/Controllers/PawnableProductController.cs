@@ -39,6 +39,17 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
+        [HttpGet("getPawnAbleProductById/{id}")]
+        public async Task<IActionResult> PawnAbleProductById(int id)
+        {
+            var respone = await _pawnableProductService.GetPawnableProductById(id);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
+
         [HttpPost("createPawnable")]
         public async Task<IActionResult> CreatePawnableProduct(PawnableDTO pawnableDTO)
         {

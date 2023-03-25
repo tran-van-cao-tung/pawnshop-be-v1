@@ -19,13 +19,12 @@ namespace Services.Services.IServices
         Task<Contract> GetContractById(int contractId);
         Task<Contract> GetContractByContractCode(string contractCode);
         Task<DisplayContractDetail> GetContractDetail(int contractId);
-        Task<bool> UpdateContract(string contractCode, Contract contract);
+        Task<bool> UpdateContract(int contractId, Contract contract);
         Task<bool> DeleteContract(int contractId);
         Task<bool> UploadContractImg(int contractId, string customerImg, string contractImg);
         Task exporteExcel();
         Task<DisplayContractHomePage> getAllContractHomepage();
         Task<bool> CreateContractExpiration(int contractId);
-        Task<bool> CheckPermission(int num, Guid userId);
-
+        Task<DisplayContractInfo> GetContractInfoByContractId(int contractId);
     }
 }

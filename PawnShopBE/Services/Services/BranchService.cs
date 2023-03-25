@@ -18,20 +18,20 @@ namespace Services.Services
         public IUnitOfWork _unitOfWork;
         private IContractService _contract;
         private IInteresDiaryService _diary;
-        private ILedgerService _ledger;
+        private ILedgerService _ledgerService;
 
         public BranchService(IUnitOfWork unitOfWork, IContractService contract
            , ILedgerService ledger, IInteresDiaryService diary)
         {
             _unitOfWork = unitOfWork;
             _contract = contract;
-            _ledger = ledger;
+            _ledgerService = ledger;
             _diary = diary;
         }
         public async Task<DisplayBranchDetail> getDisplayBranchDetail(DisplayBranchDetail branchDetail)
         {
             //get all list
-            var _ledgerList = await _ledger.GetLedger();
+            var _ledgerList = await _ledgerService.GetLedger();
             var _contractList = await _contract.GetAllContracts(0);
             var _diaryList = await _diary.GetInteresDiary();
             //get branch id
@@ -100,7 +100,7 @@ namespace Services.Services
         public async Task<IEnumerable<DisplayBranch>> getDisplayBranch(IEnumerable<DisplayBranch> branchList)
         {
             //get list Ledger
-            var _ledgerList = await _ledger.GetLedger();
+            var _ledgerList = await _ledgerService.GetLedger();
             foreach (var branch in branchList)
             {
                 var branchId = branch.branchId;
