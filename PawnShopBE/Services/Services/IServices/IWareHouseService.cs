@@ -17,5 +17,6 @@ namespace Services.Services.IServices
         Task<bool> UpdateWareHouse(Warehouse warehouse);
         Task<bool> DeleteWareHouse(int wareHouseId);
         Task<WareHouseDTO> getWareHouseDetail(int id,int num);
+        Task<bool> CheckPermission(int num, Guid userId);
     }
 }

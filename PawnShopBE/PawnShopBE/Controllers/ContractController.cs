@@ -59,43 +59,57 @@ namespace PawnShopBE.Controllers
             return Ok(listContracts);
         }
 
-        [HttpPost("createContract")]
-        public async Task<IActionResult> CreateContract(ContractDTO request)
+        [HttpPost("createContract/{userId}")]
+        public async Task<IActionResult> CreateContract(ContractDTO request,Guid userId)
         {
-            //Check Validation
-            var checkValidation = await _validation.CheckValidation(request);
-            if (checkValidation != null)
+            var check = await _contractService.CheckPermission(3, userId);
+            if (check)
             {
-                return BadRequest(checkValidation);
-            }
-            StringBuilder sb = new StringBuilder();
-            foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
-            {            
-                sb.Append(attributes.Description + "/");              
-            }       
-            //Create asset
-            var contractAsset = _mapper.Map<ContractAsset>(request);
+                //Check Validation
+                var checkValidation = await _validation.CheckValidation(request);
+                if (checkValidation != null)
+                {
+                    return BadRequest(checkValidation);
+                }
+                StringBuilder sb = new StringBuilder();
+                foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
+                {
+                    sb.Append(attributes.Description + "/");
+                }
+                //Create asset
+                var contractAsset = _mapper.Map<ContractAsset>(request);
                 contractAsset.Description = sb.ToString();
-            await _contractAssetService.CreateContractAsset(contractAsset);
-            
-            // Create contract
-            var contract = _mapper.Map<Contract>(request);
-            contract.ContractAssetId = contractAsset.ContractAssetId;
-            var result = await _contractService.CreateContract(contract);
-            return result ? Ok(result) : BadRequest();
+                await _contractAssetService.CreateContractAsset(contractAsset);
 
-
+                // Create contract
+                var contract = _mapper.Map<Contract>(request);
+                contract.ContractAssetId = contractAsset.ContractAssetId;
+                var result = await _contractService.CreateContract(contract);
+                return result ? Ok(result) : BadRequest();
+            }
+            else
+            {
+                return BadRequest("Không Được Quyền Truy Cập");
+            }
         }
 
-        [HttpGet("getAll/{numPage}")]
-        public async Task<IActionResult> GetAllContracts(int numPage)
+        [HttpGet("getAll/{numPage},{userId}")]
+        public async Task<IActionResult> GetAllContracts(int numPage,Guid userId)
         {
-            var listContracts = await _contractService.GetAllDisplayContracts(numPage);
-            if (listContracts == null)
+            var check = await _contractService.CheckPermission(2, userId);
+            if (check)
             {
-                return NotFound();
+                var listContracts = await _contractService.GetAllDisplayContracts(numPage);
+                if (listContracts == null)
+                {
+                    return NotFound();
+                }
+                return Ok(listContracts);
             }
-            return Ok(listContracts);
+            else
+            {
+                return BadRequest("Không Được Quyền Truy Cập");
+            }
         }
 
         [HttpPut("updateContract/{contractCode}")]

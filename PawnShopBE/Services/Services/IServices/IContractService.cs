@@ -25,6 +25,7 @@ namespace Services.Services.IServices
         Task exporteExcel();
         Task<DisplayContractHomePage> getAllContractHomepage();
         Task<bool> CreateContractExpiration(int contractId);
+        Task<bool> CheckPermission(int num, Guid userId);
 
     }
 }
