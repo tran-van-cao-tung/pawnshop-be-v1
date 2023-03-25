@@ -26,5 +26,6 @@ namespace Services.Services.IServices
         Task<DisplayContractHomePage> getAllContractHomepage();
         Task<bool> CreateContractExpiration(int contractId);
         Task<DisplayContractInfo> GetContractInfoByContractId(int contractId);
+        Task<bool> CheckPermission(int num, Guid userId);
     }
 }
