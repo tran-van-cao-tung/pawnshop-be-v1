@@ -27,17 +27,7 @@ namespace Services.Services
             _pawnable=pawnable;
             _mapper=mapper;
         }
-        private UserPermissionGroup group;
-        public async Task<bool> CheckPermission(int num,Guid userId)
-        {
-            var result = _unit.UserPermissionGroup.
-                        SingleOrDefault(group, g => g.UserId == userId && g.perId == num);
-            if(result!=null)
-            {
-                return result.Status;
-            }
-            return false;
-        }
+       
         public async Task<WareHouseDTO> getWareHouseDetail(int id,int num)
         {
             //get List Asset

@@ -59,12 +59,10 @@ namespace PawnShopBE.Controllers
             return Ok(listContracts);
         }
 
-        [HttpPost("createContract/{userId}")]
-        public async Task<IActionResult> CreateContract(ContractDTO request,Guid userId)
+        [HttpPost("createContract")]
+        public async Task<IActionResult> CreateContract(ContractDTO request)
         {
-            var check = await _contractService.CheckPermission(3, userId);
-            if (check)
-            {
+           
                 //Check Validation
                 var checkValidation = await _validation.CheckValidation(request);
                 if (checkValidation != null)
@@ -87,29 +85,15 @@ namespace PawnShopBE.Controllers
                 var result = await _contractService.CreateContract(contract);
                 return result ? Ok(result) : BadRequest();
             }
-            else
-            {
-                return BadRequest("Không Được Quyền Truy Cập");
-            }
-        }
-
-        [HttpGet("getAll/{numPage},{userId}")]
-        public async Task<IActionResult> GetAllContracts(int numPage,Guid userId)
+        [HttpGet("getAll/{numPage}")]
+        public async Task<IActionResult> GetAllContracts(int numPage)
         {
-            var check = await _contractService.CheckPermission(2, userId);
-            if (check)
-            {
                 var listContracts = await _contractService.GetAllDisplayContracts(numPage);
                 if (listContracts == null)
                 {
                     return NotFound();
                 }
                 return Ok(listContracts);
-            }
-            else
-            {
-                return BadRequest("Không Được Quyền Truy Cập");
-            }
         }
 
         [HttpPut("updateContract/{contractId}")]

@@ -35,11 +35,9 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpGet("GetAll/{numPage},{userId}")]
-        public async Task<IActionResult> GetAllWareHouse(int numPage,Guid userId) {
-            var check = await _wareHouseService.CheckPermission(3, userId);
-            if (check)
-            {
+        [HttpGet("GetAll/{numPage}")]
+        public async Task<IActionResult> GetAllWareHouse(int numPage) {
+            
                 var respone = await _wareHouseService.GetWareHouse(numPage);
 
                 if (respone != null)
@@ -50,11 +48,6 @@ namespace PawnShopBE.Controllers
                 {
                     return BadRequest();
                 }
-            }
-            else
-            {
-                return BadRequest("Không được quyền truy cập");
-            }
         }
          private Validation<WareHouseDTO> _validation=new Validation<WareHouseDTO>();
         [HttpPost("createWarehouse")]

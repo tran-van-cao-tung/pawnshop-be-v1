@@ -57,17 +57,7 @@ namespace Services.Services
             _ransomService = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
             _customerService = _serviceProvider.GetService(typeof(ICustomerService)) as ICustomerService;
         }
-        private UserPermissionGroup group;
-        public async Task<bool> CheckPermission(int num, Guid userId)
-        {
-            var result = _unitOfWork.UserPermissionGroup.
-                        SingleOrDefault(group, g => g.UserId == userId && g.perId == num);
-            if (result != null)
-            {
-                return result.Status;
-            }
-            return false;
-        }
+        
         public async Task exporteExcel()
         {
             var listContract = await GetAllDisplayContracts(0);
