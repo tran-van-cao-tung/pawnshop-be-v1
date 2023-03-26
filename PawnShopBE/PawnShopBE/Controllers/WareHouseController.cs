@@ -37,13 +37,17 @@ namespace PawnShopBE.Controllers
         }
         [HttpGet("GetAll/{numPage}")]
         public async Task<IActionResult> GetAllWareHouse(int numPage) {
-            var respone =await _wareHouseService.GetWareHouse(numPage);
-          
-            if (respone != null)
-            {
-                return Ok(respone) ;
-            }
-            return BadRequest();
+            
+                var respone = await _wareHouseService.GetWareHouse(numPage);
+
+                if (respone != null)
+                {
+                    return Ok(respone);
+                }
+                else
+                {
+                    return BadRequest();
+                }
         }
          private Validation<WareHouseDTO> _validation=new Validation<WareHouseDTO>();
         [HttpPost("createWarehouse")]

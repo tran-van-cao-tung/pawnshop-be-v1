@@ -57,6 +57,7 @@ namespace Services.Services
             _ransomService = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
             _customerService = _serviceProvider.GetService(typeof(ICustomerService)) as ICustomerService;
         }
+        
         public async Task exporteExcel()
         {
             var listContract = await GetAllDisplayContracts(0);

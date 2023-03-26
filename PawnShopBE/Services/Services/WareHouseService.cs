@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Org.BouncyCastle.Bcpg;
 
 namespace Services.Services
 {
@@ -26,7 +27,7 @@ namespace Services.Services
             _pawnable=pawnable;
             _mapper=mapper;
         }
-        
+       
         public async Task<WareHouseDTO> getWareHouseDetail(int id,int num)
         {
             //get List Asset

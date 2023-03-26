@@ -26,6 +26,8 @@ namespace PawnShopBE.Core.Interfaces
         IJobRepository Jobs { get; }
         ICustomerRelativeRelationshipRepository CustomersRelativeRelationships { get; }
         IRansomRepository Ransoms { get; }
+        IPermissionReporsitory Permission { get; }
+        IUserPermissionGroupRepository UserPermissionGroup { get; }
         int Save();
         Task<int> SaveList();
     }

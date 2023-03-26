@@ -55,7 +55,7 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-        [Authorize]
+       // [Authorize]
         [HttpGet("getAll/{numPage}")]
         public async Task<IActionResult> getUserList(int numPage)
         {

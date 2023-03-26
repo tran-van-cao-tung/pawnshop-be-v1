@@ -41,7 +41,8 @@ namespace PawnShopBE.Infrastructure.Helpers
         public DbSet<Kyc> Kyc { get; set; }
         public DbSet<Ransom> Ransom { get; set; }
         public DbSet<Admin> Admin { get; set; }
-
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
         #endregion
 
 
@@ -181,6 +182,10 @@ namespace PawnShopBE.Infrastructure.Helpers
             {
                 entity.ToTable("Admin");
                 entity.HasNoKey();
+            });
+            modelBuilder.Entity<UserPermissionGroup>(entity =>
+            {
+                entity.HasKey(e => new{e.perId, e.UserId});
             });
         }
 

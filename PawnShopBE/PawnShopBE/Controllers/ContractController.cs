@@ -87,26 +87,23 @@ namespace PawnShopBE.Controllers
                 //Create asset
                 var contractAsset = _mapper.Map<ContractAsset>(request);
                 contractAsset.Description = sb.ToString();
-            await _contractAssetService.CreateContractAsset(contractAsset);
-            
-            // Create contract
-            var contract = _mapper.Map<Contract>(request);
-            contract.ContractAssetId = contractAsset.ContractAssetId;
-            var result = await _contractService.CreateContract(contract);
-            return result ? Ok(result) : BadRequest();
+                await _contractAssetService.CreateContractAsset(contractAsset);
 
-
-        }
-
+                // Create contract
+                var contract = _mapper.Map<Contract>(request);
+                contract.ContractAssetId = contractAsset.ContractAssetId;
+                var result = await _contractService.CreateContract(contract);
+                return result ? Ok(result) : BadRequest();
+            }
         [HttpGet("getAll/{numPage}")]
         public async Task<IActionResult> GetAllContracts(int numPage)
         {
-            var listContracts = await _contractService.GetAllDisplayContracts(numPage);
-            if (listContracts == null)
-            {
-                return NotFound();
-            }
-            return Ok(listContracts);
+                var listContracts = await _contractService.GetAllDisplayContracts(numPage);
+                if (listContracts == null)
+                {
+                    return NotFound();
+                }
+                return Ok(listContracts);
         }
 
         [HttpPut("updateContract/{contractId}")]
