@@ -9,6 +9,8 @@ using Services.Services;
 using Services.Services.IServices;
 using System.Text;
 using PawnShopBE.Core.Validation;
+using System.Diagnostics.Contracts;
+using Contract = PawnShopBE.Core.Models.Contract;
 
 namespace PawnShopBE.Controllers
 {
@@ -69,12 +71,21 @@ namespace PawnShopBE.Controllers
                 return BadRequest(checkValidation);
             }
             StringBuilder sb = new StringBuilder();
+            var count = 1;
             foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
-            {            
-                sb.Append(attributes.Description + "/");              
-            }       
-            //Create asset
-            var contractAsset = _mapper.Map<ContractAsset>(request);
+            {
+                if (request.PawnableAttributeDTOs.Count > count)
+                {
+                    sb.Append(attributes.Description + "/");
+                    count++;
+                }
+                else
+                {
+                    sb.Append(attributes.Description);
+                }
+            }
+                //Create asset
+                var contractAsset = _mapper.Map<ContractAsset>(request);
                 contractAsset.Description = sb.ToString();
             await _contractAssetService.CreateContractAsset(contractAsset);
             
@@ -121,10 +132,17 @@ namespace PawnShopBE.Controllers
             return Ok(contractDetail);
         }
 
-        [HttpGet("getByContractCode/{contractCode}")]
-        public async Task<IActionResult> GetContractByContractCode(string contractCode)
+        //[HttpGet("getByContractId/{contractId}")]
+        //public async Task<IActionResult> GetContractByContractId(int contractId)
+        //{
+        //    var contract = await _contractService.GetContractById(contractId);
+        //    return (contract != null) ? Ok(contract) : NotFound();
+        //}
+
+        [HttpGet("getContractInfoByContractId/{contractId}")]
+        public async Task<IActionResult> GetContractInfoByContractId(int contractId)
         {
-            var contract = await _contractService.GetContractByContractCode(contractCode);
+            var contract = await _contractService.GetContractInfoByContractId(contractId);
             return (contract != null) ? Ok(contract) : NotFound();
         }
 

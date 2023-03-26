@@ -376,6 +376,7 @@ namespace Services.Services
                                                 on contractAsset.WarehouseId equals warehouse.WarehouseId
                                                 select new
                                                 {
+                                                    ContractId = contract.ContractId,
                                                     ContractCode = contract.ContractCode,
                                                     CustomerName = customer.FullName,
                                                     CommodityCode = pawnableProduct.CommodityCode,
@@ -391,6 +392,7 @@ namespace Services.Services
             foreach (var row in contractJoinCustomerJoinAsset)
             {
                 DisplayContractList displayContract = new DisplayContractList();
+                displayContract.ContractId = row.ContractId;
                 displayContract.ContractCode = row.ContractCode;
                 displayContract.CustomerName = row.CustomerName;
                 displayContract.CommodityCode = row.CommodityCode;
@@ -439,7 +441,7 @@ namespace Services.Services
             if (contract != null)
             {
                 var contractUpdate = await _unitOfWork.Contracts.GetById(contractId);
-                if (contractUpdate.ContractId == contract.ContractId)
+                if (contractUpdate != null)
                 {
                     // Update Asset
                     if (contract.ContractAsset != null)
@@ -648,6 +650,7 @@ namespace Services.Services
                 {
                     foreach (var row in contractJoinPackageJoinAssetJoinCustomerJoinUser)
                     {
+                        displayContractInfo.ContractId = contractId;
                         displayContractInfo.ContractCode = row.ContractCode;
                         displayContractInfo.ContractStartDate = row.ContractStartDate;
                         displayContractInfo.Loan = row.ContractLoan;
