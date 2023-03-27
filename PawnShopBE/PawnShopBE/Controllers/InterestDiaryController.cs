@@ -41,11 +41,10 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("updateInterestDiary/{id}")]
-        public async Task<IActionResult> UpdateInterestDiary(int id, InterestDiaryDTO diary)
+        [HttpPut("updateInterestDiary")]
+        public async Task<IActionResult> UpdateInterestDiary(InterestDiaryDTO diary)
         {
             var diaryUpdate=_mapper.Map<InterestDiary>(diary);
-            diaryUpdate.InterestDiaryId = id;
             var respone = await _interestDiaryService.UpdateInteresDiary(diaryUpdate);
             if (respone != null)
             {

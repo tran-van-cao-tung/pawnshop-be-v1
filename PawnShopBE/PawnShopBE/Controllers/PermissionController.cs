@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using Services.Services;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
@@ -63,6 +64,26 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeletePermission(int id)
+        {
+            var respone = await _perService.DeletePermission(id);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
 
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdatePermission( Permission per)
+        {
+            var respone = await _perService.UpdatePermission(per);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
     }
 }

@@ -65,13 +65,11 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("updatePawnableProduct/{id}")]
-        public async Task<IActionResult> UpdatePawnableProduct(int id, PawnableDTO request)
+        [HttpPut("updatePawnableProduct")]
+        public async Task<IActionResult> UpdatePawnableProduct( PawnableDTO request)
         {
                      
                 var pawnableProduct = _mapper.Map<PawnableProduct>(request);
-                pawnableProduct.PawnableProductId = id;
-
                 var response = await _pawnableProductService.UpdatePawnableProduct(pawnableProduct);
                 if (response)
                 {

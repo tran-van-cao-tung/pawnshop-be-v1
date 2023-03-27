@@ -116,8 +116,8 @@ namespace PawnShopBE.Controllers
             return Ok(listCustomer);
         }
 
-        [HttpPut("updateCustomer/{id}")]
-        public async Task<IActionResult> UpdateCustomer(Guid id, Customer customer)
+        [HttpPut("updateCustomer")]
+        public async Task<IActionResult> UpdateCustomer( Customer customer)
         {
             if (customer != null)
             {
