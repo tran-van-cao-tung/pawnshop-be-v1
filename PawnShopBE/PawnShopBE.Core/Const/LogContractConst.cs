@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace PawnShopBE.Core.Const
 {
-    public static class ApiUrlConsts
+    public enum LogContractConst
     {
-        public const string GetContractById = "contract/{id}";
+        CREATE_CONTRACT = 1,
+        INTEREST_NOT_PAID = 2,
+        INTEREST_PAID = 3,
+        CLOSE_CONTRACT = 4
+        
     }
 }

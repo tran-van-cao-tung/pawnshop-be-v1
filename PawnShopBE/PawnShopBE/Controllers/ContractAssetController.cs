@@ -8,7 +8,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/contractAsset")]
     [ApiController]
     public class ContractAssetController : ControllerBase
     {
@@ -21,7 +21,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("contractAsset")]
+        [HttpGet("getAll")]
         public async Task<IActionResult> GetAllContractAsset() {
             var respone =await _contractAssetService.GetAllContractAssets();
             if (respone != null)
@@ -32,7 +32,7 @@ namespace PawnShopBE.Controllers
         }
         private Validation<ContractAssetDTO> _validation=new Validation<ContractAssetDTO>();
         
-    [HttpPost("contractAsset")]
+    [HttpPost("createContractAsset")]
         public async Task<IActionResult> CreateContractAsset(ContractAssetDTO contractAsset)
         {
             //Check Validation
@@ -49,7 +49,7 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpDelete("contractAsset/{id}")]
+        [HttpDelete("deleteContractAsset/{id}")]
         public async Task<IActionResult> DeleteContractAsset(int id)
         {
             var respone = await _contractAssetService.DeleteContractAsset(id);
@@ -59,12 +59,22 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpPut("contractAsset/{id}")]
-        public async Task<IActionResult> UpdateContractAsset(int id,ContractAssetDTO contractAsset)
+        [HttpPut("updateContractAsset")]
+        public async Task<IActionResult> UpdateContractAsset(ContractAssetDTO contractAsset)
         {
             var contractAssetUpdate=_mapper.Map<ContractAsset>(contractAsset);
-            contractAssetUpdate.ContractAssetId = id;
             var respone = await _contractAssetService.UpdateContractAsset(contractAssetUpdate);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("assets/{warehouseId}")]
+        public async Task<IActionResult> GetAssetByWarehouseId(int warehouseId)
+        {
+            var respone = await _contractAssetService.GetContractAssetsByWarehouseId(warehouseId);
             if (respone != null)
             {
                 return Ok(respone);

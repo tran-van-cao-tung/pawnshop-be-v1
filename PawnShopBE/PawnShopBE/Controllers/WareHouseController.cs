@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/warehouse")]
     [ApiController]
     public class WareHouseController : ControllerBase
     {
@@ -25,7 +25,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("warehouse/detail/{id},{numPage}")]
+        [HttpGet("GetAllDetail/{id},{numPage}")]
         public async Task<IActionResult> GetAllWareHouseDetail(int id,int numPage)
         {
             var respone = await _wareHouseService.getWareHouseDetail(id,numPage);
@@ -35,18 +35,22 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpGet("warehouse/{numPage}")]
+        [HttpGet("GetAll/{numPage}")]
         public async Task<IActionResult> GetAllWareHouse(int numPage) {
-            var respone =await _wareHouseService.GetWareHouse(numPage);
-          
-            if (respone != null)
-            {
-                return Ok(respone) ;
-            }
-            return BadRequest();
+            
+                var respone = await _wareHouseService.GetWareHouse(numPage);
+
+                if (respone != null)
+                {
+                    return Ok(respone);
+                }
+                else
+                {
+                    return BadRequest();
+                }
         }
          private Validation<WareHouseDTO> _validation=new Validation<WareHouseDTO>();
-        [HttpPost("warehouse")]
+        [HttpPost("createWarehouse")]
         public async Task<IActionResult> CreateWareHouse(WareHouseDTO wareHouse)
         {
             //Check Validation
@@ -65,7 +69,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("warehouse/{id}")]
+        [HttpDelete("deleteWarehouse/{id}")]
         public async Task<IActionResult> DeleteWareHouse(int id)
         {
             var respone = await _wareHouseService.DeleteWareHouse(id);
@@ -76,11 +80,10 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("warehouse/{id}")]
-        public async Task<IActionResult> UpdateWareHouse(int id,WareHouseDTO wareHouse)
+        [HttpPut("updateWareHouse")]
+        public async Task<IActionResult> UpdateWareHouse(WareHouseDTO wareHouse)
         {
             var wareHouseUpdate=_mapper.Map<Warehouse>(wareHouse);
-            wareHouseUpdate.WarehouseId = id;
             var respone = await _wareHouseService.UpdateWareHouse(wareHouseUpdate);
             if (respone != null)
             {

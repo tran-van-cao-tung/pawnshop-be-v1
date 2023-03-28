@@ -5,10 +5,12 @@ using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
 using Services.Services;
 using Services.Services.IServices;
+using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/ramsom")]
     [ApiController]
     public class RansomController : ControllerBase
     {
@@ -21,20 +23,39 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
 
-        //[HttpPut("ransomeBeforeEndDate/{id}")]
-        //public async Task<IActionResult> RansomeBeforeEndDate(PawnableDTO request)
-        //{
+        [HttpGet("getAll")]
+        public async Task<IActionResult> GetAllRansom()
+        {
+            var respone = await _ranSomeservices.GetRansom();
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
+        [HttpGet("ransombyid/{contractId}")]
+        public async Task<IActionResult> ransombyContractId(int contractId)
+        {
 
-        //    var pawnableProduct = _mapper.Map<PawnableProduct>(request);
-        //    pawnableProduct.PawnableProductId = id;
+            var response = await _ranSomeservices.GetRansomByContractId(contractId);
+            if (response!= null)
+            {
+                return Ok(response);
+            }
 
-        //    var response = await _ranSomeservices.(pawnableProduct);
-        //    if (response)
-        //    {
-        //        return Ok(response);
-        //    }
+            return BadRequest();
+        }
 
-        //    return BadRequest();
-        //}
+        [HttpGet("saveransom/{id}")]
+        public async Task<IActionResult> SaveRansom(int id)
+        {
+            var response = await _ranSomeservices.SaveRansom(id);
+            if (response != null)
+            {
+                return Ok("Save Success");
+            }
+
+            return BadRequest();
+        }
     }
 }

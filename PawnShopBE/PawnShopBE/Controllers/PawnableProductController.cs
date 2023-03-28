@@ -11,7 +11,7 @@ using Attribute = PawnShopBE.Core.Models.Attribute;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/pawnableProduct")]
     [ApiController]
     public class PawnableProductController : ControllerBase
     {
@@ -28,8 +28,8 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
         
-        [HttpGet("pawnable/{numPage}")]
-        public async Task<IActionResult> GetAllPawnable(int numPage)
+        [HttpGet("getAll/{numPage}")]
+        public async Task<IActionResult> GetAllPawnableProducts(int numPage)
         {
             var respone = await _pawnableProductService.GetAllPawnableProducts(numPage);
             if (respone != null)
@@ -39,8 +39,19 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPost("pawnable")]
-        public async Task<IActionResult> CreatePawnable(PawnableDTO pawnableDTO)
+        [HttpGet("getPawnAbleProductById/{id}")]
+        public async Task<IActionResult> PawnAbleProductById(int id)
+        {
+            var respone = await _pawnableProductService.GetPawnableProductById(id);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("createPawnable")]
+        public async Task<IActionResult> CreatePawnableProduct(PawnableDTO pawnableDTO)
         {
             var attribute = _mapper.Map<ICollection<Attribute>>(pawnableDTO.AttributeDTOs);
             var pawnable = _mapper.Map<PawnableProduct>(pawnableDTO);
@@ -54,13 +65,11 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("pawnable/{id}")]
-        public async Task<IActionResult> UpdatePawnableProduct(int id, PawnableDTO request)
+        [HttpPut("updatePawnableProduct")]
+        public async Task<IActionResult> UpdatePawnableProduct( PawnableDTO request)
         {
                      
                 var pawnableProduct = _mapper.Map<PawnableProduct>(request);
-                pawnableProduct.PawnableProductId = id;
-
                 var response = await _pawnableProductService.UpdatePawnableProduct(pawnableProduct);
                 if (response)
                 {

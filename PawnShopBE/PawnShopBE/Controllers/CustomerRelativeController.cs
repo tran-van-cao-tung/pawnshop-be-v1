@@ -7,7 +7,7 @@ using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/customerRelative")]
     [ApiController]
     public class CustomerRelativeController : ControllerBase
     {
@@ -20,7 +20,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("customerRelative")]
+        [HttpGet("getAll")]
         public async Task<IActionResult> GetAllCustomerRelative() {
             var respone =await _customerRelative.GetCustomerRelative();
             if (respone != null)
@@ -31,7 +31,7 @@ namespace PawnShopBE.Controllers
         }
         private Validation<CustomerRelativeDTO> _validation=new Validation<CustomerRelativeDTO>();
        
-    [HttpPost("customerRelative")]
+    [HttpPost("createCustomerRelative")]
         public async Task<IActionResult> CreateCustomerRelative(CustomerRelativeDTO customerRelative)
         {
             //Check Validation
@@ -49,7 +49,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpDelete("customerRelative/{id}")]
+        [HttpDelete("deleteCustomerRelative/{id}")]
         public async Task<IActionResult> DeleteCustomerRelative(Guid id)
         {
             var respone = await _customerRelative.DeleteCustomerRelative(id);
@@ -60,11 +60,10 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("customerRelative/{id}")]
-        public async Task<IActionResult> UpdateCustomerRelative(Guid id,CustomerRelativeDTO customerRelative)
+        [HttpPut("updateCustomerRelative")]
+        public async Task<IActionResult> UpdateCustomerRelative(CustomerRelativeDTO customerRelative)
         {
             var customerRelativeMapper = _mapper.Map<CustomerRelativeRelationship>(customerRelative);
-            customerRelativeMapper.CustomerRelativeRelationshipId = id;
             var respone = await _customerRelative.UpdateCustomerRelative(customerRelativeMapper);
             if (respone != null)
             {

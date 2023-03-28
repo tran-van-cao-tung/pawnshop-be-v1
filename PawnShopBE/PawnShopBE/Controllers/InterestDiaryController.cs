@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using Services.Services;
 using Services.Services.IServices;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1")]
+    [Route("api/v1/interestDiary")]
     [ApiController]
     public class InterestDiaryController : ControllerBase
     {
@@ -19,7 +20,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
 
-        [HttpGet("interestDiaries{contractId}")]
+        [HttpGet("getInterestDiariesByContractId{contractId}")]
         public async Task<IActionResult> GetInterestDiariesByContractId(int contractId)
         {
             var respone = await _interestDiaryService.GetInteresDiariesByContractId(contractId);
@@ -30,11 +31,10 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        //[HttpPost("interestDiary")]
-        //public async Task<IActionResult> CreateinterestDiary(InterestDiaryDTO diary)
+        //[HttpDelete("deleteInterestDiary/{id}")]
+        //public async Task<IActionResult> DeleteInterestDiary(int id)
         //{
-        //    var diaryMapper = _mapper.Map<InterestDiary>(diary);
-        //    var respone = await _interestDiaryService.CreateInteresDiary(diaryMapper);
+        //    var respone = await _interestDiaryService.DeleteInteresDiary(id);
         //    if (respone != null)
         //    {
         //        return Ok(respone);
@@ -42,10 +42,10 @@ namespace PawnShopBE.Controllers
         //    return BadRequest();
         //}
 
-        [HttpDelete("interestDiary/{id}")]
-        public async Task<IActionResult> DeleteInterestDiary(int id)
+        [HttpPut("updateInterestDiary/{id}")]
+        public async Task<IActionResult> UpdateInterestDiary(int id, decimal paidMoney)
         {
-            var respone = await _interestDiaryService.DeleteInteresDiary(id);
+            var respone = await _interestDiaryService.UpdateInterestDiary(id, paidMoney);
             if (respone != null)
             {
                 return Ok(respone);
@@ -53,17 +53,14 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpPut("interestDiary/{id}")]
-        public async Task<IActionResult> UpdateInterestDiary(int id, InterestDiaryDTO diary)
+        [HttpPut("uploadInterestImg/{id}")]
+        public async Task<IActionResult> UploadInterestImg(int id, string interestImg)
         {
-            var diaryUpdate=_mapper.Map<InterestDiary>(diary);
-            diaryUpdate.InterestDiaryId = id;
-            var respone = await _interestDiaryService.UpdateInteresDiary(diaryUpdate);
-            if (respone != null)
-            {
-                return Ok(respone);
-            }
-            return BadRequest();
+            var uploadInterest = await _interestDiaryService.UploadInterestDiaryImg(id, interestImg);
+            if (uploadInterest)
+                return Ok(uploadInterest);
+            else
+                return BadRequest(uploadInterest);
         }
     }
 }
