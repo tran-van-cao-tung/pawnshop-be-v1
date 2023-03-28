@@ -59,11 +59,10 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpPut("updateContractAsset/{id}")]
-        public async Task<IActionResult> UpdateContractAsset(int id,ContractAssetDTO contractAsset)
+        [HttpPut("updateContractAsset")]
+        public async Task<IActionResult> UpdateContractAsset(ContractAssetDTO contractAsset)
         {
             var contractAssetUpdate=_mapper.Map<ContractAsset>(contractAsset);
-            contractAssetUpdate.ContractAssetId = id;
             var respone = await _contractAssetService.UpdateContractAsset(contractAssetUpdate);
             if (respone != null)
             {
