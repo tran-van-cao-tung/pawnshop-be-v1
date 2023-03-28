@@ -24,13 +24,33 @@ namespace Services.Services
         private readonly InterestDiary _diary;
         private DbContextClass _dbContextClass;
         private readonly IInterestDiaryRepository _interestDiaryRepository;
-        public InterestDiaryService(IUnitOfWork unitOfWork, DbContextClass dbContextClass, IInterestDiaryRepository interestDiaryRepository)
+        private readonly ILogContractService _logContractService;
+        public InterestDiaryService(IUnitOfWork unitOfWork, DbContextClass dbContextClass, IInterestDiaryRepository interestDiaryRepository, ILogContractService logContractService)
         {
             _unit = unitOfWork;
             _dbContextClass = dbContextClass;
             _interestDiaryRepository = interestDiaryRepository;
-
+            _logContractService = logContractService;
         }
+
+        private string GetCustomerName(Guid customerId)
+        {
+            var customerIenumerable = from c in _dbContextClass.Customer
+                                      where c.CustomerId == customerId
+                                      select c;
+            var customer = customerIenumerable.FirstOrDefault();
+            return customer.FullName;
+        }
+
+        private string GetUser(Guid userId)
+        {
+            var userIenumerable = from u in _dbContextClass.User
+                                  where u.UserId == userId
+                                  select u;
+            var user = userIenumerable.FirstOrDefault();
+            return user.FullName;
+        }
+
         public async Task<bool> CreateInterestDiary(Contract contract)
         {
             if (contract != null)

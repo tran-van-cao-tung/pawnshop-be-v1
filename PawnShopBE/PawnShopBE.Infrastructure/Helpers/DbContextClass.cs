@@ -43,6 +43,7 @@ namespace PawnShopBE.Infrastructure.Helpers
         public DbSet<Admin> Admin { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
+        public DbSet<LogContract> LogContracts { get; set; }
         #endregion
 
 
@@ -186,6 +187,12 @@ namespace PawnShopBE.Infrastructure.Helpers
             modelBuilder.Entity<UserPermissionGroup>(entity =>
             {
                 entity.HasKey(e => new{e.perId, e.UserId});
+            });
+            modelBuilder.Entity<LogContract>(entity =>
+            {
+                entity.ToTable("LogContract");
+                entity.HasKey(l => l.LogContractId);
+                entity.HasOne(l => l.Contract).WithMany(c => c.LogContracts).HasForeignKey(l => l.ContractId).IsRequired(true);
             });
         }
 
