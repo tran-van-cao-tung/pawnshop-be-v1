@@ -50,10 +50,10 @@ namespace PawnShopBE.Controllers
             await _contractService.exporteExcel();
             return Ok("Export File Excel Success");
         }
-        [HttpGet("homepage")]
-        public async Task<IActionResult> GetAllContractHomePage()
+        [HttpGet("homepage/{branchId}")]
+        public async Task<IActionResult> GetAllContractHomePage(int branchId)
         {
-            var listContracts = await _contractService.getAllContractHomepage();
+            var listContracts = await _contractService.getAllContractHomepage(branchId);
             if (listContracts == null)
             {
                 return NotFound();

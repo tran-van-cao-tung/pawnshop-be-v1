@@ -5,6 +5,7 @@ using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
 using Services.Services;
 using Services.Services.IServices;
+using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
 
 namespace PawnShopBE.Controllers
@@ -22,7 +23,7 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("ransom")]
+        [HttpGet("getAll")]
         public async Task<IActionResult> GetAllRansom()
         {
             var respone = await _ranSomeservices.GetRansom();
@@ -45,6 +46,16 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
+        [HttpGet("saveransom/{id}")]
+        public async Task<IActionResult> SaveRansom(int id)
+        {
+            var response = await _ranSomeservices.SaveRansom(id);
+            if (response != null)
+            {
+                return Ok("Save Success");
+            }
 
+            return BadRequest();
+        }
     }
 }

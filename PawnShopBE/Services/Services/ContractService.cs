@@ -156,19 +156,20 @@ namespace Services.Services
             return null;
         }
 
-        public async Task<DisplayContractHomePage> getAllContractHomepage()
+        public async Task<DisplayContractHomePage> getAllContractHomepage(int branchId)
         {
             getParameter();
             //get all List
             var branchList = await _branchService.GetAllBranch(0);
             var ledgerList = await _ledgerService.GetLedger();
-            var contractList = await GetAllContracts(0);
+            var contractCollection = await GetAllContracts(0);
             var ransomList = await _ransomService.GetRansom();
             //var customerList = await _customerService.GetAllCustomer(0);
             //var assetList = await _iContractAssetService.GetAllContractAssets();
             //var pawnableList = await _pawnableService.GetAllPawnableProducts(0);
             //var wareHouseList = await _warehouseService.GetWareHouse(0);
             // khai báo filed hiển thị chung 
+            var contractList = from c in contractCollection where c.BranchId == branchId select c;
             decimal fund = 0;
             decimal loanLedger = 0;
             decimal recveivedInterest = 0;
@@ -219,15 +220,13 @@ namespace Services.Services
         }
         private decimal getRansom(IEnumerable<Ransom> ransomList, int contractId)
         {
-            var ransomIenumerable = from r in ransomList where r.ContractId == contractId select r;
-            var ransom = ransomIenumerable.FirstOrDefault();
+            var ransom = (from r in ransomList where r.ContractId == contractId select r).FirstOrDefault();
             return ransom.TotalPay;
         }
 
         private decimal getLedger(IEnumerable<Ledger> ledgerList, int branchId, bool v)
         {
-            var ledgerIenumerable = from l in ledgerList where l.BranchId == branchId select l;
-            var ledger = ledgerIenumerable.FirstOrDefault();
+            var ledger = (from l in ledgerList where l.BranchId == branchId select l).FirstOrDefault();
             // true => get loan, false => get receiveInterest (lãi đã nhận)
             if (v)
                 return ledger.Loan;
@@ -237,8 +236,7 @@ namespace Services.Services
 
         private string getBranchName(int branchId, IEnumerable<Branch> branchList, bool v)
         {
-            var branchIenumerable = from b in branchList where b.BranchId == branchId select b;
-            var branch = branchIenumerable.FirstOrDefault();
+            var branch = (from b in branchList where b.BranchId == branchId select b).FirstOrDefault();
             // true => get branch Name, false => get fund
             if (v)
                 return branch.BranchName;
@@ -250,25 +248,20 @@ namespace Services.Services
             IEnumerable<PawnableProduct> pawnableList, IEnumerable<Warehouse> warehouseList, int num)
         {
             //get list contract asset
-            var assetIenumerable = from a in assetList where a.ContractAssetId == contractAssetId select a;
-            var asset = assetIenumerable.FirstOrDefault();
+            var asset =(from a in assetList where a.ContractAssetId == contractAssetId select a).FirstOrDefault();
             // 1 => get code Asset, 2 => get name Asset, 3 => get ware name
             switch (num)
             {
                 case 1:
-                    var pawnableIenumerable = from p in pawnableList
-                                              where
-                                          p.PawnableProductId == asset.PawnableProductId
-                                              select p;
-                    var pawnable = pawnableIenumerable.FirstOrDefault();
+                    var pawnable = (from p in pawnableList where
+                                          p.PawnableProductId == asset.PawnableProductId select p).FirstOrDefault();
                     return pawnable.CommodityCode;
 
                 case 2:
                     return asset.ContractAssetName;
 
                 case 3:
-                    var wareIenumerable = from w in warehouseList where w.WarehouseId == asset.WarehouseId select w;
-                    var wareHouse = wareIenumerable.FirstOrDefault();
+                    var wareHouse = (from w in warehouseList where w.WarehouseId == asset.WarehouseId select w).FirstOrDefault();
                     return wareHouse.WarehouseName;
             }
             return null;
@@ -354,9 +347,9 @@ namespace Services.Services
         {
             var provider = _serviceProvider.GetService(typeof(ICustomerService)) as ICustomerService;
             var customerList = await provider.GetAllCustomer(0);
-            var customerIenumerable = from c in customerList where c.CustomerId == contract.CustomerId select c;
+            var customerIenumerable = (from c in customerList where c.CustomerId == contract.CustomerId select c).FirstOrDefault();
             var customer = new Customer();
-            customer = customerIenumerable.FirstOrDefault();
+            customer = customerIenumerable;
             //plus point
             customer.Point += 100;
             if (await provider.UpdateCustomer(customer))

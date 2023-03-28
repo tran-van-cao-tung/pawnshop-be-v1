@@ -69,8 +69,7 @@ namespace Services.Services
 
         private bool getStatus(IEnumerable<UserPermissionGroup> listGroup, int perId, Guid userId)
         {
-            var resultIenumerable = from p in listGroup where p.perId == perId && p.UserId == userId select p;
-            var result = resultIenumerable.FirstOrDefault();
+            var result = (from p in listGroup where p.perId == perId && p.UserId == userId select p).FirstOrDefault();
             if (result!=null)
             {
                 return result.Status;
