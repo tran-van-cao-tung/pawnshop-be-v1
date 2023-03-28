@@ -8,10 +8,13 @@ using PawnShopBE.Infrastructure.Repositories;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Contract = PawnShopBE.Core.Models.Contract;
 
 namespace Services.Services
 {
@@ -21,7 +24,7 @@ namespace Services.Services
         private readonly InterestDiary _diary;
         private DbContextClass _dbContextClass;
         private readonly IInterestDiaryRepository _interestDiaryRepository;
-        public InterestDiaryService(IUnitOfWork unitOfWork, DbContextClass dbContextClass, IInterestDiaryRepository interestDiaryRepository )
+        public InterestDiaryService(IUnitOfWork unitOfWork, DbContextClass dbContextClass, IInterestDiaryRepository interestDiaryRepository)
         {
             _unit = unitOfWork;
             _dbContextClass = dbContextClass;
@@ -32,7 +35,7 @@ namespace Services.Services
         {
             if (contract != null)
             {
-                int numberOfPeriods = contract.Package.Day/ contract.Package.PaymentPeriod;
+                int numberOfPeriods = contract.Package.Day / contract.Package.PaymentPeriod;
                 DateTime startDate = contract.ContractStartDate;
                 DateTime endDate = contract.ContractEndDate;
                 List<Tuple<DateTime, DateTime>> periods = HelperFuncs.DivideTimePeriodIntoPeriods(startDate, endDate, numberOfPeriods);
@@ -58,10 +61,10 @@ namespace Services.Services
                     interestDiary.PaidMoney = 0;
                     interestDiary.InterestDebt = 0;
                     _dbContextClass.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.InterestDiary ON;");
-                        interestDiaries.Add(interestDiary);        
-                        await _unit.InterestDiaries.AddList(interestDiaries);
-                        _dbContextClass.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.InterestDiary OFF;");
-                    }
+                    interestDiaries.Add(interestDiary);
+                    await _unit.InterestDiaries.AddList(interestDiaries);
+                    _dbContextClass.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.InterestDiary OFF;");
+                }
                 result = await _unit.SaveList();
 
                 if (result > 0)
@@ -96,38 +99,65 @@ namespace Services.Services
 
         public async Task<IEnumerable<InterestDiary>> GetInteresDiariesByContractId(int contractId)
         {
-            if (contractId != null)
+            try
             {
-                return (List<InterestDiary>) await _interestDiaryRepository.GetDiaryByContractId(contractId);              
+                return (contractId != null) ? (List<InterestDiary>)await _interestDiaryRepository.GetDiaryByContractId(contractId) : null;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
             }
             return null;
         }
 
-        public async Task<bool> UpdateInteresDiary(InterestDiary interestDiary)
+        public async Task<bool> UpdateInterestDiary(int id, decimal paidMoney)
         {
-            var diaryUpdate = _unit.InterestDiaries.SingleOrDefault
-                (interestDiary, j => j.InterestDiaryId == interestDiary.InterestDiaryId);
-            if (diaryUpdate != null)
+            try
             {
-                //diaryUpdate.TotalPay = diaryUpdate.Penalty + diaryUpdate.Payment;
-                diaryUpdate.PaidMoney = interestDiary.PaidMoney;
-                diaryUpdate.InterestDebt = diaryUpdate.TotalPay - interestDiary.PaidMoney;
+                var diaryUpdate = await _unit.InterestDiaries.GetById(id);
+                if (diaryUpdate == null) return false;
+                diaryUpdate.PaidMoney = paidMoney;
+                diaryUpdate.InterestDebt = diaryUpdate.TotalPay - (paidMoney);
                 diaryUpdate.PaidDate = DateTime.Now;
 
-                if (diaryUpdate.TotalPay == interestDiary.PaidMoney)
+                if (diaryUpdate.TotalPay == paidMoney && diaryUpdate.InterestDebt == 0)
                 {
-                    diaryUpdate.Status = (int) InterestDiaryConsts.PAID;
+                    diaryUpdate.Status = (int)InterestDiaryConsts.PAID;
+                    diaryUpdate.InterestDebt = 0;
                 }
-                diaryUpdate.Description = interestDiary.Description;
-                diaryUpdate.ProofImg = interestDiary.ProofImg;
                 _unit.InterestDiaries.Update(diaryUpdate);
                 var result = _unit.Save();
-                if (result > 0)
+                return (result > 0) ? true : false;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+            }
+            return false;
+
+        }
+
+        public async Task<bool> UploadInterestDiaryImg(int interestDiaryId, string interestDiaryImg)
+        {
+            try
+            {
+                var interestDiary = await _unit.InterestDiaries.GetById(interestDiaryId);
+                if (interestDiary != null && (interestDiaryImg != null))
                 {
-                    return true;
+                    interestDiary.ProofImg = interestDiaryImg;
                 }
+                _unit.InterestDiaries.Update(interestDiary);
+                var result = _unit.Save();
+
+                return (result > 0) ? true : false;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
             }
             return false;
         }
+
+        
     }
 }

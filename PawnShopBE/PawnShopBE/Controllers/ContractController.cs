@@ -106,17 +106,17 @@ namespace PawnShopBE.Controllers
                 return Ok(listContracts);
         }
 
-        [HttpPut("updateContract/{contractId}")]
-        public async Task<IActionResult> UpdateContract(int contractId, ContractDTO request)
-        {       
-                var contract = _mapper.Map<Contract>(request);
-                var response = await _contractService.UpdateContract(contractId, contract);
-                if (response)
-                {
-                    return Ok(response);
-                }         
-            return Ok();
-        }
+        //[HttpPut("updateContract/{contractId}")]
+        //public async Task<IActionResult> UpdateContract(int contractId, ContractDTO request)
+        //{       
+        //        var contract = _mapper.Map<Contract>(request);
+        //        var response = await _contractService.UpdateContract(contractId, contract);
+        //        if (response)
+        //        {
+        //            return Ok(response);
+        //        }         
+        //    return Ok();
+        //}
 
         [HttpGet("getContractDetail/{idContract}")]
         public async Task<IActionResult> GetContractDetail(int idContract)
@@ -143,7 +143,7 @@ namespace PawnShopBE.Controllers
             return (contract != null) ? Ok(contract) : NotFound();
         }
 
-        [HttpPost("uploadContractImg/{contractId}/{customerImg}/{contractImg}")]
+        [HttpPut("uploadContractImg/{contractId}")]
         public async Task<IActionResult> UploadContractImg(int contractId, string customerImg, string contractImg)
         {
             
@@ -151,8 +151,7 @@ namespace PawnShopBE.Controllers
             if (uploadContract)
                 return Ok(uploadContract);
             else
-                return BadRequest(uploadContract);
-             
+                return BadRequest(uploadContract);          
         }
 
         [HttpPost("createContractExpiration/{contractId}")]
