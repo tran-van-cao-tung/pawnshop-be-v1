@@ -79,22 +79,19 @@ namespace Services.Services
 
         private PawnableProduct getPawnable(int pawnableProductId, IEnumerable<PawnableProduct> pawnableList)
         {
-            var pawnableIenumerable= from p in pawnableList where p.PawnableProductId == pawnableProductId select p;
-            var pawnable=pawnableIenumerable.FirstOrDefault();
+            var pawnable = (from p in pawnableList where p.PawnableProductId == pawnableProductId select p).FirstOrDefault();
             return pawnable;
         }
 
         private ContractAsset getAsset(int contractAssetId, IEnumerable<ContractAsset> assetList)
         {
-            var assetIenumerable= from a in assetList where a.ContractAssetId== contractAssetId select a;
-            var asset= assetIenumerable.FirstOrDefault();
+            var asset= (from a in assetList where a.ContractAssetId== contractAssetId select a).FirstOrDefault();
             return asset;
         }
 
         private Customer getCustomer(Guid customerId, IEnumerable<Customer> customerList)
         {
-            var customerIenumerable = from c in customerList where c.CustomerId == customerId select c;
-            var customer = customerIenumerable.FirstOrDefault();
+            var customer = (from c in customerList where c.CustomerId == customerId select c).FirstOrDefault();
             return customer;
         }
        
@@ -155,8 +152,7 @@ namespace Services.Services
             foreach (var contract in contractIenumerable)
             {
                 //get liquidation
-                var liquidationIenumerable = from l in liquidationList where l.ContractId == contract.ContractId select l;
-                var liquidation= liquidationIenumerable.FirstOrDefault();
+                var liquidation = (from l in liquidationList where l.ContractId == contract.ContractId select l).FirstOrDefault();
                 if(liquidation != null)
                 money += liquidation.LiquidationMoney;
             }
@@ -165,9 +161,8 @@ namespace Services.Services
 
         private Branch getBranch(IEnumerable<Branch> branchList, IEnumerable<Ledger> ledgerMonth)
         {
-            var branchIenumerable = branchList.Join(ledgerMonth, b => b.BranchId, l => l.BranchId,
-                (b, l) => { return b; });
-            var branch=branchIenumerable.FirstOrDefault();
+            var branch = (branchList.Join(ledgerMonth, b => b.BranchId, l => l.BranchId,
+                (b, l) => { return b; })).FirstOrDefault();
             return branch;
         }
 

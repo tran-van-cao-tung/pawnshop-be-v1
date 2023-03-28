@@ -93,8 +93,7 @@ namespace Services.Services
         }
         private int getContractId(IEnumerable<Contract> contract)
         {
-            var getContractId = from c in contract select c.ContractId;
-            var contractId = getContractId.FirstOrDefault();
+            var contractId = (from c in contract select c.ContractId).FirstOrDefault();
             return contractId;
         }
         public async Task<IEnumerable<DisplayBranch>> getDisplayBranch(IEnumerable<DisplayBranch> branchList)

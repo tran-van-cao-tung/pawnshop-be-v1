@@ -38,10 +38,9 @@ namespace Services.Services
             var listPawnable = await _pawnable.GetAllPawnableProducts(0);
 
             //get field
-            var wareHouseIenumerable = from w in listWarehouse where w.WarehouseId == id select w;
-            if (wareHouseIenumerable.Count() > 0)
+            var wareHouse = (from w in listWarehouse where w.WarehouseId == id select w).FirstOrDefault();
+            if (wareHouse != null)
             {
-                var wareHouse = wareHouseIenumerable.FirstOrDefault();
                 var asset = from l in listAsset where l.WarehouseId == id select l;
 
                 //get wareHouse Detail
