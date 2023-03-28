@@ -34,16 +34,16 @@ namespace Services.Services
         {
             // Contracts IN_PROGRESS turn into OVER_DUE 
             var overdueContracts = _contextClass.Contract
-                        .Where(c => c.Status == (int) ContractConst.IN_PROGRESS && c.ContractEndDate < DateTime.Today)
+                        .Where(c => c.Status == (int)ContractConst.IN_PROGRESS && c.ContractEndDate < DateTime.Today)
                         .ToList();
             foreach (var contract in overdueContracts)
             {
                 contract.Status = (int)ContractConst.OVER_DUE;
             }
-         
+
             // Ransom on time
             var ramsomsOnTime = _contextClass.Ransom
-                        .Where(r => r.Status == (int) RansomConsts.SOON && r.Contract.ContractEndDate == DateTime.Today)
+                        .Where(r => r.Status == (int)RansomConsts.SOON && r.Contract.ContractEndDate == DateTime.Today)
                         .ToList();
             foreach (var ransom in ramsomsOnTime)
             {
@@ -85,7 +85,7 @@ namespace Services.Services
                 // Penalty between 1 month to 3 month
                 else
                 {
-                    if (totalDays == (double) package.PunishDay1 || totalDays < (double)package.LiquitationDay)
+                    if (totalDays == (double)package.PunishDay1 || totalDays < (double)package.LiquitationDay)
                     {
                         ransom.Penalty = paymentFee;
                     }
@@ -138,10 +138,33 @@ namespace Services.Services
                 {
                     diary.Penalty = diary.Payment / 2;
                 }
-                diary.TotalPay = diary.Penalty + diary.Payment;              
-            }
-           
+                diary.TotalPay = diary.Penalty + diary.Payment;
 
+                // Log Contract when overdueDate
+                var contractJoinUserJoinCustomer = from contract in _contextClass.Contract
+                                                   join customer in _contextClass.Customer
+                                                   on contract.CustomerId equals customer.CustomerId
+                                                   join user in _contextClass.User
+                                                   on contract.UserId equals user.UserId
+                                                   select new
+                                                   {
+                                                       ContractId = contract.ContractId,
+                                                       UserName = user.FullName,
+                                                       CustomerName = customer.FullName,
+                                                   };
+                var logContract = new LogContract();
+                foreach (var row in contractJoinUserJoinCustomer)
+                {
+                    logContract.ContractId = row.ContractId;
+                    logContract.UserName = row.UserName;
+                    logContract.CustomerName = row.CustomerName;
+                }
+                logContract.Debt = diary.TotalPay;
+                logContract.Paid = 0;
+                logContract.Description = diary.NextDueDate.ToString("MM/dd/yyyy HH:mm");
+                logContract.EventType = (int)LogContractConst.INTEREST_NOT_PAID;
+                logContract.LogTime = DateTime.Now;
+            }
             _contextClass.SaveChanges();
         }
     }

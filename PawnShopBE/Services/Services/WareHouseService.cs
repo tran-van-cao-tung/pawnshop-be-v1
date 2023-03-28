@@ -47,6 +47,7 @@ namespace Services.Services
                 var wareHouseDTO = new WareHouseDTO();
                 wareHouseDTO.ContractAssets = new List<ContractAssetDTO>();
                 wareHouseDTO.ContractAssets = getAssetDTO(wareHouseDTO, asset, listPawnable);
+                wareHouseDTO.WarehouseId = id;
                 wareHouseDTO.WarehouseName = wareHouse.WarehouseName;
                 wareHouseDTO.WarehouseAddress = wareHouse.WarehouseAddress;
                 wareHouseDTO.Status = wareHouse.Status;

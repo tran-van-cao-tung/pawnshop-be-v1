@@ -22,6 +22,7 @@ namespace PawnShopBE.Core.DTOs
         [Required(ErrorMessage = "Cần có hình ảnh xác thực")]
         public string Image { get; set; }
         public string? commodifyCode { get; set; }
+        public int Status { get; set; }
 
     }
 }

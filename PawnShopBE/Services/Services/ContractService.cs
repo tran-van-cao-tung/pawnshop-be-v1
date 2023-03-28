@@ -34,11 +34,12 @@ namespace Services.Services
         private ICustomerService _customerService;
         private IPawnableProductService _pawnableService;
         private IWareHouseService _warehouseService;
+        private ILogContractService _logContractService;
         private DbContextClass _dbContextClass;
         public ContractService(IUnitOfWork unitOfWork, IContractRepository iContractRepository,
             IContractAssetService contractAssetService, IPackageService packageService,
             IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider,
-            ILedgerService ledger, IPawnableProductService pawnable, IWareHouseService wareHouse, DbContextClass dbContextClass)
+            ILedgerService ledger, IPawnableProductService pawnable, IWareHouseService wareHouse, DbContextClass dbContextClass, ILogContractService logContractService)
         {
             _unitOfWork = unitOfWork;
             _iContractRepository = iContractRepository;
@@ -50,6 +51,7 @@ namespace Services.Services
             _pawnableService = pawnable;
             _warehouseService = wareHouse;
             _dbContextClass = dbContextClass;
+            _logContractService = logContractService;
         }
         private void getParameter()
         {
@@ -265,10 +267,22 @@ namespace Services.Services
             return null;
         }
 
-        private string getCustomerName(IEnumerable<Customer> customerList, Guid customerId)
+        private string GetCustomerName(Guid customerId)
         {
-            var customer = (from c in customerList where c.CustomerId == customerId select c).FirstOrDefault();
+            var customerIenumerable = from c in _dbContextClass.Customer
+                                      where c.CustomerId == customerId 
+                                      select c;
+            var customer = customerIenumerable.FirstOrDefault();
             return customer.FullName;
+        }
+
+        private string GetUser(Guid userId)
+        {
+            var userIenumerable = from u in _dbContextClass.User
+                                      where u.UserId == userId
+                                      select u;
+            var user = userIenumerable.FirstOrDefault();
+            return user.FullName;
         }
 
         public async Task<bool> CreateContract(Contract contract)
@@ -301,10 +315,27 @@ namespace Services.Services
                 var result = _unitOfWork.Save();
                 if (result > 0)
                 {
+                    // Create Log Contract
+                    var logContract = new LogContract();
+                    logContract.ContractId = contract.ContractId;
+                    logContract.CustomerName = GetCustomerName(contract.CustomerId);
+                    logContract.UserName = GetUser(contract.UserId);
+                    logContract.Debt = contract.Loan;
+                    logContract.Paid = 0;
+                    logContract.LogTime = DateTime.Now;
+                    logContract.Description = null;
+                    logContract.EventType = (int)LogContractConst.CREATE_CONTRACT;
+                    await _logContractService.CreateLogContract(logContract);
+
+                    // Create Ransom
                     var ransomProvider = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
-                    var createRansom = await ransomProvider.CreateRansom(contract);
+                    await ransomProvider.CreateRansom(contract);
+
+                    // Create Interest Diary
                     var interestProvider = _serviceProvider.GetService(typeof(IInteresDiaryService)) as IInteresDiaryService;
-                    var createInterestDiary = await interestProvider.CreateInterestDiary(contract);
+                    await interestProvider.CreateInterestDiary(contract);
+                    
+                    
                     return true;
                 }
                 if (await plusPoint(contract))
@@ -369,6 +400,7 @@ namespace Services.Services
                                                 on contractAsset.WarehouseId equals warehouse.WarehouseId
                                                 select new
                                                 {
+                                                    ContractId = contract.ContractId,
                                                     ContractCode = contract.ContractCode,
                                                     CustomerName = customer.FullName,
                                                     CommodityCode = pawnableProduct.CommodityCode,
@@ -384,6 +416,7 @@ namespace Services.Services
             foreach (var row in contractJoinCustomerJoinAsset)
             {
                 DisplayContractList displayContract = new DisplayContractList();
+                displayContract.ContractId = row.ContractId;
                 displayContract.ContractCode = row.ContractCode;
                 displayContract.CustomerName = row.CustomerName;
                 displayContract.CommodityCode = row.CommodityCode;
@@ -432,7 +465,7 @@ namespace Services.Services
             if (contract != null)
             {
                 var contractUpdate = await _unitOfWork.Contracts.GetById(contractId);
-                if (contractUpdate.ContractId == contract.ContractId)
+                if (contractUpdate != null)
                 {
                     // Update Asset
                     if (contract.ContractAsset != null)
@@ -641,6 +674,7 @@ namespace Services.Services
                 {
                     foreach (var row in contractJoinPackageJoinAssetJoinCustomerJoinUser)
                     {
+                        displayContractInfo.ContractId = contractId;
                         displayContractInfo.ContractCode = row.ContractCode;
                         displayContractInfo.ContractStartDate = row.ContractStartDate;
                         displayContractInfo.Loan = row.ContractLoan;

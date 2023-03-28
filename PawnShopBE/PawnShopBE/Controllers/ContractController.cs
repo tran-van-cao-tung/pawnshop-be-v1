@@ -9,6 +9,8 @@ using Services.Services;
 using Services.Services.IServices;
 using System.Text;
 using PawnShopBE.Core.Validation;
+using System.Diagnostics.Contracts;
+using Contract = PawnShopBE.Core.Models.Contract;
 
 namespace PawnShopBE.Controllers
 {
@@ -25,9 +27,9 @@ namespace PawnShopBE.Controllers
         private readonly IMapper _mapper;
 
         public ContractController(
-            IContractService contractService, 
-            ICustomerService customer, 
-            IContractAssetService contractAssetService, 
+            IContractService contractService,
+            ICustomerService customer,
+            IContractAssetService contractAssetService,
             IPackageService packageService,
             IInteresDiaryService interestDiaryService,
             IRansomService ransomService,
@@ -41,7 +43,7 @@ namespace PawnShopBE.Controllers
             _ransomService = ransomService;
             _mapper = mapper;
         }
-        private Validation<ContractDTO> _validation=new Validation<ContractDTO>();
+        private Validation<ContractDTO> _validation = new Validation<ContractDTO>();
         [HttpGet("excel")]
         public async Task<IActionResult> exportFileExcel()
         {
@@ -62,51 +64,60 @@ namespace PawnShopBE.Controllers
         [HttpPost("createContract")]
         public async Task<IActionResult> CreateContract(ContractDTO request)
         {
-           
-                //Check Validation
-                var checkValidation = await _validation.CheckValidation(request);
-                if (checkValidation != null)
-                {
-                    return BadRequest(checkValidation);
-                }
-                StringBuilder sb = new StringBuilder();
-                foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
+            //Check Validation
+            var checkValidation = await _validation.CheckValidation(request);
+            if (checkValidation != null)
+            {
+                return BadRequest(checkValidation);
+            }
+            StringBuilder sb = new StringBuilder();
+            var count = 1;
+            foreach (AttributeDTO attributes in request.PawnableAttributeDTOs)
+            {
+                if (request.PawnableAttributeDTOs.Count > count)
                 {
                     sb.Append(attributes.Description + "/");
+                    count++;
                 }
-                //Create asset
-                var contractAsset = _mapper.Map<ContractAsset>(request);
-                contractAsset.Description = sb.ToString();
-                await _contractAssetService.CreateContractAsset(contractAsset);
-
-                // Create contract
-                var contract = _mapper.Map<Contract>(request);
-                contract.ContractAssetId = contractAsset.ContractAssetId;
-                var result = await _contractService.CreateContract(contract);
-                return result ? Ok(result) : BadRequest();
+                else
+                {
+                    sb.Append(attributes.Description);
+                }
             }
+            //Create asset
+            var contractAsset = _mapper.Map<ContractAsset>(request);
+            contractAsset.Description = sb.ToString();
+            contractAsset.Status = (int)ContractAssetConst.IN_STOCK;
+            await _contractAssetService.CreateContractAsset(contractAsset);
+
+            // Create contract
+            var contract = _mapper.Map<Contract>(request);
+            contract.ContractAssetId = contractAsset.ContractAssetId;
+            var result = await _contractService.CreateContract(contract);
+            return result ? Ok(result) : BadRequest();
+        }
         [HttpGet("getAll/{numPage}")]
         public async Task<IActionResult> GetAllContracts(int numPage)
         {
-                var listContracts = await _contractService.GetAllDisplayContracts(numPage);
-                if (listContracts == null)
-                {
-                    return NotFound();
-                }
-                return Ok(listContracts);
+            var listContracts = await _contractService.GetAllDisplayContracts(numPage);
+            if (listContracts == null)
+            {
+                return NotFound();
+            }
+            return Ok(listContracts);
         }
 
-        [HttpPut("updateContract/{contractId}")]
-        public async Task<IActionResult> UpdateContract(int contractId, ContractDTO request)
-        {       
-                var contract = _mapper.Map<Contract>(request);
-                var response = await _contractService.UpdateContract(contractId, contract);
-                if (response)
-                {
-                    return Ok(response);
-                }         
-            return Ok();
-        }
+        //[HttpPut("updateContract/{contractId}")]
+        //public async Task<IActionResult> UpdateContract(int contractId, ContractDTO request)
+        //{       
+        //        var contract = _mapper.Map<Contract>(request);
+        //        var response = await _contractService.UpdateContract(contractId, contract);
+        //        if (response)
+        //        {
+        //            return Ok(response);
+        //        }         
+        //    return Ok();
+        //}
 
         [HttpGet("getContractDetail/{idContract}")]
         public async Task<IActionResult> GetContractDetail(int idContract)
@@ -119,23 +130,29 @@ namespace PawnShopBE.Controllers
             return Ok(contractDetail);
         }
 
-        [HttpGet("getByContractCode/{contractCode}")]
-        public async Task<IActionResult> GetContractByContractCode(string contractCode)
+        //[HttpGet("getByContractId/{contractId}")]
+        //public async Task<IActionResult> GetContractByContractId(int contractId)
+        //{
+        //    var contract = await _contractService.GetContractById(contractId);
+        //    return (contract != null) ? Ok(contract) : NotFound();
+        //}
+
+        [HttpGet("getContractInfoByContractId/{contractId}")]
+        public async Task<IActionResult> GetContractInfoByContractId(int contractId)
         {
-            var contract = await _contractService.GetContractByContractCode(contractCode);
+            var contract = await _contractService.GetContractInfoByContractId(contractId);
             return (contract != null) ? Ok(contract) : NotFound();
         }
 
-        [HttpPost("uploadContractImg/{contractId}/{customerImg}/{contractImg}")]
+        [HttpPut("uploadContractImg/{contractId}")]
         public async Task<IActionResult> UploadContractImg(int contractId, string customerImg, string contractImg)
         {
-            
+
             var uploadContract = await _contractService.UploadContractImg(contractId, customerImg, contractImg);
             if (uploadContract)
                 return Ok(uploadContract);
             else
                 return BadRequest(uploadContract);
-             
         }
 
         [HttpPost("createContractExpiration/{contractId}")]
@@ -147,6 +164,6 @@ namespace PawnShopBE.Controllers
                 return Ok(contractExpiration);
             }
             return BadRequest();
-        }      
+        }
     }
 }
