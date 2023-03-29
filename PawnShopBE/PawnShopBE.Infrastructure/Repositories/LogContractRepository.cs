@@ -15,5 +15,11 @@ namespace PawnShopBE.Infrastructure.Repositories
         {
 
         }
+
+        public async Task<LogContract> getLogContractByContractId(int contractId)
+        {
+            var logContract = _dbContext.LogContracts.FirstOrDefault(x => x.ContractId == contractId);
+            return logContract;
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace PawnShopBE.Infrastructure.Helpers
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+       {
             modelBuilder.Entity<User>(entity =>
             {
                 // Table mapping to db

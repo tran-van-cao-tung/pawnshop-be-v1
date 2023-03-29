@@ -23,12 +23,14 @@ namespace Services.Services
         private readonly IContractService _contractService;
         private readonly IPackageService _packageService;
         private readonly IInteresDiaryService _interesDiaryService;
-        public ScheduleJob(DbContextClass dbContextClass, IContractService contractService, IPackageService packageService, IInteresDiaryService interesDiaryService)
+        private readonly ILogContractService _logContractService;
+        public ScheduleJob(DbContextClass dbContextClass, IContractService contractService, IPackageService packageService, IInteresDiaryService interesDiaryService, ILogContractService logContractService)
         {
             _contextClass = dbContextClass;
             _contractService = contractService;
             _packageService = packageService;
             _interesDiaryService = interesDiaryService;
+            _logContractService = logContractService;
         }
         public async Task Execute(IJobExecutionContext context)
         {
@@ -96,39 +98,9 @@ namespace Services.Services
                     contract.Status = (int)ContractConst.LIQUIDATION;
                 }
                 ransom.Status = (int)RansomConsts.LATE;
-            }
-
-            // Ransom before day contract end
-            //for (int i = 1; i <= diaries; i++) {
-
-            //    var interestDiaryList = await _interesDiaryService.GetInteresDiaryByContractId(i);
-            //    if (interestDiaryList == null)
-            //    {
-            //        break;
-            //    }
-
-            //    var result = _contextClass.InterestDiary
-            //            .Where(x => x.ContractId == interestDiaryList.ContractId)
-            //            .OrderBy(x => x.NextDueDate)
-            //            .Select((x, i) => new { Index = i + 1, Item = x })
-            //            .ToList();
-
-            //    var middleIndex = result.Count / 2;
-
-            //    var middleRow = result.SingleOrDefault(x => x.Index == middleIndex);
-
-            //    if (middleRow != null)
-            //    {
-            //        var entity = middleRow.Item;
-            //        if (entity.PaidMoney != null)
-            //        {
-
-            //        }
-            //        // access the entity's properties               
-            //    }
-            //}
+            }       
             var overdueDiaries = _contextClass.InterestDiary
-                        .Where(d => d.Status == (int)InterestDiaryConsts.NOT_PAID && d.NextDueDate < DateTime.Today)
+                        .Where(d => d.Status == (int)InterestDiaryConsts.NOT_PAID && d.NextDueDate < DateTime.Today && d.Penalty == 0)
                         .ToList();
 
             foreach (var diary in overdueDiaries)
@@ -164,6 +136,7 @@ namespace Services.Services
                 logContract.Description = diary.NextDueDate.ToString("MM/dd/yyyy HH:mm");
                 logContract.EventType = (int)LogContractConst.INTEREST_NOT_PAID;
                 logContract.LogTime = DateTime.Now;
+                await _logContractService.CreateLogContract(logContract);
             }
             _contextClass.SaveChanges();
         }
