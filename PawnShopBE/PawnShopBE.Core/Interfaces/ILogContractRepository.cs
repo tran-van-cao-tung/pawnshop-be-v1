@@ -9,5 +9,6 @@ namespace PawnShopBE.Core.Interfaces
 {
     public interface ILogContractRepository : IGenericRepository<LogContract>
     {
+        Task<LogContract> getLogContractByContractId(int contractId);
     }
 }

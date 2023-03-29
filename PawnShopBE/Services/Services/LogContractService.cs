@@ -11,11 +11,12 @@ namespace Services.Services
 {
     public class LogContractService : ILogContractService
     {
-        public IUnitOfWork _unitOfWork;
-
-        public LogContractService(IUnitOfWork unitOfWork)
+        private IUnitOfWork _unitOfWork;
+        private ILogContractRepository _logContractRepository;
+        public LogContractService(IUnitOfWork unitOfWork, ILogContractRepository logContractRepository)
         {
             _unitOfWork = unitOfWork;
+            _logContractRepository = logContractRepository;
         }
         public async Task<bool> CreateLogContract(LogContract logContract)
         {
@@ -30,9 +31,21 @@ namespace Services.Services
             return false;
         }
 
-        public Task<IEnumerable<LogContract>> GetLogContracts(int num)
+        public async Task<IEnumerable<LogContract>> GetLogContracts(int num)
         {
-            throw new NotImplementedException();
+            var logContractList = await _unitOfWork.LogContracts.GetAll();
+            if (num == 0)
+            {
+                return logContractList;
+            }
+            var result = await _unitOfWork.LogContracts.TakePage(num, logContractList);
+            return result;
+        }
+
+        public Task<LogContract> LogContractByContractId(int contractId)
+        {
+            var logContract = _logContractRepository.getLogContractByContractId(contractId);
+            return logContract;
         }
     }
 }

@@ -323,7 +323,7 @@ namespace Services.Services
                     logContract.Debt = contract.Loan;
                     logContract.Paid = 0;
                     logContract.LogTime = DateTime.Now;
-                    logContract.Description = null;
+                    logContract.Description = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
                     logContract.EventType = (int)LogContractConst.CREATE_CONTRACT;
                     await _logContractService.CreateLogContract(logContract);
 
