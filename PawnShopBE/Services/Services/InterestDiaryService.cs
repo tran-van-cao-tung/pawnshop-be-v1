@@ -84,6 +84,7 @@ namespace Services.Services
                     interestDiaries.Add(interestDiary);
                     await _unit.InterestDiaries.AddList(interestDiaries);
                     _dbContextClass.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.InterestDiary OFF;");
+
                 }
                 result = await _unit.SaveList();
 
@@ -145,9 +146,45 @@ namespace Services.Services
                     diaryUpdate.Status = (int)InterestDiaryConsts.PAID;
                     diaryUpdate.InterestDebt = 0;
                 }
+
+
                 _unit.InterestDiaries.Update(diaryUpdate);
+                
                 var result = _unit.Save();
-                return (result > 0) ? true : false;
+                if (result > 0)
+                {
+                    // Log Contract when onTime
+                    var contractJoinUserJoinCustomer = from contract in _dbContextClass.Contract
+                                                       join customer in _dbContextClass.Customer
+                                                       on contract.CustomerId equals customer.CustomerId
+                                                       join user in _dbContextClass.User
+                                                       on contract.UserId equals user.UserId
+                                                       select new
+                                                       {
+                                                           ContractId = contract.ContractId,
+                                                           UserName = user.FullName,
+                                                           CustomerName = customer.FullName,
+                                                       };
+                    var logContract = new LogContract();
+                    foreach (var row in contractJoinUserJoinCustomer)
+                    {
+                        logContract.ContractId = row.ContractId;
+                        logContract.UserName = row.UserName;
+                        logContract.CustomerName = row.CustomerName;
+                    }
+                    logContract.Debt = diaryUpdate.TotalPay;
+                    logContract.Paid = diaryUpdate.PaidMoney;
+                    logContract.Description = diaryUpdate.NextDueDate.ToString("MM/dd/yyyy HH:mm");
+                    logContract.EventType = (diaryUpdate.TotalPay == diaryUpdate.PaidMoney) ? (int)LogContractConst.INTEREST_PAID : (int)LogContractConst.INTEREST_NOT_PAID;
+                    logContract.LogTime = DateTime.Now;
+                    if (logContract.EventType == (int)LogContractConst.INTEREST_PAID)
+                    {
+                        await _logContractService.CreateLogContract(logContract);
+                    }
+                    return true;
+                }
+              
+                
             }
             catch (Exception e)
             {

@@ -46,10 +46,10 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpGet("saveransom/{id}")]
-        public async Task<IActionResult> SaveRansom(int id)
+        [HttpPut("saveransom/{ransomId}")]
+        public async Task<IActionResult> SaveRansom(int ransomId)
         {
-            var response = await _ranSomeservices.SaveRansom(id);
+            var response = await _ranSomeservices.SaveRansom(ransomId);
             if (response != null)
             {
                 return Ok("Save Success");
