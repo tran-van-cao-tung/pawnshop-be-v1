@@ -29,6 +29,7 @@ namespace PawnShopBE.Core.Interfaces
         IPermissionReporsitory Permission { get; }
         IUserPermissionGroupRepository UserPermissionGroup { get; }
         IMoneyRepository Money { get; }
+        ILogContractRepository LogContracts { get; }
         int Save();
         Task<int> SaveList();
     }

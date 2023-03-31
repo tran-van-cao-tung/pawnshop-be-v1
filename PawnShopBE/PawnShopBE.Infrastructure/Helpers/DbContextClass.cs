@@ -44,11 +44,12 @@ namespace PawnShopBE.Infrastructure.Helpers
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
         public DbSet<Money> Money { get; set; }
+        public DbSet<LogContract> LogContracts { get; set; }
         #endregion
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+       {
             modelBuilder.Entity<User>(entity =>
             {
                 // Table mapping to db
@@ -187,6 +188,12 @@ namespace PawnShopBE.Infrastructure.Helpers
             modelBuilder.Entity<UserPermissionGroup>(entity =>
             {
                 entity.HasKey(e => new{e.perId, e.UserId});
+            });
+            modelBuilder.Entity<LogContract>(entity =>
+            {
+                entity.ToTable("LogContract");
+                entity.HasKey(l => l.LogContractId);
+                entity.HasOne(l => l.Contract).WithMany(c => c.LogContracts).HasForeignKey(l => l.ContractId).IsRequired(true);
             });
         }
 

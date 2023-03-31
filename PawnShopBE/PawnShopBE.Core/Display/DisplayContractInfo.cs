@@ -8,6 +8,7 @@ namespace PawnShopBE.Core.Display
 {
     public class DisplayContractInfo
     {
+        public int ContractId { get; set; }
         //Customer info
         public string CustomerName { get; set; }
         public string CCCD { get; set; }

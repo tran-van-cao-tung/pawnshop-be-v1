@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace PawnShopBE.Core.Const
 {
-    public enum ContractAssetConst
+    public enum LogContractConst
     {
-        IN_STOCK = 1,
-        OUT_STOCK = 2,
-        LIQUIDATION = 3
+        CREATE_CONTRACT = 1,
+        INTEREST_NOT_PAID = 2,
+        INTEREST_PAID = 3,
+        CLOSE_CONTRACT = 4
+        
     }
 }
