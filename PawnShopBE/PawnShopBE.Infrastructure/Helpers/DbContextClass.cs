@@ -43,6 +43,7 @@ namespace PawnShopBE.Infrastructure.Helpers
         public DbSet<Admin> Admin { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
+        public DbSet<Money> Money { get; set; }
         #endregion
 
 

@@ -42,6 +42,7 @@ namespace PawnShopBE.Infrastructure.ServiceExtension
             services.AddScoped<IRansomRepository, RansomRepository>();
             services.AddScoped<IPermissionReporsitory,PermissionRepository>();
             services.AddScoped<IUserPermissionGroupRepository, UserPerGroupRepository>();
+            services.AddScoped<IMoneyRepository, MoneyRepository>();
             return services;
         }
     }
