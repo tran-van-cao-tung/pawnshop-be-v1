@@ -71,8 +71,7 @@ namespace PawnShopBE.Infrastructure.Repositories
         IJobRepository jobRepository,
         ICustomerRelativeRelationshipRepository customerRelativeRelationshipRepository,
         IRansomRepository ransomRepository,IPermissionReporsitory permissionReporsitory,
-        IUserPermissionGroupRepository userPermissionGroupRepository,IMoneyRepository moneyRepository)
-        IUserPermissionGroupRepository userPermissionGroupRepository,
+        IUserPermissionGroupRepository userPermissionGroupRepository,IMoneyRepository moneyRepository,
         ILogContractRepository logContractRepository)
         {
             _dbContext = dbContext;
