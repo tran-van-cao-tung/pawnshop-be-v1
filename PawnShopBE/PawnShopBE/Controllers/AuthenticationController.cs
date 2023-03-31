@@ -39,25 +39,34 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpPost("create")]
-        public async Task<IActionResult> Validate(Login login)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(Login login)
         {
+            var user=_context.User.SingleOrDefault(p => p.UserName == login.userName &&
+            p.Password == login.password);
+            if (user != null)
+            {
+                return Ok(user);
+            }
             var admin= _context.Admin.SingleOrDefault(p => p.UserName == login.userName &&
             p.Password== login.password);
-            if(admin == null)
+            if(admin != null)
             {
-                return BadRequest(new
+                // cấp token
+                var token = await _authen.GenerateToken(admin);
+                if (token != null)
                 {
-                    result="Invalid UserName or Password"
-                });
+                    return Ok(new
+                    {
+                        account=admin,
+                        token= token
+                    });
+                }
             }
-            // cấp token
-            var token = await _authen.GenerateToken(admin);
-            if (token != null)
+            return BadRequest(new
             {
-                return Ok(token);
-            }
-             return BadRequest();
+                result = "Invalid UserName or Password"
+            });
         }
         [HttpGet]
         public async Task<IActionResult> getAllToken()
