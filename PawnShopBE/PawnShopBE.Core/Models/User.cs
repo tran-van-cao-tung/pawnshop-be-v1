@@ -6,10 +6,11 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace PawnShopBE.Core.Models
 {
-    public class User
+    public class User:IdentityUser<Guid>
     {
         public Guid UserId { get; set; }
         public int RoleId { get; set; }

@@ -14,5 +14,6 @@ namespace Services.Services.IServices
         Task<TokenModel> GenerateToken(Admin user);
         Task<ApiRespone> RenewToken(TokenModel tokenModel);
         Task<IEnumerable<RefeshToken>> getAllToken();
+        Task<bool> Login(Login user);
     }
 }

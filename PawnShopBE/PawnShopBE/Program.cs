@@ -12,6 +12,10 @@ using System.Configuration;
 using Quartz;
 using PawnShopBE.Core.Data;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Identity;
+using PawnShopBE.Core.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 //Add Authentication
@@ -51,8 +55,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         };
     });
 
+
 // Add services to the container.
 builder.Services.Configure<Appsetting>(builder.Configuration.GetSection("AppSettings"));
+
+//
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", builder =>
@@ -63,6 +70,19 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddDIServices(builder.Configuration);
+
+builder.Services.AddIdentity<User, Role>(options =>
+{
+    options.User.RequireUniqueEmail= false;
+})
+   .AddEntityFrameworkStores<DbContextClass>()
+   .AddDefaultTokenProviders();
+//builder.Services.AddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+//builder.Services.AddScoped<IUserStore<User>, UserStore<User,Role,DbContextClass,Guid>>();
+//builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<UserManager<User>, UserManager<User>>();
+builder.Services.AddScoped<SignInManager<User>, SignInManager<User>>();
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IBranchService, BranchService>();
 builder.Services.AddScoped<IAuthentication, AuthenticationService>();
@@ -86,6 +106,7 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<ILogContractService, LogContractService>();
 builder.Services.AddScoped<IMoneyService, MoneyService>();
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);

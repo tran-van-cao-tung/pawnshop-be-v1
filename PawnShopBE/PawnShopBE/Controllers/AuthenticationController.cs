@@ -42,6 +42,7 @@ namespace PawnShopBE.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(Login login)
         {
+            var result=await _authen.Login(login);
             var user=_context.User.SingleOrDefault(p => p.UserName == login.userName &&
             p.Password == login.password);
             if (user != null)

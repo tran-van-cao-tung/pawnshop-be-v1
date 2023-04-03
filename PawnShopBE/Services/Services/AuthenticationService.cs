@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -22,11 +23,28 @@ namespace Services.Services
     {
         private readonly DbContextClass _context;
         private readonly Appsetting _appsetting;
+        private IUserService _userService;
+        private UserManager<User> _userManager;
+        private SignInManager<User> _signInManager;
 
-        public AuthenticationService(DbContextClass context, IOptionsMonitor<Appsetting> optionsMonitor)
+       
+        public AuthenticationService(DbContextClass context, IOptionsMonitor<Appsetting> optionsMonitor, 
+            IUserService userService,UserManager<User> userManager, SignInManager<User> signInManager)
         {
             _context = context;
             _appsetting = optionsMonitor.CurrentValue;
+            _userService = userService;
+            _userManager= userManager;
+            _signInManager= signInManager;
+        }
+        public async Task<bool> Login(Login user)
+        {
+            var userName = await _userManager.FindByNameAsync(user.userName);
+            if(userName == null) return false;
+
+            var result = await _signInManager.PasswordSignInAsync(userName,user.password,user.remember,true);
+            if(!result.Succeeded) return false;
+            return true;
         }
         public async Task<IEnumerable<RefeshToken>> getAllToken()
         {
