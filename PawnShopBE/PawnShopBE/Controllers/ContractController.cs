@@ -11,11 +11,13 @@ using System.Text;
 using PawnShopBE.Core.Validation;
 using System.Diagnostics.Contracts;
 using Contract = PawnShopBE.Core.Models.Contract;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PawnShopBE.Controllers
 {
     [Route("api/v1/contract")]
     [ApiController]
+    [Authorize]
     public class ContractController : ControllerBase
     {
         private readonly IContractService _contractService;
@@ -62,7 +64,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("createContract")]
-        public async Task<IActionResult> CreateContract(ContractDTO request)
+        public async Task<IActionResult> CreateContract([FromForm] ContractDTO request)
         {
             //Check Validation
             var checkValidation = await _validation.CheckValidation(request);

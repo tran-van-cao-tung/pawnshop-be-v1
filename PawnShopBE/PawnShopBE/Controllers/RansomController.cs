@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
@@ -12,6 +13,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/ramsom")]
     [ApiController]
+    [Authorize]
     public class RansomController : ControllerBase
     {
         private readonly IRansomService _ranSomeservices;
@@ -34,7 +36,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
         [HttpGet("ransombyid/{contractId}")]
-        public async Task<IActionResult> ransombyContractId(int contractId)
+        public async Task<IActionResult> ransombyContractId( int contractId)
         {
 
             var response = await _ranSomeservices.GetRansomByContractId(contractId);

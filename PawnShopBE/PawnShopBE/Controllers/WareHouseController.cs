@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Data.DescriptionAttribute;
 using PawnShopBE.Core.DTOs;
@@ -13,6 +14,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/warehouse")]
     [ApiController]
+    [Authorize]
     public class WareHouseController : ControllerBase
     {
         private readonly IWareHouseService _wareHouseService;
@@ -26,7 +28,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpGet("GetAllDetail/{id},{numPage}")]
-        public async Task<IActionResult> GetAllWareHouseDetail(int id,int numPage)
+        public async Task<IActionResult> GetAllWareHouseDetail( int id,int numPage)
         {
             var respone = await _wareHouseService.getWareHouseDetail(id,numPage);
             if (respone != null)
@@ -51,7 +53,7 @@ namespace PawnShopBE.Controllers
         }
          private Validation<WareHouseDTO> _validation=new Validation<WareHouseDTO>();
         [HttpPost("createWarehouse")]
-        public async Task<IActionResult> CreateWareHouse(WareHouseDTO wareHouse)
+        public async Task<IActionResult> CreateWareHouse([FromForm]WareHouseDTO wareHouse)
         {
             //Check Validation
             var checkValidation =await _validation.CheckValidation(wareHouse);
@@ -81,7 +83,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateWareHouse")]
-        public async Task<IActionResult> UpdateWareHouse(WareHouseDTO wareHouse)
+        public async Task<IActionResult> UpdateWareHouse([FromForm] WareHouseDTO wareHouse)
         {
             var wareHouseUpdate=_mapper.Map<Warehouse>(wareHouse);
             var respone = await _wareHouseService.UpdateWareHouse(wareHouseUpdate);

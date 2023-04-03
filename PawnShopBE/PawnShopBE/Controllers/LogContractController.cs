@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services;
 using Services.Services.IServices;
@@ -7,6 +8,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/logContract")]
     [ApiController]
+    [Authorize]
     public class LogContractController : ControllerBase
     {
         private readonly ILogContractService _logContractService;
@@ -16,7 +18,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpGet("all/{numPage}")]
-        public async Task<IActionResult> GetAllLogContracts(int numPage)
+        public async Task<IActionResult> GetAllLogContracts( int numPage)
         {
             var logContracts = await _logContractService.GetLogContracts(numPage);
 

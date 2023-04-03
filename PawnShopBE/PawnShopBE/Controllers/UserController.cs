@@ -12,6 +12,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/user")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -22,7 +23,7 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
         [HttpPost("recoverPassword")]
-        public async Task<IActionResult> recoverPass(UserDTO user)
+        public async Task<IActionResult> recoverPass([FromForm] UserDTO user)
         {
             var respone = await _userService.sendEmail(user);
             if (respone)
@@ -33,9 +34,9 @@ namespace PawnShopBE.Controllers
         }
         private Validation<UserDTO> _validation=new Validation<UserDTO>();
        
-        [Authorize]
+       
         [HttpPost("createUser")]
-        public async Task<IActionResult> CreateUser(UserDTO request)
+        public async Task<IActionResult> CreateUser([FromForm] UserDTO request)
         {
             //Check Validation
             var checkValidation = await _validation.CheckValidation(request);
@@ -55,9 +56,9 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-       // [Authorize]
+       
         [HttpGet("getAll/{numPage}")]
-        public async Task<IActionResult> getUserList(int numPage)
+        public async Task<IActionResult> getUserList( int numPage)
         {
             var userList = await _userService.GetAllUsers(numPage);
             if (userList == null)
@@ -68,7 +69,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpGet("getUserById/{userId:guid}")]
-        public async Task<IActionResult> GetUserById(Guid userId)
+        public async Task<IActionResult> GetUserById( Guid userId)
         {
             var user = await _userService.GetUserById(userId);
 
@@ -81,9 +82,9 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-        [Authorize]
+      
         [HttpPut("updateUser")]
-        public async Task<IActionResult> UpdateUser( UserDTO request)
+        public async Task<IActionResult> UpdateUser( [FromForm] UserDTO request)
         {
           
             if (request != null )
@@ -101,9 +102,9 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-        [Authorize]
+        
         [HttpDelete("deleteUser/{userId:guid}")]
-        public async Task<IActionResult> DeleteUser(Guid userId)
+        public async Task<IActionResult> DeleteUser( Guid userId)
         {
             var isUserCreated = await _userService.DeleteUser(userId);
 

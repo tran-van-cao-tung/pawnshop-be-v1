@@ -1,5 +1,6 @@
 ﻿
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
@@ -11,6 +12,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/permission")]
     [ApiController]
+    [Authorize]
     public class PermissionController : ControllerBase
     {
         private readonly IPermissionService _perService;
@@ -31,7 +33,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create(Permission per)
+        public async Task<IActionResult> Create([FromForm]Permission per)
         {
             if (per != null)
             {
@@ -44,7 +46,7 @@ namespace PawnShopBE.Controllers
             return BadRequest("Permission Is Exists");
         }
         [HttpPost("savepermission")]
-        public async Task<IActionResult> SavePermission(IEnumerable<DisplayPermission> user)
+        public async Task<IActionResult> SavePermission([FromForm]IEnumerable<DisplayPermission> user)
         {
             if (user != null)
             {
@@ -55,7 +57,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("showpermission")]
-        public async Task<IActionResult> ShowPermission(UserPermissionDTO user)
+        public async Task<IActionResult> ShowPermission([FromForm] UserPermissionDTO user)
         {
             if (user != null)
             {
@@ -65,7 +67,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeletePermission(int id)
+        public async Task<IActionResult> DeletePermission( int id)
         {
             var respone = await _perService.DeletePermission(id);
             if (respone != null)
@@ -76,7 +78,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdatePermission( Permission per)
+        public async Task<IActionResult> UpdatePermission([FromForm] Permission per)
         {
             var respone = await _perService.UpdatePermission(per);
             if (respone != null)

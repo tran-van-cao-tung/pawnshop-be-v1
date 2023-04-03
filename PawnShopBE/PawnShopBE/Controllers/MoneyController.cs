@@ -1,5 +1,6 @@
 ﻿
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
@@ -9,6 +10,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/money")]
     [ApiController]
+    [Authorize]
     public class MoneyController : ControllerBase
     {
         private readonly IMoneyService _moneyService;
@@ -30,7 +32,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateMoney(MoneyDTO moneyDTO)
+        public async Task<IActionResult> CreateMoney([FromForm] MoneyDTO moneyDTO)
         {
             if (moneyDTO != null)
             {

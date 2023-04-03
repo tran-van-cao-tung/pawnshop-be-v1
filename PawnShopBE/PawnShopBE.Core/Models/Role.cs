@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace PawnShopBE.Core.Models
 {
-    public class Role:IdentityRole<Guid>
+    public class Role//:IdentityRole<Guid>
     {
         public int RoleId { get; set; }
         public string RoleName { get; set; }

@@ -29,7 +29,7 @@ namespace PawnShopBE.Controllers
             _authen = authentication;
         }
         [HttpPost("renewToken")]
-        public async Task<IActionResult> RenewToken(TokenModel tokenmodel)
+        public async Task<IActionResult> RenewToken([FromForm] TokenModel tokenmodel)
         {
             var token = tokenmodel;
             if (token != null)
@@ -40,13 +40,23 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login(Login login)
+        public async Task<IActionResult> Login([FromForm] Login login)
         {
-            var result=await _authen.Login(login);
+            //var result=await _authen.Login(login);
             var user=_context.User.SingleOrDefault(p => p.UserName == login.userName &&
             p.Password == login.password);
             if (user != null)
             {
+                // cấp token
+                var token = await _authen.GenerateToken();
+                if (token != null)
+                {
+                    return Ok(new
+                    {
+                        Account = user,
+                        Token = token
+                    });
+                }
                 return Ok(user);
             }
             var admin= _context.Admin.SingleOrDefault(p => p.UserName == login.userName &&
@@ -54,13 +64,13 @@ namespace PawnShopBE.Controllers
             if(admin != null)
             {
                 // cấp token
-                var token = await _authen.GenerateToken(admin);
+                var token = await _authen.GenerateToken();
                 if (token != null)
                 {
                     return Ok(new
                     {
-                        account=admin,
-                        token= token
+                        Account=admin,
+                        Token= token
                     });
                 }
             }

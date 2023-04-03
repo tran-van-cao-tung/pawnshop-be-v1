@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
@@ -9,6 +10,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/liquidation")]
     [ApiController]
+    [Authorize]
     public class LiquidationController : ControllerBase
     {
         private readonly ILiquidationService _liquidationService;
@@ -32,7 +34,7 @@ namespace PawnShopBE.Controllers
         private Validation<LiquidationDTO> _validation=new Validation<LiquidationDTO>();
         
     [HttpPost("createLiquidation")]
-        public async Task<IActionResult> CreateLiquidation(LiquidationDTO liquidation)
+        public async Task<IActionResult> CreateLiquidation([FromForm] LiquidationDTO liquidation)
         {
             //Check Validation
             var checkValidation = await _validation.CheckValidation(liquidation);
@@ -61,7 +63,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateLiquidation")]
-        public async Task<IActionResult> UpdateLiquidation(LiquidationDTO liquidation)
+        public async Task<IActionResult> UpdateLiquidation([FromForm] LiquidationDTO liquidation)
         {
             var liquidationUpdate=_mapper.Map<Liquidtation>(liquidation);
             var respone = await _liquidationService.UpdateLiquidation(liquidationUpdate);
