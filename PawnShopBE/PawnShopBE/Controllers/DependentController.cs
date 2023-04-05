@@ -34,7 +34,7 @@ namespace PawnShopBE.Controllers
         private Validation<DependentPeopleDTO> _validation=new Validation<DependentPeopleDTO>();
        
         [HttpPost("createDependentPeople")]
-        public async Task<IActionResult> CreateDependent([FromForm] DependentPeopleDTO dependent)
+        public async Task<IActionResult> CreateDependent( DependentPeopleDTO dependent)
         {
             //Check Validation
             var checkValidation = await _validation.CheckValidation(dependent);
@@ -63,7 +63,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateDependentPeople")]
-        public async Task<IActionResult> UpdateDependent([FromForm] DependentPeopleDTO dependent)
+        public async Task<IActionResult> UpdateDependent( DependentPeopleDTO dependent)
         {
             var dependentMapper=_mapper.Map<DependentPeople>(dependent);
             var respone = await _dependentService.UpdateDependent(dependentMapper);

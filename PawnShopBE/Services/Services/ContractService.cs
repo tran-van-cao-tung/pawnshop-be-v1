@@ -323,7 +323,7 @@ namespace Services.Services
                     logContract.Debt = contract.Loan;
                     logContract.Paid = 0;
                     logContract.LogTime = DateTime.Now;
-                    logContract.Description = DateTime.Now.ToString("MM/dd/yyyy HH:mm");
+                    logContract.Description = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
                     logContract.EventType = (int)LogContractConst.CREATE_CONTRACT;
                     await _logContractService.CreateLogContract(logContract);
 
@@ -526,13 +526,14 @@ namespace Services.Services
             return contractDetail;
         }
 
-        public async Task<bool> UploadContractImg(int contractId, string customerImg, string contractImg)
+        public async Task<bool> UploadContractImg(int contractId, string? customerImg, string? contractImg)
         {
             var contract = await _unitOfWork.Contracts.GetById(contractId);
-            if (contract != null && (customerImg != null || contractImg != null))
+            if (contract != null)
             {
-                contract.CustomerVerifyImg = customerImg;
-                contract.ContractVerifyImg = contractImg;
+                if (customerImg != null) contract.CustomerVerifyImg = customerImg;
+
+                if (contractImg != null) contract.ContractVerifyImg = contractImg;
             }
             _unitOfWork.Contracts.Update(contract);
             var result = _unitOfWork.Save();
@@ -543,7 +544,7 @@ namespace Services.Services
                 return false;
         }
 
-        public async Task<bool> CreateContractExpiration(int contractId)
+        public async Task<bool> CreateContractExpiration(int contractId, string proofImg)
         {
             var contract = await _unitOfWork.Contracts.GetById(contractId);
 
@@ -597,7 +598,47 @@ namespace Services.Services
                 oldRansom.PaidMoney = oldRansom.TotalPay;
                 oldRansom.Status = (int)RansomConsts.ON_TIME;
 
+                // Close Log Contract
+                var contractJoinUserJoinCustomer = from getcontract in _dbContextClass.Contract
+                                                   join customer in _dbContextClass.Customer
+                                                   on oldContract.CustomerId equals customer.CustomerId
+                                                   join user in _dbContextClass.User
+                                                   on contract.UserId equals user.UserId
+                                                   select new
+                                                   {
+                                                       ContractId = oldContract.ContractId,
+                                                       UserName = user.FullName,
+                                                       CustomerName = customer.FullName,
+                                                   };
+                var oldLogContract = new LogContract();
+                foreach (var row in contractJoinUserJoinCustomer)
+                {
+                    oldLogContract.ContractId = row.ContractId;
+                    oldLogContract.UserName = row.UserName;
+                    oldLogContract.CustomerName = row.CustomerName;
+                }
+                oldLogContract.Debt = oldContract.Loan;
+                oldLogContract.Paid = oldContract.Loan;
+                oldLogContract.LogTime = DateTime.Now;
+                oldLogContract.Description = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                oldLogContract.EventType = (int)LogContractConst.CLOSE_CONTRACT;
+                await _logContractService.CreateLogContract(oldLogContract);
 
+                // Create Log Contract
+                var logContract = new LogContract();
+                logContract.ContractId = contract.ContractId;
+                logContract.CustomerName = GetCustomerName(contract.CustomerId);
+                logContract.UserName = GetUser(contract.UserId);
+                logContract.Debt = contract.Loan;
+                logContract.Paid = 0;
+                logContract.LogTime = DateTime.Now;
+                logContract.Description = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+                logContract.EventType = (int)LogContractConst.CREATE_CONTRACT;
+                await _logContractService.CreateLogContract(logContract);
+
+                // Close Ransom
+                var closeRansom = await ransomProvider.GetRansomByContractId(oldContract.ContractId);
+                await ransomProvider.SaveRansom(closeRansom.RansomId, proofImg);
                 _unitOfWork.Contracts.Update(oldContract);
                 _unitOfWork.Save();
 

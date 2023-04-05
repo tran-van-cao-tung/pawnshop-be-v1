@@ -34,7 +34,7 @@ namespace PawnShopBE.Controllers
         private Validation<JobDTO> _validation=new Validation<JobDTO>();
         
         [HttpPost("createJob")]
-        public async Task<IActionResult> CreateJob([FromForm] JobDTO job)
+        public async Task<IActionResult> CreateJob( JobDTO job)
         {
             //Check Validation
             var checkValidation = await _validation.CheckValidation(job);
@@ -63,7 +63,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateJob")]
-        public async Task<IActionResult> UpdateJob([FromForm] JobDTO job)
+        public async Task<IActionResult> UpdateJob( JobDTO job)
         {
             var jobUpdate=_mapper.Map<Job>(job);
             var respone = await _jobService.UpdateJob(jobUpdate);

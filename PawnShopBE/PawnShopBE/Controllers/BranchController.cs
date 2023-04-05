@@ -27,7 +27,7 @@ namespace PawnShopBE.Controllers
 
         [Authorize]
         [HttpPost("CreateBranch")]
-        public async Task<IActionResult> CreateBranch([FromForm] BranchDTO request)
+        public async Task<IActionResult> CreateBranch( BranchDTO request)
         {
             //Check Validation
             var checkValidation = await _validation.CheckValidation(request);
@@ -99,7 +99,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateBranch/{id}")]
-        public async Task<IActionResult> UpdateBranch([FromForm]int id, BranchRequest request)
+        public async Task<IActionResult> UpdateBranch(int id, BranchRequest request)
         {
             if (id != null)
             {

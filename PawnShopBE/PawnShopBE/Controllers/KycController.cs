@@ -31,7 +31,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("createKyc")]
-        public async Task<IActionResult> CreateKyc([FromForm] KycDTO kyc)
+        public async Task<IActionResult> CreateKyc( KycDTO kyc)
         {
             if (kyc != null)
             {

@@ -23,7 +23,7 @@ namespace PawnShopBE.Controllers
             _mapper = mapper;
         }
         [HttpPost("recoverPassword")]
-        public async Task<IActionResult> recoverPass([FromForm] UserDTO user)
+        public async Task<IActionResult> recoverPass( UserDTO user)
         {
             var respone = await _userService.sendEmail(user);
             if (respone)
@@ -36,7 +36,7 @@ namespace PawnShopBE.Controllers
        
        
         [HttpPost("createUser")]
-        public async Task<IActionResult> CreateUser([FromForm] UserDTO request)
+        public async Task<IActionResult> CreateUser( UserDTO request)
         {
             //Check Validation
             var checkValidation = await _validation.CheckValidation(request);
@@ -84,7 +84,7 @@ namespace PawnShopBE.Controllers
         }
       
         [HttpPut("updateUser")]
-        public async Task<IActionResult> UpdateUser( [FromForm] UserDTO request)
+        public async Task<IActionResult> UpdateUser(  UserDTO request)
         {
           
             if (request != null )

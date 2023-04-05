@@ -84,7 +84,7 @@ namespace Services.Services
             await _context.AddAsync(refeshTokenEntity);
             await _context.SaveChangesAsync();
 
-            accessToken ="Bearer "+accessToken;
+            //accessToken ="Bearer "+accessToken;
             return new TokenModel
             {
                 AccessToken = accessToken,

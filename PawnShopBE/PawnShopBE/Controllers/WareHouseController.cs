@@ -53,7 +53,7 @@ namespace PawnShopBE.Controllers
         }
          private Validation<WareHouseDTO> _validation=new Validation<WareHouseDTO>();
         [HttpPost("createWarehouse")]
-        public async Task<IActionResult> CreateWareHouse([FromForm]WareHouseDTO wareHouse)
+        public async Task<IActionResult> CreateWareHouse(WareHouseDTO wareHouse)
         {
             //Check Validation
             var checkValidation =await _validation.CheckValidation(wareHouse);
@@ -83,7 +83,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateWareHouse")]
-        public async Task<IActionResult> UpdateWareHouse([FromForm] WareHouseDTO wareHouse)
+        public async Task<IActionResult> UpdateWareHouse( WareHouseDTO wareHouse)
         {
             var wareHouseUpdate=_mapper.Map<Warehouse>(wareHouse);
             var respone = await _wareHouseService.UpdateWareHouse(wareHouseUpdate);

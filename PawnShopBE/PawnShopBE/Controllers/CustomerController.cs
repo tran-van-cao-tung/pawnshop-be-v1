@@ -49,7 +49,7 @@ namespace PawnShopBE.Controllers
         private Validation<CustomerDTO> _validation=new Validation<CustomerDTO>();
 
         [HttpPost("createCustomer")]
-        public async Task<IActionResult> CreateCustomer([FromForm] CustomerDTO customer)
+        public async Task<IActionResult> CreateCustomer( CustomerDTO customer)
         {
           //  Check Validation
             var checkValidation = await _validation.CheckValidation(customer);
@@ -119,7 +119,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateCustomer")]
-        public async Task<IActionResult> UpdateCustomer([FromForm] Customer customer)
+        public async Task<IActionResult> UpdateCustomer( Customer customer)
         {
             if (customer != null)
             {
