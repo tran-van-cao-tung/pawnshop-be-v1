@@ -37,7 +37,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpGet("report/month/{branchId}")]
+        [HttpGet("month/{branchId}")]
         public async Task<IActionResult> GetAllReportMonth(int branchId)
         {
             var respone = await _report.getReportMonth(branchId);

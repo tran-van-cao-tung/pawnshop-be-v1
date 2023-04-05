@@ -49,9 +49,9 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("saveransom/{ransomId}")]
-        public async Task<IActionResult> SaveRansom(int ransomId)
+        public async Task<IActionResult> SaveRansom(int ransomId, string proofImg)
         {
-            var response = await _ranSomeservices.SaveRansom(ransomId);
+            var response = await _ranSomeservices.SaveRansom(ransomId, proofImg);
             if (response != null)
             {
                 return Ok("Save Success");

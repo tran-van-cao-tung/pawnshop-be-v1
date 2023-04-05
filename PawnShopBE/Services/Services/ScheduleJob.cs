@@ -35,6 +35,7 @@ namespace Services.Services
         public async Task Execute(IJobExecutionContext context)
         {
             // Contracts IN_PROGRESS turn into OVER_DUE 
+
             var overdueContracts = _contextClass.Contract
                         .Where(c => c.Status == (int)ContractConst.IN_PROGRESS && c.ContractEndDate < DateTime.Today)
                         .ToList();
@@ -98,7 +99,7 @@ namespace Services.Services
                     contract.Status = (int)ContractConst.LIQUIDATION;
                 }
                 ransom.Status = (int)RansomConsts.LATE;
-            }       
+            }
             var overdueDiaries = _contextClass.InterestDiary
                         .Where(d => d.Status == (int)InterestDiaryConsts.NOT_PAID && d.NextDueDate < DateTime.Today && d.Penalty == 0)
                         .ToList();
@@ -133,11 +134,13 @@ namespace Services.Services
                 }
                 logContract.Debt = diary.TotalPay;
                 logContract.Paid = 0;
-                logContract.Description = diary.NextDueDate.ToString("MM/dd/yyyy HH:mm");
+                logContract.Description = diary.NextDueDate.ToString("dd/MM/yyyy HH:mm");
                 logContract.EventType = (int)LogContractConst.INTEREST_NOT_PAID;
                 logContract.LogTime = DateTime.Now;
                 await _logContractService.CreateLogContract(logContract);
             }
+
+
             _contextClass.SaveChanges();
         }
     }
