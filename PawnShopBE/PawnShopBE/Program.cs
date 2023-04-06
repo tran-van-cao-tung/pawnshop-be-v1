@@ -17,6 +17,8 @@ using PawnShopBE.Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using FluentValidation.AspNetCore;
+using PawnShopBE.Core.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 //Add Authentication
@@ -123,6 +125,8 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+//Setting fluent validation
+builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<BranchValidation>());
 //builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
 {

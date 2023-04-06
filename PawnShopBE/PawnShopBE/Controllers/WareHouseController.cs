@@ -51,16 +51,9 @@ namespace PawnShopBE.Controllers
                     return BadRequest();
                 }
         }
-         private Validation<WareHouseDTO> _validation=new Validation<WareHouseDTO>();
         [HttpPost("createWarehouse")]
         public async Task<IActionResult> CreateWareHouse(WareHouseDTO wareHouse)
         {
-            //Check Validation
-            var checkValidation =await _validation.CheckValidation(wareHouse);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
 
             var wareHouseMapper = _mapper.Map<Warehouse>(wareHouse);
             var respone = await _wareHouseService.CreateWareHouse(wareHouseMapper);

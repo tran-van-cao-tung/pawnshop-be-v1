@@ -46,17 +46,11 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<CustomerDTO> _validation=new Validation<CustomerDTO>();
 
         [HttpPost("createCustomer")]
         public async Task<IActionResult> CreateCustomer( CustomerDTO customer)
         {
-          //  Check Validation
-            var checkValidation = await _validation.CheckValidation(customer);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
+         
             //get Kyc id
             customer.KycId = await _customer.createKyc(customer);
             //create Customer

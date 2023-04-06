@@ -31,17 +31,11 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<DependentPeopleDTO> _validation=new Validation<DependentPeopleDTO>();
        
         [HttpPost("createDependentPeople")]
         public async Task<IActionResult> CreateDependent( DependentPeopleDTO dependent)
         {
-            //Check Validation
-            var checkValidation = await _validation.CheckValidation(dependent);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
+            
             var dependentMapper  = _mapper.Map<DependentPeople>(dependent);
             var respone = await _dependentService.CreateDependent(dependentMapper);
             if (respone != null)

@@ -32,17 +32,11 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<LiquidationDTO> _validation = new Validation<LiquidationDTO>();
 
         [HttpPost("save/{contractId}")]
         public async Task<IActionResult> CreateLiquidation(int contractId, decimal liquidationMoney)
         {
-            ////Check Validation
-            //var checkValidation = await _validation.CheckValidation(liquidation);
-            //if (checkValidation != null)
-            //{
-            //    return BadRequest(checkValidation);
-            //}
+           
             //var liquidationMapper = _mapper.Map<Liquidtation>(liquidation);
             var respone = await _liquidationService.CreateLiquidation(contractId, liquidationMoney);
             if (respone != null)

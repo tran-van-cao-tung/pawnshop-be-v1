@@ -32,18 +32,11 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<UserDTO> _validation=new Validation<UserDTO>();
        
        
         [HttpPost("createUser")]
         public async Task<IActionResult> CreateUser( UserDTO request)
         {
-            //Check Validation
-            var checkValidation = await _validation.CheckValidation(request);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
             var user = _mapper.Map<User>(request);
             var response = await _userService.CreateUser(user);
 

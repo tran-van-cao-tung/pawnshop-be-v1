@@ -31,17 +31,11 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<JobDTO> _validation=new Validation<JobDTO>();
         
         [HttpPost("createJob")]
         public async Task<IActionResult> CreateJob( JobDTO job)
         {
-            //Check Validation
-            var checkValidation = await _validation.CheckValidation(job);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
+          
             var jobMapper = _mapper.Map<Job>(job);
             var respone = await _jobService.CreateJob(jobMapper);
             if (respone != null)

@@ -31,7 +31,6 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<LedgerDTO> _validation=new Validation<LedgerDTO>();
         
     //[HttpPost("createLedger")]
     //    public async Task<IActionResult> CreateLedger( LedgerDTO ledger)

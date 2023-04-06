@@ -31,17 +31,10 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        private Validation<ContractAssetDTO> _validation=new Validation<ContractAssetDTO>();
         
         [HttpPost("createContractAsset")]
         public async Task<IActionResult> CreateContractAsset( ContractAssetDTO contractAsset)
         {
-            //Check Validation
-            var checkValidation = await _validation.CheckValidation(contractAsset);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
             var contractAssetMapper = _mapper.Map<ContractAsset>(contractAsset);
             var respone = await _contractAssetService.CreateContractAsset(contractAssetMapper);
             if (respone != null)
