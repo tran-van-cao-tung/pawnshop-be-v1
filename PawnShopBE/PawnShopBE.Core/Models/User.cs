@@ -30,9 +30,11 @@ namespace PawnShopBE.Core.Models
         public virtual Role Role { get; set; }
         public virtual Branch? Branch { get; set; }
         public ICollection<Contract> Contracts { get; set; }
+        public ICollection<UserPermissionGroup> UserPermissionGroups { get; set; }
         public User()
         {
             Contracts = new List<Contract>();
+            UserPermissionGroups = new List<UserPermissionGroup>();
         }
 
 

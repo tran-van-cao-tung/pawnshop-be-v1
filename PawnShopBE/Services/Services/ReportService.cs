@@ -1,10 +1,12 @@
 ﻿using PawnShopBE.Core.Const;
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Infrastructure.Helpers;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,10 +21,12 @@ namespace Services.Services
         private ILedgerService _ledgerService;
         private ILiquidationService _liquidation;
         private IBranchService _branch;
+        private DbContextClass _dbContextClass;
 
-        public ReportService(IContractService contract, ICustomerService customer, 
+        public ReportService(IContractService contract, ICustomerService customer,
             IContractAssetService asset, IPawnableProductService pawnable, ILedgerService ledger,
-            ILiquidationService liquidation, IBranchService branch)
+            ILiquidationService liquidation, IBranchService branch,
+            DbContextClass dbContextClass)
         {
             _contract = contract;
             _customer = customer;
@@ -31,8 +35,9 @@ namespace Services.Services
             _ledgerService = ledger;
             _liquidation = liquidation;
             _branch = branch;
+
         }
-        
+
         public async Task<IEnumerable<DisplayReportTransaction>> getReportTransaction(int number)
         {
             var reportList = new List<DisplayReportTransaction>();
@@ -43,22 +48,22 @@ namespace Services.Services
             //get pawnable
             var pawnableList = await _pawnable.GetAllPawnableProducts(0);
             //get contract
-            var contractList = await _contract.GetAllContracts(0);
-
+            var getAllContract = await _contract.GetAllContracts(0);
+            var contractList = getAllContract.Where(c => c.Status == 4).ToList();
             foreach (var contract in contractList)
             {
                 var customer = getCustomer(contract.CustomerId, customerList);
-                var asset= getAsset(contract.ContractAssetId,assetList);
+                var asset = getAsset(contract.ContractAssetId, assetList);
                 var pawnable = getPawnable(asset.PawnableProductId, pawnableList);
                 //đưa value vào report
                 var report = new DisplayReportTransaction();
-                report.contractCode= contract.ContractCode;
-                report.customerName = customer.FullName;
-                report.assetCode = pawnable.CommodityCode;
-                report.assetName = asset.ContractAssetName;
-                report.loan=contract.Loan;
-                report.startDate = contract.ContractStartDate; 
-                report.endDate=contract.ContractEndDate;
+                report.ContractCode = contract.ContractCode;
+                report.CustomerName = customer.FullName;
+                report.AssetCode = pawnable.CommodityCode;
+                report.AssetName = asset.ContractAssetName;
+                report.Loan = contract.Loan;
+                report.StartDate = contract.ContractStartDate;
+                report.EndDate = contract.ContractEndDate;
                 reportList.Add(report);
             }
 
@@ -66,7 +71,7 @@ namespace Services.Services
             {
                 return reportList;
             }
-            var result =await TakePage(number, reportList);
+            var result = await TakePage(number, reportList);
             return result;
 
         }
@@ -85,7 +90,7 @@ namespace Services.Services
 
         private ContractAsset getAsset(int contractAssetId, IEnumerable<ContractAsset> assetList)
         {
-            var asset= (from a in assetList where a.ContractAssetId== contractAssetId select a).FirstOrDefault();
+            var asset = (from a in assetList where a.ContractAssetId == contractAssetId select a).FirstOrDefault();
             return asset;
         }
 
@@ -94,24 +99,24 @@ namespace Services.Services
             var customer = (from c in customerList where c.CustomerId == customerId select c).FirstOrDefault();
             return customer;
         }
-       
+
         public async Task<IEnumerable<DisplayReportMonth>> getReportMonth(int branchId)
         {
-            var listReport= new List<DisplayReportMonth>();
+            var listReport = new List<DisplayReportMonth>();
             //get List all
             var ledgerList = await _ledgerService.GetLedger();
             var branchList = await _branch.GetAllBranch(0);
-            var liquidationList= await _liquidation.GetLiquidation();
+            var liquidationList = await _liquidation.GetLiquidation();
             var contractList = await _contract.GetAllContracts(0);
             //branch theo id, 
-            var branchIenumerable=from b in branchList where b.BranchId == branchId select b;
+            var branchIenumerable = from b in branchList where b.BranchId == branchId select b;
             int month = 1;
             for (int i = 0; i < 12; i++)
             {
                 //get ledger theo 12 tháng
                 var ledgerMonth = getLedgerMonth(ledgerList, month);
-                var x=ledgerMonth.ToList();
-                if (x.Count==0)
+                var x = ledgerMonth.ToList();
+                if (x.Count == 0)
                 {
                     month++;
                 }
@@ -122,17 +127,17 @@ namespace Services.Services
                     var branch = getBranch(branchIenumerable, ledgerMonth);
                     if (branch != null)
                     {
-                        report.branchName = branch.BranchName;
-                        report.fund = branch.Fund;
+                        report.BranchName = branch.BranchName;
+                        report.Fund = branch.Fund;
                         //get money
-                        report.liquidationMoney = getLiquiMoney(branch.BranchId, contractList, liquidationList, month);
-                        report.month = month;
+                        report.LiquidationMoney = getLiquiMoney(branch.BranchId, contractList, liquidationList, month);
+                        report.Month = month;
                         foreach (var ledger in ledgerMonth)
                         {
-                            report.receiveInterest += ledger.RecveivedInterest;
-                            report.receivedPrincipal += ledger.ReceivedPrincipal;
-                            report.loan += ledger.Loan;
-                            report.balance += ledger.Balance;
+                            report.ReceiveInterest += ledger.RecveivedInterest;
+                            report.ReceivedPrincipal += ledger.ReceivedPrincipal;
+                            report.Loan += ledger.Loan;
+                            report.Balance += ledger.Balance;
                         }
                         //add report
                         listReport.Add(report);
@@ -153,8 +158,8 @@ namespace Services.Services
             {
                 //get liquidation
                 var liquidation = (from l in liquidationList where l.ContractId == contract.ContractId select l).FirstOrDefault();
-                if(liquidation != null)
-                money += liquidation.LiquidationMoney;
+                if (liquidation != null)
+                    money += liquidation.LiquidationMoney;
             }
             return money;
         }

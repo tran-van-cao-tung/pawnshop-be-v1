@@ -33,7 +33,7 @@ namespace PawnShopBE.Controllers
         }
        
     [HttpPost("createCustomerRelative")]
-        public async Task<IActionResult> CreateCustomerRelative([FromForm] CustomerRelativeDTO customerRelative)
+        public async Task<IActionResult> CreateCustomerRelative( CustomerRelativeDTO customerRelative)
         {
            
             var customerRelativeMapper = _mapper.Map<CustomerRelativeRelationship>(customerRelative);
@@ -57,7 +57,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateCustomerRelative")]
-        public async Task<IActionResult> UpdateCustomerRelative([FromForm] CustomerRelativeDTO customerRelative)
+        public async Task<IActionResult> UpdateCustomerRelative( CustomerRelativeDTO customerRelative)
         {
             var customerRelativeMapper = _mapper.Map<CustomerRelativeRelationship>(customerRelative);
             var respone = await _customerRelative.UpdateCustomerRelative(customerRelativeMapper);

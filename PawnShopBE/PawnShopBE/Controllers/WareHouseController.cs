@@ -52,7 +52,7 @@ namespace PawnShopBE.Controllers
                 }
         }
         [HttpPost("createWarehouse")]
-        public async Task<IActionResult> CreateWareHouse([FromForm]WareHouseDTO wareHouse)
+        public async Task<IActionResult> CreateWareHouse(WareHouseDTO wareHouse)
         {
 
             var wareHouseMapper = _mapper.Map<Warehouse>(wareHouse);
@@ -76,7 +76,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateWareHouse")]
-        public async Task<IActionResult> UpdateWareHouse([FromForm] WareHouseDTO wareHouse)
+        public async Task<IActionResult> UpdateWareHouse( WareHouseDTO wareHouse)
         {
             var wareHouseUpdate=_mapper.Map<Warehouse>(wareHouse);
             var respone = await _wareHouseService.UpdateWareHouse(wareHouseUpdate);

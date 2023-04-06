@@ -30,12 +30,22 @@ builder.Services.AddQuartz(q =>
 {
     q.UseMicrosoftDependencyInjectionScopedJobFactory();
     // Just use the name of your job that you created in the Jobs folder.
-    var jobKey = new JobKey("ScheduleJob");
-    q.AddJob<ScheduleJob>(opts => opts.WithIdentity(jobKey));
+    var scheduleJob = new JobKey("ScheduleJob");
+    q.AddJob<ScheduleJob>(opts => opts.WithIdentity(scheduleJob));
 
     q.AddTrigger(opts => opts
-        .ForJob(jobKey)
+        .ForJob(scheduleJob)
         .WithIdentity("ScheduleJob-trigger")
+        //This Cron interval can be described as "run every minute" (when second is zero)
+        .WithCronSchedule("0 * * ? * *")
+    );
+
+    var monthlyJob = new JobKey("MonthlyJob");
+    q.AddJob<MonthlyJob>(opts => opts.WithIdentity(monthlyJob));
+
+    q.AddTrigger(opts => opts
+        .ForJob(monthlyJob)
+        .WithIdentity("MonthlyJob-trigger")
         //This Cron interval can be described as "run every minute" (when second is zero)
         .WithCronSchedule("0 * * ? * *")
     );
@@ -61,7 +71,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 // Add services to the container.
 builder.Services.Configure<Appsetting>(builder.Configuration.GetSection("AppSettings"));
 
-//
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact", builder =>
@@ -96,9 +106,9 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IContractAssetService, ContractAssetService>();
 builder.Services.AddScoped<IWareHouseService, WareHouseService>();
 builder.Services.AddScoped<IPackageService, PackageService>();
-builder.Services.AddScoped<ILiquidationService,LiquidationService>();
+builder.Services.AddScoped<ILiquidationService, LiquidationService>();
 builder.Services.AddScoped<IPawnableProductService, PawnableProductService>();
-builder.Services.AddScoped<ICustomerService,CustomerService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IKycService, KycService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IAttributeService, AttributeService>();
@@ -118,16 +128,17 @@ builder.Services.AddEndpointsApiExplorer();
 //Setting fluent validation
 builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<BranchValidation>());
 //builder.Services.AddSwaggerGen();
-builder.Services.AddSwaggerGen(c => {
+builder.Services.AddSwaggerGen(c =>
+{
     // hiển thị khung authorize điền token
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = @"JWT Authorization header using the Bearer scheme. \r\n\r\n
-                      Enter 'Bearer' [space] and then your token in the text input below.
-                      \r\n\r\nExample: 'Bearer 12345abcdef'",
+        Description = @"JWT Authorization header using the Bearer scheme. \\n\\n
+                      Enter your token in the text input below.
+                      \\n\\nExample: 'Bearer 12345abcdef'",
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
+        Type = SecuritySchemeType.Http,
         Scheme = "Bearer"
     });
 
@@ -152,16 +163,11 @@ builder.Services.AddSwaggerGen(c => {
     c.IgnoreObsoleteActions();
     c.IgnoreObsoleteProperties();
     c.CustomSchemaIds(type => type.FullName);
+    c.OperationFilter<RemovePrefixFromAuthorizationHeaderFilter>();
 });
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-//}
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

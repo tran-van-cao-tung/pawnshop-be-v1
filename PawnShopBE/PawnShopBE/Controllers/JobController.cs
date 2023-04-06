@@ -33,7 +33,7 @@ namespace PawnShopBE.Controllers
         }
         
         [HttpPost("createJob")]
-        public async Task<IActionResult> CreateJob([FromForm] JobDTO job)
+        public async Task<IActionResult> CreateJob( JobDTO job)
         {
           
             var jobMapper = _mapper.Map<Job>(job);
@@ -57,7 +57,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateJob")]
-        public async Task<IActionResult> UpdateJob([FromForm] JobDTO job)
+        public async Task<IActionResult> UpdateJob( JobDTO job)
         {
             var jobUpdate=_mapper.Map<Job>(job);
             var respone = await _jobService.UpdateJob(jobUpdate);

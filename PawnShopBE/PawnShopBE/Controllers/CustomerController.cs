@@ -48,7 +48,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("createCustomer")]
-        public async Task<IActionResult> CreateCustomer([FromForm] CustomerDTO customer)
+        public async Task<IActionResult> CreateCustomer( CustomerDTO customer)
         {
          
             //get Kyc id
@@ -113,7 +113,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateCustomer")]
-        public async Task<IActionResult> UpdateCustomer([FromForm] Customer customer)
+        public async Task<IActionResult> UpdateCustomer( Customer customer)
         {
             if (customer != null)
             {

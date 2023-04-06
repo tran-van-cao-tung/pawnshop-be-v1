@@ -16,22 +16,22 @@ namespace PawnShopBE.Controllers
         private readonly ILiquidationService _liquidationService;
         private readonly IMapper _mapper;
 
-        public LiquidationController(ILiquidationService liquidationService, IMapper mapper) 
-        { 
-        _liquidationService=liquidationService;
-            _mapper=mapper;
+        public LiquidationController(ILiquidationService liquidationService, IMapper mapper)
+        {
+            _liquidationService = liquidationService;
+            _mapper = mapper;
         }
 
         [HttpGet("getAll")]
-        public async Task<IActionResult> GetAllLiquidation() {
-            var respone =await _liquidationService.GetLiquidation();
+        public async Task<IActionResult> GetAllLiquidation()
+        {
+            var respone = await _liquidationService.GetLiquidation();
             if (respone != null)
             {
                 return Ok(respone);
             }
             return BadRequest();
         }
-<<<<<<< HEAD
 
         [HttpPost("save/{contractId}")]
         public async Task<IActionResult> CreateLiquidation(int contractId, decimal liquidationMoney)
@@ -39,21 +39,6 @@ namespace PawnShopBE.Controllers
            
             //var liquidationMapper = _mapper.Map<Liquidtation>(liquidation);
             var respone = await _liquidationService.CreateLiquidation(contractId, liquidationMoney);
-=======
-        private Validation<LiquidationDTO> _validation=new Validation<LiquidationDTO>();
-        
-    [HttpPost("createLiquidation")]
-        public async Task<IActionResult> CreateLiquidation([FromForm] LiquidationDTO liquidation)
-        {
-            //Check Validation
-            var checkValidation = await _validation.CheckValidation(liquidation);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
-            var liquidationMapper = _mapper.Map<Liquidtation>(liquidation);
-            var respone = await _liquidationService.CreateLiquidation(liquidationMapper);
->>>>>>> parent of cdd810f (Merge pull request #17 from tran-van-cao-tung/tung)
             if (respone != null)
             {
                 return Ok(respone);
@@ -73,15 +58,26 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateLiquidation")]
-        public async Task<IActionResult> UpdateLiquidation([FromForm] LiquidationDTO liquidation)
+        public async Task<IActionResult> UpdateLiquidation(LiquidationDTO liquidation)
         {
-            var liquidationUpdate=_mapper.Map<Liquidtation>(liquidation);
+            var liquidationUpdate = _mapper.Map<Liquidtation>(liquidation);
             var respone = await _liquidationService.UpdateLiquidation(liquidationUpdate);
             if (respone != null)
             {
                 return Ok(respone);
             }
             return BadRequest();
+        }
+
+        [HttpGet("detail/{contractId}")]
+        public async Task<IActionResult> GetDetail(int contractId)
+        {
+            var respone = await _liquidationService.GetLiquidationById(contractId);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return NotFound();
         }
     }
 }

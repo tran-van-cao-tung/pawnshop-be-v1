@@ -32,23 +32,23 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
         
-    [HttpPost("createLedger")]
-        public async Task<IActionResult> CreateLedger([FromForm] LedgerDTO ledger)
-        {
-            //Check Validation
-            var checkValidation = await _validation.CheckValidation(ledger);
-            if (checkValidation != null)
-            {
-                return BadRequest(checkValidation);
-            }
-            var ledgerMapper = _mapper.Map<Ledger>(ledger);
-            var respone = await _ledgerService.CreateLedger(ledgerMapper);
-            if (respone != null)
-            {
-                return Ok(respone);
-            }
-            return BadRequest();
-        }
+    //[HttpPost("createLedger")]
+    //    public async Task<IActionResult> CreateLedger( LedgerDTO ledger)
+    //    {
+    //        //Check Validation
+    //        var checkValidation = await _validation.CheckValidation(ledger);
+    //        if (checkValidation != null)
+    //        {
+    //            return BadRequest(checkValidation);
+    //        }
+    //        var ledgerMapper = _mapper.Map<Ledger>(ledger);
+    //        var respone = await _ledgerService.CreateLedger(ledgerMapper);
+    //        if (respone != null)
+    //        {
+    //            return Ok(respone);
+    //        }
+    //        return BadRequest();
+    //    }
 
         [HttpDelete("deleteLedger/{id}")]
         public async Task<IActionResult> DeleteLedger( int id)
@@ -62,7 +62,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateLedger")]
-        public async Task<IActionResult> UpdateLedger([FromForm] LedgerDTO ledger)
+        public async Task<IActionResult> UpdateLedger( LedgerDTO ledger)
         {
             var ledgerUpdate=_mapper.Map<Ledger>(ledger);
             var respone = await _ledgerService.UpdateLedger(ledgerUpdate);
