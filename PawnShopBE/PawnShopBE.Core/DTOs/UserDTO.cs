@@ -11,8 +11,10 @@ namespace PawnShopBE.Core.DTOs
     public class UserDTO
     {
         public Guid UserId { get; set; }
-        public int? RoleId { get; set; }
-        public int? BranchId { get; set; }
+        [Required]
+        public int RoleId { get; set; }
+        [Required]
+        public int BranchId { get; set; }
 
         [Required(ErrorMessage = "Tên tài khoản không được để trống")]
         public string UserName { get; set; }

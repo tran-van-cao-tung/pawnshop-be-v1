@@ -10,6 +10,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/contractAsset")]
     [ApiController]
+    [Authorize]
     public class ContractAssetController : ControllerBase
     {
         private readonly IContractAssetService _contractAssetService;
@@ -32,8 +33,8 @@ namespace PawnShopBE.Controllers
         }
         private Validation<ContractAssetDTO> _validation=new Validation<ContractAssetDTO>();
         
-    [HttpPost("createContractAsset")]
-        public async Task<IActionResult> CreateContractAsset(ContractAssetDTO contractAsset)
+        [HttpPost("createContractAsset")]
+        public async Task<IActionResult> CreateContractAsset( ContractAssetDTO contractAsset)
         {
             //Check Validation
             var checkValidation = await _validation.CheckValidation(contractAsset);
@@ -60,7 +61,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
         [HttpPut("updateContractAsset")]
-        public async Task<IActionResult> UpdateContractAsset(ContractAssetDTO contractAsset)
+        public async Task<IActionResult> UpdateContractAsset( ContractAssetDTO contractAsset)
         {
             var contractAssetUpdate=_mapper.Map<ContractAsset>(contractAsset);
             var respone = await _contractAssetService.UpdateContractAsset(contractAssetUpdate);

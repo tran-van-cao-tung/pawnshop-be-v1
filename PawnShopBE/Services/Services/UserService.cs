@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
@@ -102,7 +103,7 @@ namespace Services.Services
             {
                 return userList;
             }
-            var result= await _unitOfWork.Users.TakePage(num,userList);
+            var result = await _unitOfWork.Users.TakePage(num, userList);
             return result;
         }
 

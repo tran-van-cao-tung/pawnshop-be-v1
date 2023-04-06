@@ -17,7 +17,7 @@ using PawnShopBE.Core.Const;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/authentication/login/")]
+    [Route("api/v1/authentication")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
@@ -29,7 +29,7 @@ namespace PawnShopBE.Controllers
             _authen = authentication;
         }
         [HttpPost("renewToken")]
-        public async Task<IActionResult> RenewToken(TokenModel tokenmodel)
+        public async Task<IActionResult> RenewToken( TokenModel tokenmodel)
         {
             var token = tokenmodel;
             if (token != null)
@@ -39,25 +39,45 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        [HttpPost("create")]
-        public async Task<IActionResult> Validate(Login login)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login( Login login)
         {
+            //var result=await _authen.Login(login);
+            var user=_context.User.SingleOrDefault(p => p.UserName == login.userName &&
+            p.Password == login.password);
+            if (user != null)
+            {
+                // cấp token
+                var token = await _authen.GenerateToken();
+                if (token != null)
+                {
+                    return Ok(new
+                    {
+                        Account = user,
+                        Token = token
+                    });
+                }
+                return Ok(user);
+            }
             var admin= _context.Admin.SingleOrDefault(p => p.UserName == login.userName &&
             p.Password== login.password);
-            if(admin == null)
+            if(admin != null)
             {
-                return BadRequest(new
+                // cấp token
+                var token = await _authen.GenerateToken();
+                if (token != null)
                 {
-                    result="Invalid UserName or Password"
-                });
+                    return Ok(new
+                    {
+                        Account=admin,
+                        Token= token
+                    });
+                }
             }
-            // cấp token
-            var token = await _authen.GenerateToken(admin);
-            if (token != null)
+            return BadRequest(new
             {
-                return Ok(token);
-            }
-             return BadRequest();
+                result = "Invalid UserName or Password"
+            });
         }
         [HttpGet]
         public async Task<IActionResult> getAllToken()

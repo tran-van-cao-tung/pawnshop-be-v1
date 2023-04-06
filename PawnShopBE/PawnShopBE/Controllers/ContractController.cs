@@ -11,11 +11,13 @@ using System.Text;
 using PawnShopBE.Core.Validation;
 using System.Diagnostics.Contracts;
 using Contract = PawnShopBE.Core.Models.Contract;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PawnShopBE.Controllers
 {
     [Route("api/v1/contract")]
     [ApiController]
+    [Authorize]
     public class ContractController : ControllerBase
     {
         private readonly IContractService _contractService;
@@ -62,7 +64,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("createContract")]
-        public async Task<IActionResult> CreateContract(ContractDTO request)
+        public async Task<IActionResult> CreateContract( ContractDTO request)
         {
             //Check Validation
             var checkValidation = await _validation.CheckValidation(request);
@@ -130,12 +132,12 @@ namespace PawnShopBE.Controllers
             return Ok(contractDetail);
         }
 
-        //[HttpGet("getByContractId/{contractId}")]
-        //public async Task<IActionResult> GetContractByContractId(int contractId)
-        //{
-        //    var contract = await _contractService.GetContractById(contractId);
-        //    return (contract != null) ? Ok(contract) : NotFound();
-        //}
+        [HttpGet("getImgByContractId/{contractId}")]
+        public async Task<IActionResult> GetContractByContractId(int contractId)
+        {
+            var contract = await _contractService.GetContractById(contractId);
+            return (contract != null) ? Ok(contract) : NotFound();
+        }
 
         [HttpGet("getContractInfoByContractId/{contractId}")]
         public async Task<IActionResult> GetContractInfoByContractId(int contractId)
@@ -145,7 +147,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("uploadContractImg/{contractId}")]
-        public async Task<IActionResult> UploadContractImg(int contractId, string customerImg, string contractImg)
+        public async Task<IActionResult> UploadContractImg(int contractId, string? customerImg, string? contractImg)
         {
 
             var uploadContract = await _contractService.UploadContractImg(contractId, customerImg, contractImg);
@@ -156,9 +158,9 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("createContractExpiration/{contractId}")]
-        public async Task<IActionResult> CreateContractExpiration(int contractId)
+        public async Task<IActionResult> CreateContractExpiration(int contractId, string proofImg)
         {
-            var contractExpiration = await _contractService.CreateContractExpiration(contractId);
+            var contractExpiration = await _contractService.CreateContractExpiration(contractId, proofImg);
             if (contractExpiration != null)
             {
                 return Ok(contractExpiration);

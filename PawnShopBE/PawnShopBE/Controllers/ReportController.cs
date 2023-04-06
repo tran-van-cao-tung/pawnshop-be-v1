@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Data.DescriptionAttribute;
 using PawnShopBE.Core.DTOs;
@@ -13,6 +14,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/report")]
     [ApiController]
+    [Authorize]
     public class ReportController : ControllerBase
     {
         private readonly IReportService _report;
@@ -25,7 +27,7 @@ namespace PawnShopBE.Controllers
             _mapper=mapper;
         }
         [HttpGet("getAll/transaction/{numPage}")]
-        public async Task<IActionResult> GetAllReportTransaction(int numPage) {
+        public async Task<IActionResult> GetAllReportTransaction( int numPage) {
             var respone =await _report.getReportTransaction(numPage);
           
             if (respone != null)
@@ -35,7 +37,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpGet("report/month/{branchId}")]
+        [HttpGet("month/{branchId}")]
         public async Task<IActionResult> GetAllReportMonth(int branchId)
         {
             var respone = await _report.getReportMonth(branchId);
