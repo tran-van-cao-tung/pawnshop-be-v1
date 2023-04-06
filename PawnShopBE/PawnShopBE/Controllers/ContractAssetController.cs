@@ -33,7 +33,7 @@ namespace PawnShopBE.Controllers
         }
         
         [HttpPost("createContractAsset")]
-        public async Task<IActionResult> CreateContractAsset( ContractAssetDTO contractAsset)
+        public async Task<IActionResult> CreateContractAsset([FromForm] ContractAssetDTO contractAsset)
         {
             var contractAssetMapper = _mapper.Map<ContractAsset>(contractAsset);
             var respone = await _contractAssetService.CreateContractAsset(contractAssetMapper);
@@ -54,7 +54,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
         [HttpPut("updateContractAsset")]
-        public async Task<IActionResult> UpdateContractAsset( ContractAssetDTO contractAsset)
+        public async Task<IActionResult> UpdateContractAsset([FromForm] ContractAssetDTO contractAsset)
         {
             var contractAssetUpdate=_mapper.Map<ContractAsset>(contractAsset);
             var respone = await _contractAssetService.UpdateContractAsset(contractAssetUpdate);

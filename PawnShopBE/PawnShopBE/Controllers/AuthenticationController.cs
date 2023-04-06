@@ -17,7 +17,7 @@ using PawnShopBE.Core.Const;
 
 namespace PawnShopBE.Controllers
 {
-    [Route("api/v1/authentication")]
+    [Route("api/authentication/login/")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
@@ -29,7 +29,7 @@ namespace PawnShopBE.Controllers
             _authen = authentication;
         }
         [HttpPost("renewToken")]
-        public async Task<IActionResult> RenewToken( TokenModel tokenmodel)
+        public async Task<IActionResult> RenewToken([FromForm] TokenModel tokenmodel)
         {
             var token = tokenmodel;
             if (token != null)
@@ -40,7 +40,7 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login( Login login)
+        public async Task<IActionResult> Login([FromForm] Login login)
         {
             //var result=await _authen.Login(login);
             var user=_context.User.SingleOrDefault(p => p.UserName == login.userName &&

@@ -12,6 +12,6 @@ namespace Services.Services.IServices
         Task<bool> CreateRansom(Contract contract);
         Task<IEnumerable<Ransom>> GetRansom();
         Task<Ransom> GetRansomByContractId(int contractId);
-        Task<bool> SaveRansom(int ransomId, string proofImg);
+        Task<bool> SaveRansom(int ransomId);
     }
 }

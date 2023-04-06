@@ -33,7 +33,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create(Permission per)
+        public async Task<IActionResult> Create([FromForm]Permission per)
         {
             if (per != null)
             {
@@ -45,8 +45,8 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest("Permission Is Exists");
         }
-        [HttpPut("savepermission")]
-        public async Task<IActionResult> SavePermission(IEnumerable<DisplayPermission> user)
+        [HttpPost("savepermission")]
+        public async Task<IActionResult> SavePermission([FromForm]IEnumerable<DisplayPermission> user)
         {
             if (user != null)
             {
@@ -57,7 +57,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("showpermission")]
-        public async Task<IActionResult> ShowPermission( UserPermissionDTO user)
+        public async Task<IActionResult> ShowPermission([FromForm] UserPermissionDTO user)
         {
             if (user != null)
             {
@@ -78,7 +78,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdatePermission( Permission per)
+        public async Task<IActionResult> UpdatePermission([FromForm] Permission per)
         {
             var respone = await _perService.UpdatePermission(per);
             if (respone != null)

@@ -8,14 +8,13 @@ namespace PawnShopBE.Core.Display
 {
     public class DisplayReportTransaction
     {
-        public int ContractId { get; set; }
-        public string ContractCode { get; set; }
-        public string CustomerName { get; set; }
-        public string AssetCode { get; set; }
-        public string AssetName { get; set; }
-        public decimal Loan { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+       public string contractCode { get; set; }
+        public string customerName { get; set; }
+        public string assetCode { get; set; }
+        public string assetName { get; set; }
+        public decimal loan { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
 
     }
 }

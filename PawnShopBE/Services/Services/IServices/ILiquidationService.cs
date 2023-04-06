@@ -1,5 +1,4 @@
-﻿using PawnShopBE.Core.Display;
-using PawnShopBE.Core.Models;
+﻿using PawnShopBE.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +9,9 @@ namespace Services.Services.IServices
 {
     public interface ILiquidationService
     {
-        Task<bool> CreateLiquidation(int contractId, decimal liquidationMoney);
+        Task<bool> CreateLiquidation(Liquidtation liquidtation);
         Task<IEnumerable<Liquidtation>> GetLiquidation();
-        Task<DisplayLiquidationDetail> GetLiquidationById(int contractId);
+        Task<Liquidtation> GetLiquidationById(int liquidationId);
         Task<bool> UpdateLiquidation(Liquidtation liquidtation);
         Task<bool> DeleteLiquidation(int liquidationId);
     }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PawnShopBE.Infrastructure.Helpers;
 
@@ -11,9 +12,11 @@ using PawnShopBE.Infrastructure.Helpers;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContextClass))]
-    partial class DbContextClassModelSnapshot : ModelSnapshot
+    [Migration("20230325121406_addGroup")]
+    partial class addGroup
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -504,78 +507,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.ToTable("Liquidtation", (string)null);
                 });
 
-            modelBuilder.Entity("PawnShopBE.Core.Models.Money", b =>
-                {
-                    b.Property<int>("MoneyId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MoneyId"));
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateCreate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("MoneyInput")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MoneyId");
-
-                    b.HasIndex("BranchId");
-
-                    b.ToTable("Money");
-                });
-
-            modelBuilder.Entity("PawnShopBE.Core.Models.LogContract", b =>
-                {
-                    b.Property<int>("LogContractId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LogContractId"));
-
-                    b.Property<int>("ContractId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CustomerName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Debt")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("EventType")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("LogTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Paid")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("LogContractId");
-
-                    b.HasIndex("ContractId");
-
-                    b.ToTable("LogContract", (string)null);
-                });
-
             modelBuilder.Entity("PawnShopBE.Core.Models.Package", b =>
                 {
                     b.Property<int>("PackageId")
@@ -814,9 +745,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.HasKey("perId", "UserId");
 
                     b.HasIndex("UserId");
@@ -998,28 +926,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Navigation("Contract");
                 });
 
-            modelBuilder.Entity("PawnShopBE.Core.Models.Money", b =>
-                {
-                    b.HasOne("PawnShopBE.Core.Models.Branch", "Branch")
-                        .WithMany()
-                        .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Branch");
-                });
-
-            modelBuilder.Entity("PawnShopBE.Core.Models.LogContract", b =>
-                {
-                    b.HasOne("PawnShopBE.Core.Models.Contract", "Contract")
-                        .WithMany("LogContracts")
-                        .HasForeignKey("ContractId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Contract");
-                });
-
             modelBuilder.Entity("PawnShopBE.Core.Models.Ransom", b =>
                 {
                     b.HasOne("PawnShopBE.Core.Models.Contract", "Contract")
@@ -1081,8 +987,6 @@ namespace PawnShopBE.Infrastructure.Migrations
                     b.Navigation("InterestDiaries");
 
                     b.Navigation("Liquidtation");
-
-                    b.Navigation("LogContracts");
 
                     b.Navigation("Ransom");
                 });

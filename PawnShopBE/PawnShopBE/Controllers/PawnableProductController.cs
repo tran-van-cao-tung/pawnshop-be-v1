@@ -53,7 +53,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("createPawnable")]
-        public async Task<IActionResult> CreatePawnableProduct( PawnableDTO pawnableDTO)
+        public async Task<IActionResult> CreatePawnableProduct([FromForm] PawnableDTO pawnableDTO)
         {
             var attribute = _mapper.Map<ICollection<Attribute>>(pawnableDTO.AttributeDTOs);
             var pawnable = _mapper.Map<PawnableProduct>(pawnableDTO);
@@ -68,7 +68,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updatePawnableProduct")]
-        public async Task<IActionResult> UpdatePawnableProduct( PawnableDTO request)
+        public async Task<IActionResult> UpdatePawnableProduct([FromForm] PawnableDTO request)
         {                
                 var pawnableProduct = _mapper.Map<PawnableProduct>(request);
                 var response = await _pawnableProductService.UpdatePawnableProduct(pawnableProduct);

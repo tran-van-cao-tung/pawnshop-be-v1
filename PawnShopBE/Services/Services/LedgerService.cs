@@ -20,7 +20,7 @@ namespace Services.Services
             _unit = unitOfWork;
         }
         public async Task<bool> CreateLedger(Ledger ledger)
-        {
+        { 
             if (ledger != null)
             {
                 await _unit.Ledgers.Add(ledger);
@@ -35,7 +35,7 @@ namespace Services.Services
 
         public async Task<bool> DeleteLedger(int ledgerId)
         {
-            var ledgerDelete = _unit.Ledgers.SingleOrDefault(_ledgerService, j => j.LedgerId == ledgerId); ;
+            var ledgerDelete = _unit.Ledgers.SingleOrDefault(_ledgerService, j => j.LedgerId == ledgerId);;
             if (ledgerDelete != null)
             {
                 _unit.Ledgers.Delete(ledgerDelete);
@@ -64,16 +64,14 @@ namespace Services.Services
             var ledgerUpdate = _unit.Ledgers.SingleOrDefault(ledger, j => j.LedgerId == ledger.LedgerId);
             if (ledgerUpdate != null)
             {
+                ledgerUpdate.BranchId = ledger.BranchId;
                 ledgerUpdate.ReceivedPrincipal = ledger.ReceivedPrincipal;
                 ledgerUpdate.RecveivedInterest = ledger.RecveivedInterest;
                 ledgerUpdate.Loan = ledger.Loan;
                 ledgerUpdate.Balance = ledger.Balance;
-                //ledgerUpdate.FromDate = ledger.FromDate;
-                //ledgerUpdate.ToDate = ledger.ToDate;
-                ledgerUpdate.Fund = ledger.Fund;
+                ledgerUpdate.FromDate = ledger.FromDate;
+                ledgerUpdate.ToDate = ledger.FromDate;
                 ledgerUpdate.Status = ledger.Status;
-                ledgerUpdate.LiquidationMoney = ledger.LiquidationMoney;
-
                 _unit.Ledgers.Update(ledgerUpdate);
                 var result = _unit.Save();
                 if (result > 0)

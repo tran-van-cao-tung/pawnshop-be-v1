@@ -33,7 +33,7 @@ namespace PawnShopBE.Controllers
         }
        
         [HttpPost("createDependentPeople")]
-        public async Task<IActionResult> CreateDependent( DependentPeopleDTO dependent)
+        public async Task<IActionResult> CreateDependent([FromForm] DependentPeopleDTO dependent)
         {
             
             var dependentMapper  = _mapper.Map<DependentPeople>(dependent);
@@ -57,7 +57,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPut("updateDependentPeople")]
-        public async Task<IActionResult> UpdateDependent( DependentPeopleDTO dependent)
+        public async Task<IActionResult> UpdateDependent([FromForm] DependentPeopleDTO dependent)
         {
             var dependentMapper=_mapper.Map<DependentPeople>(dependent);
             var respone = await _dependentService.UpdateDependent(dependentMapper);

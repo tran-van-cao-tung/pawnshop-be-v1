@@ -32,7 +32,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateMoney( MoneyDTO moneyDTO)
+        public async Task<IActionResult> CreateMoney([FromForm] MoneyDTO moneyDTO)
         {
             if (moneyDTO != null)
             {
