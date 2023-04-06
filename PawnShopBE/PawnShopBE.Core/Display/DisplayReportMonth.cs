@@ -21,5 +21,6 @@ namespace PawnShopBE.Core.Display
         public decimal Balance { get; set; }
         //tiền thanh lý
         public decimal LiquidationMoney { get; set; }
+        public int Status { get; set; }
     }
 }
