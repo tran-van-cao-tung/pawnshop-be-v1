@@ -13,7 +13,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/branch")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
     public class BranchController : ControllerBase
     {
         private readonly IBranchService _branchService;
