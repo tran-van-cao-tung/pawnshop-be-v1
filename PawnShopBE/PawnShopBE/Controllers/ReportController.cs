@@ -18,21 +18,24 @@ namespace PawnShopBE.Controllers
     public class ReportController : ControllerBase
     {
         private readonly IReportService _report;
+        private readonly ILedgerService _ledgerService;
         private readonly IMapper _mapper;
-       
 
-        public ReportController(IReportService report, IMapper mapper) 
-        { 
-        _report= report;
-            _mapper=mapper;
+
+        public ReportController(IReportService report, IMapper mapper, ILedgerService ledger)
+        {
+            _report = report;
+            _mapper = mapper;
+            _ledgerService = ledger;
         }
         [HttpGet("getAll/transaction/{numPage}")]
-        public async Task<IActionResult> GetAllReportTransaction( int numPage) {
-            var respone =await _report.getReportTransaction(numPage);
-          
+        public async Task<IActionResult> GetAllReportTransaction(int numPage)
+        {
+            var respone = await _report.getReportTransaction(numPage);
+
             if (respone != null)
             {
-                return Ok(respone) ;
+                return Ok(respone);
             }
             return BadRequest();
         }

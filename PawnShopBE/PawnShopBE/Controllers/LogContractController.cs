@@ -28,7 +28,15 @@ namespace PawnShopBE.Controllers
         [HttpGet("logContractById/{contractId}")]
         public async Task<IActionResult> GetLogContractByContractId(int contractId)
         {
-            var logContract = await _logContractService.LogContractByContractId(contractId);
+            var logContract = await _logContractService.LogContractsByContractId(contractId);
+
+            return (logContract != null) ? Ok(logContract) : BadRequest();
+        }
+
+        [HttpGet("logContractByBranchId/{branchId}")]
+        public async Task<IActionResult> GetLogContractByBranchId(int branchId)
+        {
+            var logContract = await _logContractService.LogContractsByBranchId(branchId);
 
             return (logContract != null) ? Ok(logContract) : BadRequest();
         }

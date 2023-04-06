@@ -59,29 +59,8 @@ namespace Services.Services
                 {
 
                 }
-
-
                 if (ledger != null)
-                {
-                    //var ledger = from ledgerDB in _contextClass.Ledger
-                    //             where ledgerDB.BranchId == branch.BranchId && (ledgerDB.FromDate >= firstDayOfMonth) && (ledgerDB.ToDate <= lastDayOfMonth)
-                    //             select new
-                    //             {
-                    //                 LedgerId = ledgerDB.LedgerId,
-                    //                 BranchId = ledgerDB.BranchId,
-                    //                 Fund = ledgerDB.Fund,
-                    //                 ReceivedPrincipal = ledgerDB.ReceivedPrincipal,
-                    //                 RecveivedInterest = ledgerDB.RecveivedInterest,
-                    //                 Loan = ledgerDB.Loan,
-                    //                 LiquidationMoney = ledgerDB.LiquidationMoney,
-                    //                 Balance = ledgerDB.Balance,
-                    //                 FromDate = ledgerDB.FromDate,
-                    //                 ToDate = ledgerDB.ToDate,
-                    //                 Status = ledgerDB.Status
-                    //             };
-
-                    //             select new);
-
+                {              
                     // Get Fund of month
                     ledger.Fund = ledger.Balance;
 
@@ -147,6 +126,8 @@ namespace Services.Services
                     ledger.Status = (ledger.Balance > ledger.Fund) ? (int)LedgerConst.PROFIT_REVENUE : (int)LedgerConst.LOSS_REVENUE;
 
                     _ledgerService.UpdateLedger(ledger);
+                    branch.Fund = ledger.Balance;
+                    _unitOfWork.Branches.Update(branch);
                 }
                 else
                 {

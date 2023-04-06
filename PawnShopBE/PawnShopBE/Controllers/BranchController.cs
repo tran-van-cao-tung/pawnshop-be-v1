@@ -126,5 +126,20 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpGet("getById/{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var branch = await _branchService.GetBranchById(id);
+
+            if (branch != null)
+            {
+                return Ok(branch);
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
     }
 }

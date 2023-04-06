@@ -51,16 +51,16 @@ namespace PawnShopBE.Controllers
     //        return BadRequest();
     //    }
 
-        [HttpDelete("deleteLedger/{id}")]
-        public async Task<IActionResult> DeleteLedger( int id)
-        {
-            var respone = await _ledgerService.DeleteLedger(id);
-            if (respone != null)
-            {
-                return Ok(respone);
-            }
-            return BadRequest();
-        }
+        //[HttpDelete("deleteLedger/{id}")]
+        //public async Task<IActionResult> DeleteLedger( int id)
+        //{
+        //    var respone = await _ledgerService.DeleteLedger(id);
+        //    if (respone != null)
+        //    {
+        //        return Ok(respone);
+        //    }
+        //    return BadRequest();
+        //}
 
         [HttpPut("updateLedger")]
         public async Task<IActionResult> UpdateLedger( LedgerDTO ledger)
