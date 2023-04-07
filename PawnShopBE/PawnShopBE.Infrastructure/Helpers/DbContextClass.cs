@@ -183,7 +183,7 @@ namespace PawnShopBE.Infrastructure.Helpers
             modelBuilder.Entity<Admin>(entity =>
             {
                 entity.ToTable("Admin");
-                entity.HasNoKey();
+                entity.HasKey(a => a.UserName);
             });
             modelBuilder.Entity<UserPermissionGroup>(entity =>
             {

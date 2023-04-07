@@ -2,6 +2,7 @@
 using PawnShopBE.Core.Display;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Core.Responses;
 using Attribute = PawnShopBE.Core.Models.Attribute;
 
 namespace PawnShopBE.Helpers
@@ -165,6 +166,9 @@ namespace PawnShopBE.Helpers
                 .ForMember(
                     dest => dest.LiquidationMoney,
                     opt => opt.MapFrom(src => src.LiquidationMoney));
+
+            // Mapping from User to UserRepsonse
+            CreateMap<User, UserRepsonse>();
 
         }
     }
