@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using PawnShopBE.Core.DTOs;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
+using PawnShopBE.Helpers;
+using PawnShopBE.Infrastructure.Helpers;
 using Services.Services.IServices;
 using System;
 using System.Collections.Generic;
@@ -17,19 +19,24 @@ namespace Services.Services
     public class UserService : IUserService
     {
         public IUnitOfWork _unitOfWork;
-        private readonly string _gmail= "nguyentuanvu020901@gmail.com";
-        private readonly string _pass = "fhnwtwqisekdqzcr";
+        //private readonly string _gmail = "nguyentuanvu020901@gmail.com";
+        //private readonly string _pass = "fhnwtwqisekdqzcr";
+        private readonly string _gmail= "hethongpawns@gmail.com";
+        private readonly string _pass = "1234abcd*";
         private IMapper _mapper;
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        private DbContextClass _dbContextClass;
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, DbContextClass dbContextClass)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _dbContextClass = dbContextClass;
         }
         public async Task<bool> CreateUser(User user)
         {
             if (user != null)
             {
                 user.CreateTime = DateTime.Now;
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                 await _unitOfWork.Users.Add(user);
 
                 var result = _unitOfWork.Save();
@@ -41,13 +48,29 @@ namespace Services.Services
             }
             return false;
         }
+
+        public async Task<bool> CreateAdmin(Admin admin)
+        {
+            if (admin != null)
+            {
+                admin.Password = BCrypt.Net.BCrypt.HashPassword(admin.Password);  
+                
+                _dbContextClass.Admin.Add(admin);
+                var result = _dbContextClass.SaveChanges();           
+                return (result > 0) ? true: false;       
+            }
+            return false;
+        }
         public async Task<bool> sendEmail(UserDTO userDTO)
         {
             string sendto = userDTO.Email;
-            string subject = "Recover Password of "+userDTO.FullName;
-            string content = "Your New Password is abc";
+            string subject = "[PAWNSHOP] - Khôi phục mật khẩu" ;
+            string content = "Mật khẩu mới cho tài khoản đăng nhập" + userDTO.FullName ;
+
+            // Create random password
+            string randomPassword = HelperFuncs.GeneratePassword(10);
             //set new password
-            userDTO.Password = "abc";
+            userDTO.Password = randomPassword;
             //update password
             var user= _mapper.Map<User>(userDTO);
             await UpdateUser(user);
@@ -128,7 +151,7 @@ namespace Services.Services
                 if (userUpdate != null)
                 {
                     userUpdate.UserName = user.UserName;
-                    userUpdate.Password = user.Password;
+                    userUpdate.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                     userUpdate.Status = user.Status;
                     userUpdate.Email= user.Email;
                     userUpdate.Phone = user.Phone;

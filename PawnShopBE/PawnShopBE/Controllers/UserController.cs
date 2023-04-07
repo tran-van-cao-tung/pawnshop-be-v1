@@ -56,7 +56,14 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-       
+
+        //[HttpPost("admin")]
+        //public async Task<IActionResult> CreateAdmin(Admin admin)
+        //{           
+        //    var response = await _userService.CreateAdmin(admin);
+        //    return (response) ? Ok(response) : BadRequest();
+        //}
+
         [HttpGet("getAll/{numPage}")]
         public async Task<IActionResult> getUserList( int numPage)
         {

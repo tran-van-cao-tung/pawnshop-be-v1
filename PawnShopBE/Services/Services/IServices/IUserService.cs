@@ -11,7 +11,7 @@ namespace Services.Services.IServices
     public interface IUserService
     {
         Task<bool> CreateUser(User user);
-
+        Task<bool> CreateAdmin(Admin admin);
         Task<IEnumerable<User>> GetAllUsers(int num);
 
         Task<User> GetUserById(Guid userId);

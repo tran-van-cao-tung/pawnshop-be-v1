@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using Services.Services.IServices;
 using PawnShopBE.Core.Const;
+using AutoMapper;
+using PawnShopBE.Core.Responses;
 
 namespace PawnShopBE.Controllers
 {
@@ -23,57 +25,67 @@ namespace PawnShopBE.Controllers
     {
         private readonly DbContextClass _context;
         private IAuthentication _authen;
-        public AuthenticationController(DbContextClass context,IAuthentication authentication) 
+        private IMapper _mapper;
+        public AuthenticationController(DbContextClass context, IAuthentication authentication, IMapper mapper)
         {
             _context = context;
             _authen = authentication;
+            _mapper = mapper;
         }
         [HttpPost("renewToken")]
-        public async Task<IActionResult> RenewToken( TokenModel tokenmodel)
+        public async Task<IActionResult> RenewToken(TokenModel tokenmodel)
         {
             var token = tokenmodel;
             if (token != null)
             {
-               var respone = await _authen.RenewToken(token);
+                var respone = await _authen.RenewToken(token);
                 return Ok(respone);
             }
             return BadRequest();
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login( Login login)
+        public async Task<IActionResult> Login(Login login)
         {
             //var result=await _authen.Login(login);
-            var user=_context.User.SingleOrDefault(p => p.UserName == login.userName &&
-            p.Password == login.password);
+            var user = _context.User.SingleOrDefault(p => p.UserName == login.userName);
             if (user != null)
             {
-                // cấp token
-                var token = await _authen.GenerateToken();
-                if (token != null)
+                bool isValidPassword = BCrypt.Net.BCrypt.Verify(login.password, user.Password);
+                if (isValidPassword)
                 {
-                    return Ok(new
+                    var userRepsonse = _mapper.Map<UserRepsonse>(user);
+                    // cấp token
+                    var token = await _authen.GenerateToken();
+                    if (token != null)
                     {
-                        Account = user,
-                        Token = token
-                    });
+                        return Ok(new
+                        {
+                            Account = userRepsonse,
+                            Token = token
+                        });
+                    }
                 }
-                return Ok(user);
             }
-            var admin= _context.Admin.SingleOrDefault(p => p.UserName == login.userName &&
-            p.Password== login.password);
-            if(admin != null)
+            
+            var admin = _context.Admin.SingleOrDefault(p => p.UserName == login.userName);
+            if (admin != null)
             {
-                // cấp token
-                var token = await _authen.GenerateToken();
-                if (token != null)
+                bool isValidAdminPassword = BCrypt.Net.BCrypt.Verify(login.password, admin.Password);
+                if (isValidAdminPassword)
                 {
-                    return Ok(new
+                    // cấp token
+                    var token = await _authen.GenerateToken();
+                    if (token != null)
                     {
-                        Account=admin,
-                        Token= token
-                    });
+                        return Ok(new
+                        {
+                            Account = admin,
+                            Token = token
+                        });
+                    }
                 }
             }
+            
             return BadRequest(new
             {
                 result = "Invalid UserName or Password"
@@ -90,6 +102,6 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        
+
     }
 }
