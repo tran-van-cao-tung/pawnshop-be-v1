@@ -19,6 +19,6 @@ namespace Services.Services.IServices
         Task<bool> UpdateUser(User user);
 
         Task<bool> DeleteUser(Guid userId);
-        Task<bool> sendEmail(UserDTO userDTO);
+        Task<bool> sendEmail(string email);
     }
 }
