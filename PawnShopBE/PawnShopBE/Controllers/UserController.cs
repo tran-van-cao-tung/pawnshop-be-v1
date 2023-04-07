@@ -12,7 +12,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/user")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
