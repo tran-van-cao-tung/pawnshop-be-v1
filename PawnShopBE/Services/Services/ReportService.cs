@@ -111,6 +111,7 @@ namespace Services.Services
                 var report = new DisplayReportMonth();
                 report.BranchId = ledger.BranchId;
                 report.Month = ledger.ToDate.Month;
+                report.Year = ledger.ToDate.Year;
                 report.Fund = ledger.Fund;
                 report.Loan = ledger.Loan;
                 report.ReceivedPrincipal = ledger.ReceivedPrincipal;

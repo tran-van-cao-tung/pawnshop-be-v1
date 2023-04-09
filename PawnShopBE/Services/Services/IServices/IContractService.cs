@@ -26,5 +26,7 @@ namespace Services.Services.IServices
         Task<DisplayContractHomePage> getAllContractHomepage(int branchId);
         Task<bool> CreateContractExpiration(int contractId, string proofImg);
         Task<DisplayContractInfo> GetContractInfoByContractId(int contractId);
+        public Task<IEnumerable<DisplayNotification>> NotificationList(int branchId);
+
     }
 }

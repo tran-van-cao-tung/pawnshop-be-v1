@@ -197,10 +197,20 @@ namespace Services.Services
                 totalProfit += contract.TotalProfit;
                 loanLedger += getLedger(ledgerList, contract.BranchId, true);
                 recveivedInterest += getLedger(ledgerList, contract.BranchId, false);
-                ransomTotal += getRansom(ransomList, contract.ContractId);
                 //add list
                 //listDipslay.Add(display);
             }
+            var endContractList = from c in contractCollection where c.BranchId == branchId && c.Status != (int)ContractConst.CLOSE select c;
+            foreach (var endContract in endContractList)
+            {
+                ransomTotal += getRansom(ransomList, endContract.ContractId);
+            }
+
+            var openContractList = from c in _dbContextClass.Contract
+                               where c.BranchId == branchId && c.Status != (int)ContractConst.CLOSE
+                               select c;
+            var count = openContractList.Count();
+            
             DisplayContractHomePage x = new DisplayContractHomePage();
             //add field hiển thị chung
             x.totalProfit = totalProfit;
@@ -208,7 +218,7 @@ namespace Services.Services
             x.fund = fund;
             x.recveivedInterest = recveivedInterest;
             x.ransomTotal = ransomTotal;
-
+            x.openContract = count;
             return x;
         }
         private async Task<IEnumerable<DisplayContractHomePage>> TakePage
@@ -756,6 +766,106 @@ namespace Services.Services
                 displayContractInfo = null;
             }
             return displayContractInfo;
+        }
+
+        public async Task<IEnumerable<DisplayNotification>> NotificationList(int branchId)
+        {
+            var notifiList = new List<DisplayNotification>();
+
+            // Notification for interest payment
+            var diaryProvider = _serviceProvider.GetService(typeof(IInteresDiaryService)) as IInteresDiaryService;
+
+            var contractJoinCustomerJoinAsset = from contract in _dbContextClass.Contract
+                                                join customer in _dbContextClass.Customer
+                                                on contract.CustomerId equals customer.CustomerId
+                                                join contractAsset in _dbContextClass.ContractAsset
+                                                on contract.ContractAssetId equals contractAsset.ContractAssetId
+                                                join pawnableProduct in _dbContextClass.PawnableProduct
+                                                on contractAsset.PawnableProductId equals pawnableProduct.PawnableProductId
+                                                join ransom in _dbContextClass.Ransom
+                                                on contract.ContractId equals ransom.ContractId
+                                                where (contract.BranchId == branchId)
+                                                select new
+                                                {
+                                                    ContractId = contract.ContractId,
+                                                    ContractCode = contract.ContractCode,
+                                                    CustomerName = customer.FullName,
+                                                    CommodityCode = pawnableProduct.CommodityCode,
+                                                    ContractAssetName = contractAsset.ContractAssetName,
+                                                    RansomTotalPay = ransom.TotalPay,
+                                                    ContractStartDate = contract.ContractStartDate,
+                                                    ContractEndDate = contract.ContractEndDate,
+                                                    Status = contract.Status
+                                                };
+
+            foreach (var row in contractJoinCustomerJoinAsset)
+            {
+                // Notification for ransom (contract is on due date) payment
+                if (row.ContractEndDate == DateTime.Today && row.Status != (int)ContractConst.CLOSE)
+                {
+                    DisplayNotification displayNotification = new DisplayNotification();
+                    displayNotification.ContractId = row.ContractId;
+                    displayNotification.ContractCode = row.ContractCode;
+                    displayNotification.CustomerName = row.CustomerName;
+                    displayNotification.CommodityCode = row.CommodityCode;
+                    displayNotification.ContractAssetName = row.ContractAssetName;
+                    displayNotification.TotalPay = row.RansomTotalPay;
+                    displayNotification.ContractStartDate = row.ContractStartDate;
+                    displayNotification.ContractEndDate = row.ContractEndDate;
+                    displayNotification.Description = "Hợp đồng đến hạn cần thanh toán: " + displayNotification.TotalPay.ToString() + " VND";
+                    notifiList.Add(displayNotification);
+                }            
+            }
+
+            var contractJoinCustomerJoinAssetJoinDiaries = from contract in _dbContextClass.Contract
+                                                           join customer in _dbContextClass.Customer
+                                                           on contract.CustomerId equals customer.CustomerId
+                                                           join contractAsset in _dbContextClass.ContractAsset
+                                                           on contract.ContractAssetId equals contractAsset.ContractAssetId
+                                                           join pawnableProduct in _dbContextClass.PawnableProduct
+                                                           on contractAsset.PawnableProductId equals pawnableProduct.PawnableProductId
+                                                           join interestDiary in _dbContextClass.InterestDiary
+                                                           on contract.ContractId equals interestDiary.ContractId
+                                                           where (contract.BranchId == branchId)
+                                                           select new
+                                                           {
+                                                               ContractId = contract.ContractId,
+                                                               ContractCode = contract.ContractCode,
+                                                               CustomerName = customer.FullName,
+                                                               CommodityCode = pawnableProduct.CommodityCode,
+                                                               ContractAssetName = contractAsset.ContractAssetName,
+                                                               InterestTotalPay = interestDiary.TotalPay,
+                                                               NextDueDate = interestDiary.NextDueDate,
+                                                               DueDate = interestDiary.DueDate,
+                                                               Status = contract.Status
+                                                           };
+            foreach (var rows in contractJoinCustomerJoinAssetJoinDiaries)
+            {
+
+
+                if (rows.NextDueDate != DateTime.Today)
+                {
+                    continue;
+                }
+                DisplayNotification displayNotification = new DisplayNotification();
+                displayNotification.ContractId = rows.ContractId;
+                displayNotification.ContractCode = rows.ContractCode;
+                displayNotification.CustomerName = rows.CustomerName;
+                displayNotification.CommodityCode = rows.CommodityCode;
+                displayNotification.ContractAssetName = rows.ContractAssetName;
+                displayNotification.TotalPay = rows.InterestTotalPay;
+                displayNotification.ContractStartDate = rows.DueDate;
+                displayNotification.ContractEndDate = rows.NextDueDate;
+                displayNotification.Description = "Kỳ hạn đóng lãi đến cần thanh toán: " + displayNotification.TotalPay.ToString() + " VND";
+                notifiList.Add(displayNotification);
+            }
+
+
+
+
+
+
+            return notifiList;
         }
     }
 }

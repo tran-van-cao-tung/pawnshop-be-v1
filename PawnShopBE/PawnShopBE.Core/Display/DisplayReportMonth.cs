@@ -11,6 +11,7 @@ namespace PawnShopBE.Core.Display
         public int BranchId { get; set; }
         public string BranchName { get; set; }
         public int Month { get; set; }
+        public int Year { get; set; }
         public decimal Fund { get; set; }
         public decimal Loan { get; set; }
         // tiền lãi đã nhận

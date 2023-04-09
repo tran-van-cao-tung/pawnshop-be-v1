@@ -118,6 +118,7 @@ builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<ILogContractService, LogContractService>();
 builder.Services.AddScoped<IMoneyService, MoneyService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
