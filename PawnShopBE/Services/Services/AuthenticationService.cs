@@ -63,8 +63,9 @@ namespace Services.Services
                     Subject = new ClaimsIdentity(new[]
                     {
                     new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.Email,user.Email),
-                    new Claim(ClaimTypes.Name,user.FullName),
+                    new Claim("Email",user.Email),
+                    new Claim("Name",user.FullName),
+                    new Claim("BranchId",user.BranchId.ToString()),
                     new Claim("UserId",user.UserId.ToString())
                 }),
 
@@ -82,8 +83,10 @@ namespace Services.Services
                     Subject = new ClaimsIdentity(new[]
                     {
                     new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.Email,admin.Email),
-                    new Claim(ClaimTypes.Name,admin.UserName)
+                    new Claim("Email",admin.Email),
+                    new Claim("Name",admin.UserName),
+                    new Claim("BranchId","Admin không có BranchId"),
+                    new Claim("UserId","Admin không có Id")
                 }),
 
                     Expires = DateTime.UtcNow.AddHours(2),

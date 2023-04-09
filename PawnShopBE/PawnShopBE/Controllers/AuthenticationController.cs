@@ -45,6 +45,11 @@ namespace PawnShopBE.Controllers
         //    }
         //    return BadRequest();
         //}
+        private string name { get; set; }
+        private string email { get; set; }
+        private string id { get; set; }
+        private string branchid { get; set; }
+
         [HttpPost("decrypttoken")]
         public async Task<IActionResult> DecryptToken(TokenModel tokenmodel)
         {
@@ -52,8 +57,32 @@ namespace PawnShopBE.Controllers
             if (token != null)
             {
                 var readToken = _authen.EncrypToken(token);
-                var respone = readToken.Claims.FirstOrDefault();
-                return Ok(respone);
+                var respone = readToken.Claims;
+                foreach(var x in respone)
+                {
+                   switch (x.Type)
+                    {
+                        case "Email":
+                            email=x.Value;
+                            break;
+                        case "UserId":
+                            id = x.Value;
+                            break;
+                        case "Name":
+                            name = x.Value;
+                            break;
+                        case "BranchId":
+                            branchid= x.Value;
+                            break;
+                    }
+                }
+                return Ok(new
+                {
+                    Name = name,
+                    Email=email,
+                    BranchId=branchid,
+                    UserId=id
+                }) ;
             }
             return BadRequest();
         }
