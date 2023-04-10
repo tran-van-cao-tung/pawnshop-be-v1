@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace PawnShopBE.Core.Models
@@ -17,6 +19,8 @@ namespace PawnShopBE.Core.Models
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public int Status { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int Point { get; set; }
 
 
