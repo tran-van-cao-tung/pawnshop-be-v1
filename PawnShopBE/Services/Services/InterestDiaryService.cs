@@ -25,12 +25,14 @@ namespace Services.Services
         private DbContextClass _dbContextClass;
         private readonly IInterestDiaryRepository _interestDiaryRepository;
         private readonly ILogContractService _logContractService;
-        public InterestDiaryService(IUnitOfWork unitOfWork, DbContextClass dbContextClass, IInterestDiaryRepository interestDiaryRepository, ILogContractService logContractService)
+        private readonly IDiaryImgService _diaryImgService;
+        public InterestDiaryService(IUnitOfWork unitOfWork, DbContextClass dbContextClass, IInterestDiaryRepository interestDiaryRepository, ILogContractService logContractService, IDiaryImgService diaryImgService)
         {
             _unit = unitOfWork;
             _dbContextClass = dbContextClass;
             _interestDiaryRepository = interestDiaryRepository;
             _logContractService = logContractService;
+            _diaryImgService = diaryImgService;
         }
 
         private string GetCustomerName(Guid customerId)
@@ -131,25 +133,40 @@ namespace Services.Services
             return null;
         }
 
-        public async Task<bool> UpdateInterestDiary(int id, decimal paidMoney)
+        public async Task<bool> UpdateInterestDiary(int id, decimal paidMoney, List<string> proofImg)
         {
             try
             {
                 var diaryUpdate = await _unit.InterestDiaries.GetById(id);
-                if (diaryUpdate == null) return false;
-                diaryUpdate.PaidMoney = paidMoney;
-                diaryUpdate.InterestDebt = diaryUpdate.TotalPay - (paidMoney);
-                diaryUpdate.PaidDate = DateTime.Now;
-
-                if (diaryUpdate.TotalPay == paidMoney && diaryUpdate.InterestDebt == 0)
+                if (diaryUpdate == null) return false;          
+                // Check current PaidMoney
+                if (paidMoney > diaryUpdate.TotalPay)
                 {
-                    diaryUpdate.Status = (int)InterestDiaryConsts.PAID;
+                    return false;
+                }
+                if (diaryUpdate.PaidMoney == diaryUpdate.TotalPay)
+                {
+                    paidMoney = 0;
+                }
+                diaryUpdate.InterestDebt = diaryUpdate.TotalPay - (paidMoney + diaryUpdate.PaidMoney);
+                if (diaryUpdate.InterestDebt < 0)
+                {
                     diaryUpdate.InterestDebt = 0;
                 }
+                diaryUpdate.PaidMoney += paidMoney;
+                // Status is PAID
+                if (diaryUpdate.TotalPay == diaryUpdate.PaidMoney && diaryUpdate.InterestDebt == 0)
+                {
+                    diaryUpdate.Status = (int)InterestDiaryConsts.PAID;
+                }
 
+                if (diaryUpdate.InterestDebt != 0)
+                {
+                    diaryUpdate.Status = (int)InterestDiaryConsts.DEBT;
 
+                }
                 _unit.InterestDiaries.Update(diaryUpdate);
-                
+
                 var result = _unit.Save();
                 if (result > 0)
                 {
@@ -159,6 +176,7 @@ namespace Services.Services
                                                        on contract.CustomerId equals customer.CustomerId
                                                        join user in _dbContextClass.User
                                                        on contract.UserId equals user.UserId
+                                                       where contract.ContractId == diaryUpdate.ContractId
                                                        select new
                                                        {
                                                            ContractId = contract.ContractId,
@@ -176,15 +194,21 @@ namespace Services.Services
                     logContract.Paid = diaryUpdate.PaidMoney;
                     logContract.Description = diaryUpdate.NextDueDate.ToString("dd/MM/yyyy HH:mm");
                     logContract.EventType = (diaryUpdate.TotalPay == diaryUpdate.PaidMoney) ? (int)LogContractConst.INTEREST_PAID : (int)LogContractConst.INTEREST_NOT_PAID;
-                    logContract.LogTime = DateTime.Now;
-                    if (logContract.EventType == (int)LogContractConst.INTEREST_PAID)
+                    if (diaryUpdate.Status == (int)InterestDiaryConsts.DEBT || diaryUpdate.PaidMoney < paidMoney)
                     {
-                        await _logContractService.CreateLogContract(logContract);
+                        logContract.EventType = (int)LogContractConst.INTEREST_DEBT;
+                        logContract.Debt = diaryUpdate.InterestDebt;
+                        logContract.Paid = paidMoney;
                     }
+                    logContract.LogTime = DateTime.Now;
+                    await _logContractService.CreateLogContract(logContract);
+                   
+                        await _diaryImgService.CreateDiariesImg(id, proofImg);
+                
+
+
                     return true;
                 }
-              
-                
             }
             catch (Exception e)
             {
@@ -215,6 +239,6 @@ namespace Services.Services
             return false;
         }
 
-       
+
     }
 }

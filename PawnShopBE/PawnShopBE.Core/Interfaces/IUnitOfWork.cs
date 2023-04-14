@@ -30,6 +30,8 @@ namespace PawnShopBE.Core.Interfaces
         IUserPermissionGroupRepository UserPermissionGroup { get; }
         IMoneyRepository Money { get; }
         ILogContractRepository LogContracts { get; }
+        IDiaryImgRepository DiaryImgs { get; }
+        ILogAssetRepository LogAssets { get; }
         int Save();
         Task<int> SaveList();
     }

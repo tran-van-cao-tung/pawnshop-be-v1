@@ -8,7 +8,7 @@ namespace PawnShopBE.Core.Models
 {
     public class InterestDiary
     {
-        
+
         public int? InterestDiaryId { get; set; }
         public int ContractId { get; set; }
         public decimal Payment { get; set; }
@@ -24,12 +24,11 @@ namespace PawnShopBE.Core.Models
         public string? ProofImg { get; set; }
 
         public virtual Contract Contract { get; set; }
+        public ICollection<DiaryImg>? DiaryImgs { get; set; }
 
-        //public InterestDiary() { 
-        //    Penalty = 0;
-        //    PaidMoney = 0;
-        //    TotalPay = 0;
-
-        //}
+        public InterestDiary()
+        {
+            DiaryImgs = new List<DiaryImg>();
+        }
     }
 }

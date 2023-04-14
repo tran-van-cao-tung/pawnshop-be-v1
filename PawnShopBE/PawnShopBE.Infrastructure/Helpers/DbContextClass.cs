@@ -45,6 +45,9 @@ namespace PawnShopBE.Infrastructure.Helpers
         public DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
         public DbSet<Money> Money { get; set; }
         public DbSet<LogContract> LogContracts { get; set; }
+        public DbSet<LogAsset> LogAssets { get; set; }
+        public DbSet<DiaryImg> DiaryImgs { get; set; }
+
         #endregion
 
 
@@ -195,7 +198,18 @@ namespace PawnShopBE.Infrastructure.Helpers
                 entity.HasKey(l => l.LogContractId);
                 entity.HasOne(l => l.Contract).WithMany(c => c.LogContracts).HasForeignKey(l => l.ContractId).IsRequired(true);
             });
+            modelBuilder.Entity<LogAsset>(entity =>
+            {
+                entity.ToTable("LogAsset");
+                entity.HasKey(l => l.logAssetId);
+                entity.HasOne(l => l.ContractAsset).WithMany(c => c.LogAssets).HasForeignKey(l => l.contractAssetId).IsRequired(true);
+            });
+            modelBuilder.Entity<DiaryImg>(entity =>
+            {
+                entity.ToTable("DiaryImg");
+                entity.HasKey(d => d.DiaryImgId);
+                entity.HasOne(l => l.InterestDiary).WithMany(c => c.DiaryImgs).HasForeignKey(l => l.InterestDiaryId).IsRequired(true);
+            });
         }
-
-    }
+    } 
 }

@@ -57,7 +57,7 @@ namespace PawnShopBE.Controllers
             var listContracts = await _contractService.getAllContractHomepage(branchId);
             if (listContracts == null)
             {
-                return NotFound();
+                return NotFound(listContracts);
             }
             return Ok(listContracts);
         }

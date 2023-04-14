@@ -35,11 +35,13 @@ namespace Services.Services
         private IPawnableProductService _pawnableService;
         private IWareHouseService _warehouseService;
         private ILogContractService _logContractService;
+        private ILogAssetService _logAssetService;
         private DbContextClass _dbContextClass;
         public ContractService(IUnitOfWork unitOfWork, IContractRepository iContractRepository,
             IContractAssetService contractAssetService, IPackageService packageService,
             IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider,
-            ILedgerService ledger, IPawnableProductService pawnable, IWareHouseService wareHouse, DbContextClass dbContextClass, ILogContractService logContractService)
+            ILedgerService ledger, IPawnableProductService pawnable, IWareHouseService wareHouse, DbContextClass dbContextClass,
+            ILogContractService logContractService, ILogAssetService logAssetService)
         {
             _unitOfWork = unitOfWork;
             _iContractRepository = iContractRepository;
@@ -52,6 +54,7 @@ namespace Services.Services
             _warehouseService = wareHouse;
             _dbContextClass = dbContextClass;
             _logContractService = logContractService;
+            _logAssetService = logAssetService;
         }
         private void getParameter()
         {
@@ -325,6 +328,17 @@ namespace Services.Services
                 var result = _unitOfWork.Save();
                 if (result > 0)
                 {
+                    var contractAsset = _dbContextClass.ContractAsset.FirstOrDefault(w => w.ContractAssetId == contract.ContractAssetId);
+                    var warehouse = _dbContextClass.Warehouse.FirstOrDefault(w => w.WarehouseId == contractAsset.WarehouseId);
+                    // Create Log Asset
+                    var logAsset = new LogAsset();
+                    logAsset.contractAssetId = contract.ContractAssetId;
+                    logAsset.Description = null;
+                    logAsset.ImportImg = null;
+                    logAsset.ExportImg = null;
+                    logAsset.UserName = GetUser(contract.UserId);
+                    logAsset.WareHouseName = warehouse.WarehouseName;
+                    await _logAssetService.CreateLogAsset(logAsset);
                     // Create Log Contract
                     var logContract = new LogContract();
                     logContract.ContractId = contract.ContractId;
@@ -859,12 +873,6 @@ namespace Services.Services
                 displayNotification.Description = "Kỳ hạn đóng lãi đến cần thanh toán: " + displayNotification.TotalPay.ToString() + " VND";
                 notifiList.Add(displayNotification);
             }
-
-
-
-
-
-
             return notifiList;
         }
     }
