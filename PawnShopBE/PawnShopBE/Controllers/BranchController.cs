@@ -14,7 +14,7 @@ namespace PawnShopBE.Controllers
 {
     [Route("api/v1/branch")]
     [ApiController]
-   [Authorize]
+    [Authorize]
     public class BranchController : ControllerBase
     {
         private readonly IBranchService _branchService;
@@ -26,9 +26,9 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpPost("CreateBranch")]
-        public async Task<IActionResult> CreateBranch( BranchDTO request)
+        public async Task<IActionResult> CreateBranch(BranchDTO request)
         {
-           
+
             var branch = _mapper.Map<Branch>(request);
             var response = await _branchService.CreateBranch(branch);
 
@@ -41,34 +41,23 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-        [HttpGet("getDetailById/{id}")]
+        [HttpGet("getDetailById/{branchId}")]
 
-        public async Task<IActionResult> GetBranchDetail(int id)
-        {
-            var branchList = await _branchService.GetBranchById(id);
-            var branchDetail = _mapper.Map<DisplayBranchDetail>(branchList);
-            if (branchDetail != null)
-            {
-                branchDetail = await _branchService.getDisplayBranchDetail(branchDetail);
-                return Ok(branchDetail);
-            }
-            return BadRequest();
+        public async Task<IActionResult> GetBranchDetail(int branchId)
+        {    
+                var branchDetail = await _branchService.getDisplayBranchDetail(branchId);
+            return (branchDetail == null) ? NotFound(branchDetail) : Ok(branchDetail);    
+     
         }
         [HttpGet("getChain")]
         public async Task<IActionResult> GetBranchChain()
         {
-            var branchList = await _branchService.GetAllBranch(0);
-            var displayBranch = _mapper.Map<IEnumerable<DisplayBranch>>(branchList);
-            if (displayBranch != null)
-            {
-                displayBranch = await _branchService.getDisplayBranch(displayBranch);
-                return Ok(displayBranch);
-            }
-            return NotFound();
+            var displayBranch = await _branchService.getDisplayBranch();
+            return (displayBranch == null) ? NotFound() : Ok(displayBranch);
         }
 
         [HttpGet("getAll/{numPage}")]
-        public async Task<IActionResult> GetBranchList( int numPage)
+        public async Task<IActionResult> GetBranchList(int numPage)
         {
             var branchList = await _branchService.GetAllBranch(numPage);
             if (branchList == null)
@@ -79,7 +68,7 @@ namespace PawnShopBE.Controllers
         }
 
         [HttpGet("getById/{id}")]
-        public async Task<IActionResult> GetBranchById( int id)
+        public async Task<IActionResult> GetBranchById(int id)
         {
             var branch = await _branchService.GetBranchById(id);
 
@@ -98,7 +87,7 @@ namespace PawnShopBE.Controllers
         {
             if (id != null)
             {
-               // var branch = _mapper.Map<Branch>(request);
+                // var branch = _mapper.Map<Branch>(request);
                 var response = await _branchService.UpdateBranch(id, request);
                 if (response)
                 {

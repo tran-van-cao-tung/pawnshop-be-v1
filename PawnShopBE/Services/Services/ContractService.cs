@@ -56,13 +56,6 @@ namespace Services.Services
             _logContractService = logContractService;
             _logAssetService = logAssetService;
         }
-        private void getParameter()
-        {
-            _branchService = _serviceProvider.GetService(typeof(IBranchService)) as IBranchService;
-            _ransomService = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
-            _customerService = _serviceProvider.GetService(typeof(ICustomerService)) as ICustomerService;
-        }
-        
         public async Task exporteExcel()
         {
             var listContract = await GetAllDisplayContracts(0);
@@ -161,53 +154,24 @@ namespace Services.Services
 
         public async Task<DisplayContractHomePage> getAllContractHomepage(int branchId)
         {
-            getParameter();
-            //get all List
-            var branchList = await _branchService.GetAllBranch(0);
-            var ledgerList = await _ledgerService.GetLedger();
-            var contractCollection = await GetAllContracts(0);
-            var ransomList = await _ransomService.GetRansom();
-            // khai báo filed hiển thị chung 
-            var contractList = from c in contractCollection where c.BranchId == branchId select c;
-            decimal fund = 0;
-            decimal loanLedger = 0;
-            decimal recveivedInterest = 0;
-            decimal totalProfit = 0;
-            decimal ransomTotal = 0;
-            //get displayHomePage
-            // List<DisplayContractHomePage> listDipslay = new List<DisplayContractHomePage>();
-            foreach (var contract in contractList)
-            {
-                var contractId = contract.ContractId;
-
-                //if (fund == 0)
-                //{
-                //    fund = decimal.Parse(getBranchName(contract.BranchId, branchList, false));
-                //}
-                //totalProfit += contract.TotalProfit;
-                //loanLedger += getLedger(ledgerList, contract.BranchId, true);
-                //recveivedInterest += getLedger(ledgerList, contract.BranchId, false);
-            }
-            var endContractList = from c in contractCollection where c.BranchId == branchId && c.Status != (int)ContractConst.CLOSE select c;
-            foreach (var endContract in endContractList)
-            {
-                ransomTotal += getRansom(ransomList, endContract.ContractId);
-            }
-
-            var openContractList = from c in _dbContextClass.Contract
-                               where c.BranchId == branchId && c.Status != (int)ContractConst.CLOSE
-                               select c;
-            var count = openContractList.Count();
+            var branchServiceProvider = _serviceProvider.GetService(typeof(IBranchService)) as IBranchService;
+            var contractService = _serviceProvider.GetService(typeof(IContractService)) as IContractService;
             
-            DisplayContractHomePage x = new DisplayContractHomePage();
-            //add field hiển thị chung
-            x.totalProfit = totalProfit;
-            x.loanLedger = loanLedger;
-            x.fund = fund;
-            x.recveivedInterest = recveivedInterest;
-            x.ransomTotal = ransomTotal;
-            x.openContract = count;
-            return x;
+
+            var branch = await branchServiceProvider.GetBranchById(branchId);
+            var contractList = await contractService.GetAllContracts();
+            contractList = from c in contractList
+                               where c.BranchId == branchId
+                               select c;
+
+            var displayContractHomePage = new DisplayContractHomePage();
+            displayContractHomePage.BranchId = branch.BranchId;
+            displayContractHomePage.Fund = branch.Fund;
+            displayContractHomePage.OpenContract = contractList.Where(c => c.Status == (int)ContractConst.IN_PROGRESS).Count();
+            displayContractHomePage.LateContract = contractList.Where(c => c.Status == (int)ContractConst.OVER_DUE).Count();
+            displayContractHomePage.LiquidationContract = contractList.Where(c => c.Status == (int)ContractConst.LIQUIDATION).Count();
+
+            return displayContractHomePage;
         }
         private async Task<IEnumerable<DisplayContractHomePage>> TakePage
             (int number, IEnumerable<DisplayContractHomePage> list)

@@ -113,8 +113,6 @@ namespace PawnShopBE.Helpers
             #endregion Contract
 
             #region Branch
-            CreateMap<Branch, DisplayBranch>().ReverseMap();
-            CreateMap<Branch, DisplayBranchDetail>().ReverseMap();
             CreateMap<BranchDTO, Branch>().ReverseMap();
             #endregion Branch
 
