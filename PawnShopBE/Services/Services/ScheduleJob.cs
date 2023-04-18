@@ -83,7 +83,7 @@ namespace Services.Services
 
                 decimal paymentFee = (contract.Loan * (1 + package.PackageInterest)) * package.PackageInterest;
 
-                // Penalty for < 1 month and > 3 month
+                // Penalty for Punish Day 2 != 0
                 if (package.PunishDay2 != 0)
                 {
                     // Overdue punish day 1
@@ -97,7 +97,7 @@ namespace Services.Services
                         ransom.Penalty = paymentFee * 2;
                     }
                 }
-                // Penalty between 1 month to 3 month
+                // Penalty for Punish Day 2 == 0
                 else
                 {
                     if (totalDays == (double)package.PunishDay1 || totalDays < (double)package.LiquitationDay)
@@ -118,10 +118,13 @@ namespace Services.Services
 
             foreach (var diary in overdueDiaries)
             {
+                var existContract = await _contractService.GetContractById(diary.ContractId);
+                var package = await _packageService.GetPackageById(existContract.PackageId);
+
                 // Payment Fee for Interest if overdue periods
                 if (diary.Penalty == 0)
                 {
-                    diary.Penalty = diary.Payment / 2;
+                    diary.Penalty = diary.Payment * (package.InterestDiaryPenalty * (decimal)0.01);
                 }
                 diary.TotalPay = diary.Penalty + diary.Payment;
 
@@ -136,7 +139,7 @@ namespace Services.Services
                                                        ContractId = contract.ContractId,
                                                        UserName = user.FullName,
                                                        CustomerName = customer.FullName,
-                                                   }; 
+                                                   };
                 var logContract = new LogContract();
                 foreach (var row in contractJoinUserJoinCustomer)
                 {
@@ -151,8 +154,6 @@ namespace Services.Services
                 logContract.LogTime = DateTime.Now;
                 await _logContractService.CreateLogContract(logContract);
             }
-
-
             _contextClass.SaveChanges();
         }
     }

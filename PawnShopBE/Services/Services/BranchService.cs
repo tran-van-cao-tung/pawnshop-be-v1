@@ -36,43 +36,43 @@ namespace Services.Services
             var _diaryList = await _diary.GetInteresDiary();
             //get branch id
             var branchID = branchDetail.branchId;
-            //get ledger have branchID
-            var ledger = from l in _ledgerList where l.BranchId == branchID select l;
-            var contract = from c in _contractList where c.BranchId == branchID select c;
-            //get contract id
-            var contractId = getContractId(contract);
-            //get diary have contractId
-            var diary = from d in _diaryList where d.ContractId == contractId select d;
+            ////get ledger have branchID
+            //var ledger = from l in _ledgerList where l.BranchId == branchID select l;
+            //var contract = from c in _contractList where c.BranchId == branchID select c;
+            ////get contract id
+            //var contractId = getContractId(contract);
+            ////get diary have contractId
+            //var diary = from d in _diaryList where d.ContractId == contractId select d;
 
-            foreach (var x in ledger)
-            {
-                //lãi đã thu
-                branchDetail.recveivedInterest += x.RecveivedInterest;
-                //tiền cho vay
-                branchDetail.loanLedger += x.Loan;
-                //quỹ tiền mặt   
-                branchDetail.balance += x.Balance;
-            }
+            //foreach (var x in ledger)
+            //{
+            //    //lãi đã thu
+            //    branchDetail.recveivedInterest += x.RecveivedInterest;
+            //    //tiền cho vay
+            //    branchDetail.loanLedger += x.Loan;
+            //    //quỹ tiền mặt   
+            //    branchDetail.balance += x.Balance;
+            //}
 
-            foreach (var x in contract)
-            {
-                //tiền đang cho vay
-                branchDetail.loanContract += x.Loan;
-                //lãi dự kiến
-                branchDetail.totalProfit += x.TotalProfit;
-            }
-            //số hợp đồng
-            branchDetail.numberContract = _contractList.Count();
-            //số họp đồng mở
-            branchDetail.openContract = getNumOpenCloseContract(1, _contractList);
-            //số hợp đồng đóng
-            branchDetail.closeContract = getNumOpenCloseContract(4, _contractList);
+            //foreach (var x in contract)
+            //{
+            //    //tiền đang cho vay
+            //    branchDetail.loanContract += x.Loan;
+            //    //lãi dự kiến
+            //    branchDetail.totalProfit += x.TotalProfit;
+            //}
+            ////số hợp đồng
+            //branchDetail.numberContract = _contractList.Count();
+            ////số họp đồng mở
+            //branchDetail.openContract = getNumOpenCloseContract(1, _contractList);
+            ////số hợp đồng đóng
+            //branchDetail.closeContract = getNumOpenCloseContract(4, _contractList);
 
-            foreach (var x in diary)
-            {
-                //tiền khách nợ
-                branchDetail.debtCustomers += x.TotalPay - x.PaidMoney;
-            }
+            //foreach (var x in diary)
+            //{
+            //    //tiền khách nợ
+            //    branchDetail.debtCustomers += x.TotalPay - x.PaidMoney;
+            //}
             return branchDetail;
         }
 
@@ -98,20 +98,20 @@ namespace Services.Services
         }
         public async Task<IEnumerable<DisplayBranch>> getDisplayBranch(IEnumerable<DisplayBranch> branchList)
         {
-            //get list Ledger
-            var _ledgerList = await _ledgerService.GetLedger();
-            foreach (var branch in branchList)
-            {
-                var branchId = branch.branchId;
-                // ger ledger khi branch id = nhau
-                var ledger = from l in _ledgerList where l.BranchId == branchId select l;
-                foreach (var l in ledger)
-                {
-                    branch.recveivedInterest = l.RecveivedInterest;
-                    branch.loan = l.Loan;
-                    branch.balance = l.Balance;
-                }
-            }
+            ////get list Ledger
+            //var _ledgerList = await _ledgerService.GetLedger();
+            //foreach (var branch in branchList)
+            //{
+            //    var branchId = branch.branchId;
+            //    // ger ledger khi branch id = nhau
+            //    var ledger = from l in _ledgerList where l.BranchId == branchId select l;
+            //    foreach (var l in ledger)
+            //    {
+            //        branch.recveivedInterest = l.RecveivedInterest;
+            //        branch.loan = l.Loan;
+            //        branch.balance = l.Balance;
+            //    }
+            //}
             return branchList;
         }
         public async Task<bool> CreateBranch(Branch branch)

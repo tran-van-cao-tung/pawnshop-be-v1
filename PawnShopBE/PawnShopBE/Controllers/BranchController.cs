@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PawnShopBE.Core.Display;
@@ -65,6 +66,7 @@ namespace PawnShopBE.Controllers
             }
             return NotFound();
         }
+
         [HttpGet("getAll/{numPage}")]
         public async Task<IActionResult> GetBranchList( int numPage)
         {

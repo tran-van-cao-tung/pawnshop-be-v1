@@ -140,33 +140,6 @@ namespace PawnShopBE.Helpers
             CreateMap<MoneyDTO,Money>().ReverseMap();
             CreateMap<CustomerRelativeDTO, CustomerRelativeRelationship>().ReverseMap();
 
-            // Mapping from ledger to displayReportMonth
-            CreateMap<Ledger, DisplayReportMonth>()
-                .ForMember(
-                    dest => dest.BranchId,
-                    opt => opt.MapFrom(src => src.BranchId))
-                .ForMember(
-                    dest => dest.ReceiveInterest,
-                    opt => opt.MapFrom(src => src.RecveivedInterest))
-                .ForMember(
-                    dest => dest.ReceivedPrincipal,
-                    opt => opt.MapFrom(src => src.ReceivedPrincipal))
-                .ForMember(
-                    dest => dest.Balance,
-                    opt => opt.MapFrom(src => src.Balance))
-                .ForMember(
-                    dest => dest.Loan,
-                    opt => opt.MapFrom(src => src.Loan))
-                .ForMember(
-                    dest => dest.Fund,
-                    opt => opt.MapFrom(src => src.Fund))
-                .ForMember(
-                    dest => dest.Status,
-                    opt => opt.MapFrom(src => src.Status))
-                .ForMember(
-                    dest => dest.LiquidationMoney,
-                    opt => opt.MapFrom(src => src.LiquidationMoney));
-
             // Mapping from User to UserRepsonse
             CreateMap<User, UserRepsonse>();
 

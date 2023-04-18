@@ -16,6 +16,7 @@ using Services.Services.IServices;
 using PawnShopBE.Core.Const;
 using AutoMapper;
 using PawnShopBE.Core.Responses;
+using Microsoft.AspNetCore.Cors;
 
 namespace PawnShopBE.Controllers
 {

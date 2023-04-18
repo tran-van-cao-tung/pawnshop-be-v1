@@ -167,10 +167,6 @@ namespace Services.Services
             var ledgerList = await _ledgerService.GetLedger();
             var contractCollection = await GetAllContracts(0);
             var ransomList = await _ransomService.GetRansom();
-            //var customerList = await _customerService.GetAllCustomer(0);
-            //var assetList = await _iContractAssetService.GetAllContractAssets();
-            //var pawnableList = await _pawnableService.GetAllPawnableProducts(0);
-            //var wareHouseList = await _warehouseService.GetWareHouse(0);
             // khai báo filed hiển thị chung 
             var contractList = from c in contractCollection where c.BranchId == branchId select c;
             decimal fund = 0;
@@ -183,25 +179,14 @@ namespace Services.Services
             foreach (var contract in contractList)
             {
                 var contractId = contract.ContractId;
-                //display.contractCode = contract.ContractCode;
-                //display.customerName = getCustomerName(customerList, contract.CustomerId);
-                //display.assestCode = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 1);
-                //display.assetName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 2);
-                //display.loanContract = contract.Loan;
-                //display.startDate = contract.ContractStartDate;
-                //display.endDate = contract.ContractEndDate;
-                //display.wareName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 3);
-                //display.status = contract.Status;
-                //get field hiển thị chung
-                if (fund == 0)
-                {
-                    fund = decimal.Parse(getBranchName(contract.BranchId, branchList, false));
-                }
-                totalProfit += contract.TotalProfit;
-                loanLedger += getLedger(ledgerList, contract.BranchId, true);
-                recveivedInterest += getLedger(ledgerList, contract.BranchId, false);
-                //add list
-                //listDipslay.Add(display);
+
+                //if (fund == 0)
+                //{
+                //    fund = decimal.Parse(getBranchName(contract.BranchId, branchList, false));
+                //}
+                //totalProfit += contract.TotalProfit;
+                //loanLedger += getLedger(ledgerList, contract.BranchId, true);
+                //recveivedInterest += getLedger(ledgerList, contract.BranchId, false);
             }
             var endContractList = from c in contractCollection where c.BranchId == branchId && c.Status != (int)ContractConst.CLOSE select c;
             foreach (var endContract in endContractList)
@@ -237,15 +222,15 @@ namespace Services.Services
             return ransom.TotalPay;
         }
 
-        private decimal getLedger(IEnumerable<Ledger> ledgerList, int branchId, bool v)
-        {
-            var ledger = (from l in ledgerList where l.BranchId == branchId select l).FirstOrDefault();
-            // true => get loan, false => get receiveInterest (lãi đã nhận)
-            if (v)
-                return ledger.Loan;
-            else
-                return ledger.RecveivedInterest;
-        }
+        //private decimal getLedger(IEnumerable<Ledger> ledgerList, int branchId, bool v)
+        //{
+        //    var ledger = (from l in ledgerList where l.BranchId == branchId select l).FirstOrDefault();
+        //    // true => get loan, false => get receiveInterest (lãi đã nhận)
+        //    if (v)
+        //        return ledger.Loan;
+        //    else
+        //        return ledger.RecveivedInterest;
+        //}
 
         private string getBranchName(int branchId, IEnumerable<Branch> branchList, bool v)
         {

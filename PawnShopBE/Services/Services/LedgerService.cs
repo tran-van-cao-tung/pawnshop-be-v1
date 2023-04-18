@@ -71,14 +71,9 @@ namespace Services.Services
             var ledgerUpdate = _unit.Ledgers.SingleOrDefault(ledger, j => j.LedgerId == ledger.LedgerId);
             if (ledgerUpdate != null)
             {
-                ledgerUpdate.ReceivedPrincipal = ledger.ReceivedPrincipal;
-                ledgerUpdate.RecveivedInterest = ledger.RecveivedInterest;
-                ledgerUpdate.Loan = ledger.Loan;
-                ledgerUpdate.Balance = ledger.Balance;
-                ledgerUpdate.Fund = ledger.Fund;
-                ledgerUpdate.Status = ledger.Status;
-                ledgerUpdate.LiquidationMoney = ledger.LiquidationMoney;
-
+                ledgerUpdate.Profit = ledger.Profit;
+                ledgerUpdate.Revenue = ledger.Revenue;
+                ledgerUpdate.Loan = ledger.Loan;          
                 _unit.Ledgers.Update(ledgerUpdate);
                 var result = _unit.Save();
                 if (result > 0)

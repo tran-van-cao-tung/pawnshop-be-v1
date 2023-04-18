@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PawnShopBE.Infrastructure.Helpers;
 
@@ -11,9 +12,11 @@ using PawnShopBE.Infrastructure.Helpers;
 namespace PawnShopBE.Infrastructure.Migrations
 {
     [DbContext(typeof(DbContextClass))]
-    partial class DbContextClassModelSnapshot : ModelSnapshot
+    [Migration("20230416160536_Package")]
+    partial class Package
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -477,20 +480,32 @@ namespace PawnShopBE.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LedgerId"));
 
+                    b.Property<long>("Balance")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("BranchId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("FromDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<decimal>("Fund")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("LiquidationMoney")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("Loan")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("Profit")
+                    b.Property<decimal>("ReceivedPrincipal")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("Revenue")
+                    b.Property<decimal>("RecveivedInterest")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ToDate")
                         .HasColumnType("datetime2");

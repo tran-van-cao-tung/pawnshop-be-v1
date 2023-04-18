@@ -19,6 +19,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using FluentValidation.AspNetCore;
 using PawnShopBE.Core.Validation;
+using Microsoft.AspNetCore.Cors;
+using Microsoft.Office.Interop.Excel;
 
 var builder = WebApplication.CreateBuilder(args);
 //Add Authentication
@@ -47,14 +49,16 @@ builder.Services.AddQuartz(q =>
         .ForJob(monthlyJob)
         .WithIdentity("MonthlyJob-trigger")
         // Run at midnight on the 1st of every month
-        .WithCronSchedule("0 0 0 1 * ?")
+        //.WithCronSchedule("0 0 0 1 * ?")
+        .WithCronSchedule("0 * * ? * *")
+
     );
-    q.AddTrigger(opts => opts
-        .ForJob(monthlyJob)
-        .WithIdentity("MonthlyJob-trigger")
-        // Run at 9 PM on the last day of every month
-        .WithCronSchedule("0 0 21 L * ?")
-    );
+    //q.AddTrigger(opts => opts
+    //    .ForJob(monthlyJob)
+    //    .WithIdentity("MonthlyJob-trigger")
+    //    // Run at 9 PM on the last day of every month
+    //    .WithCronSchedule("0 0 21 L * ?")
+    //);
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
@@ -120,7 +124,6 @@ builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IAttributeService, AttributeService>();
 builder.Services.AddScoped<IInteresDiaryService, InterestDiaryService>();
 builder.Services.AddScoped<IRansomService, RansomService>();
-builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<ILogContractService, LogContractService>();
 builder.Services.AddScoped<IMoneyService, MoneyService>();
@@ -129,8 +132,20 @@ builder.Services.AddScoped<IDiaryImgService, DiaryImgService>();
 builder.Services.AddScoped<ILogAssetService, LogAssetService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact", builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithExposedHeaders("Authorization");
+    });
+});
+
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+
 builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -178,8 +193,13 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("AllowReact");
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+//app.MapControllers();
 app.Run();

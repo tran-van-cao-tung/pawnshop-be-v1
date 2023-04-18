@@ -140,7 +140,7 @@ namespace Services.Services
                 var diaryUpdate = await _unit.InterestDiaries.GetById(id);
                 if (diaryUpdate == null) return false;          
                 // Check current PaidMoney
-                if (paidMoney > diaryUpdate.TotalPay)
+                if (paidMoney > diaryUpdate.TotalPay || (paidMoney + diaryUpdate.PaidMoney) > diaryUpdate.TotalPay)
                 {
                     return false;
                 }
