@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper.Execution;
+using Microsoft.EntityFrameworkCore;
 using PawnShopBE.Core.Const;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
@@ -70,7 +71,8 @@ namespace Services.Services
                     ICollection<InterestDiary> interestDiaries = new List<InterestDiary>();
 
                     // Interest money
-                    decimal payment = interestDiary.Payment = contract.TotalProfit / numberOfPeriods;
+                    decimal payment = interestDiary.Payment = (int) contract.TotalProfit / numberOfPeriods;
+
                     decimal totalFee = contract.InsuranceFee + contract.StorageFee;
 
                     interestDiary.ContractId = contract.ContractId;

@@ -32,22 +32,15 @@ namespace PawnShopBE.Controllers
             var branch = _mapper.Map<Branch>(request);
             var response = await _branchService.CreateBranch(branch);
 
-            if (response)
-            {
-                return Ok(response);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return (response) ? Ok(response) : BadRequest();
         }
         [HttpGet("getDetailById/{branchId}")]
 
         public async Task<IActionResult> GetBranchDetail(int branchId)
-        {    
-                var branchDetail = await _branchService.getDisplayBranchDetail(branchId);
-            return (branchDetail == null) ? NotFound(branchDetail) : Ok(branchDetail);    
-     
+        {
+            var branchDetail = await _branchService.getDisplayBranchDetail(branchId);
+            return (branchDetail == null) ? NotFound(branchDetail) : Ok(branchDetail);
+
         }
         [HttpGet("getChain")]
         public async Task<IActionResult> GetBranchChain()
@@ -60,26 +53,14 @@ namespace PawnShopBE.Controllers
         public async Task<IActionResult> GetBranchList(int numPage)
         {
             var branchList = await _branchService.GetAllBranch(numPage);
-            if (branchList == null)
-            {
-                return NotFound();
-            }
-            return Ok(branchList);
+            return (branchList == null) ? NotFound(branchList) : Ok(branchList);
         }
 
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetBranchById(int id)
         {
             var branch = await _branchService.GetBranchById(id);
-
-            if (branch != null)
-            {
-                return Ok(branch);
-            }
-            else
-            {
-                return BadRequest();
-            }
+            return (branch != null) ? Ok(branch) : BadRequest();
         }
 
         [HttpPut("updateBranch/{id}")]
@@ -110,20 +91,5 @@ namespace PawnShopBE.Controllers
                 return BadRequest();
             }
         }
-
-        //[HttpGet("getById/{id}")]
-        //public async Task<IActionResult> Get(int id)
-        //{
-        //    var branch = await _branchService.GetBranchById(id);
-
-        //    if (branch != null)
-        //    {
-        //        return Ok(branch);
-        //    }
-        //    else
-        //    {
-        //        return BadRequest();
-        //    }
-        //}
     }
 }

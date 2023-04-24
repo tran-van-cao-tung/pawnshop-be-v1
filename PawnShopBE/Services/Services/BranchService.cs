@@ -80,7 +80,7 @@ namespace Services.Services
                 displayBranch.PhoneNumber = branch.PhoneNumber;
                 displayBranch.CurrentFund = branch.Fund - openContract.Sum(c => c.Loan);
                 displayBranchList.Add(displayBranch);
-            }          
+            }           
             return displayBranchList;
         }
         public async Task<bool> CreateBranch(Branch branch)

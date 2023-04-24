@@ -56,9 +56,9 @@ namespace Services.Services
             _logContractService = logContractService;
             _logAssetService = logAssetService;
         }
-        public async Task exporteExcel()
+        public async Task exporteExcel(int branchId)
         {
-            var listContract = await GetAllDisplayContracts(0);
+            var listContract = await GetAllDisplayContracts(0, 1);
             //set cấu hình excel
             Excel.Application exApp = new Excel.Application();
             Excel.Workbook exBook = exApp.Workbooks.Add(Excel.XlWBATemplate.xlWBATWorksheet);
@@ -356,11 +356,12 @@ namespace Services.Services
             {
                 return contractList;
             }
+            contractList.OrderByDescending(c => c.ContractStartDate);
             var result = await _unitOfWork.Contracts.TakePage(num, contractList);
             return result;
         }
 
-        public async Task<ICollection<DisplayContractList>> GetAllDisplayContracts(int num)
+        public async Task<ICollection<DisplayContractList>> GetAllDisplayContracts(int num, int branchId)
         {
             var contractJoinCustomerJoinAsset = from contract in _dbContextClass.Contract
                                                 join customer in _dbContextClass.Customer
@@ -371,6 +372,7 @@ namespace Services.Services
                                                 on contractAsset.PawnableProductId equals pawnableProduct.PawnableProductId
                                                 join warehouse in _dbContextClass.Warehouse
                                                 on contractAsset.WarehouseId equals warehouse.WarehouseId
+                                                where contract.BranchId == branchId
                                                 select new
                                                 {
                                                     ContractId = contract.ContractId,
@@ -384,7 +386,7 @@ namespace Services.Services
                                                     WarehouseName = warehouse.WarehouseName,
                                                     Status = contract.Status
                                                 };
-
+            contractJoinCustomerJoinAsset = contractJoinCustomerJoinAsset.OrderByDescending(c => c.ContractId);
             List<DisplayContractList> displayContractList = new List<DisplayContractList>();
             foreach (var row in contractJoinCustomerJoinAsset)
             {
@@ -764,7 +766,7 @@ namespace Services.Services
             foreach (var row in contractJoinCustomerJoinAsset)
             {
                 // Notification for ransom (contract is on due date) payment
-                if (row.ContractEndDate == DateTime.Today && row.Status != (int)ContractConst.CLOSE)
+                if (row.ContractEndDate <= DateTime.Today && row.Status != (int)ContractConst.CLOSE)
                 {
                     DisplayNotification displayNotification = new DisplayNotification();
                     displayNotification.ContractId = row.ContractId;
@@ -806,7 +808,7 @@ namespace Services.Services
             {
 
 
-                if (rows.NextDueDate != DateTime.Today)
+                if (rows.NextDueDate > DateTime.Today)
                 {
                     continue;
                 }
@@ -819,7 +821,7 @@ namespace Services.Services
                 displayNotification.TotalPay = rows.InterestTotalPay;
                 displayNotification.ContractStartDate = rows.DueDate;
                 displayNotification.ContractEndDate = rows.NextDueDate;
-                displayNotification.Description = "Kỳ hạn đóng lãi đến cần thanh toán: " + displayNotification.TotalPay.ToString() + " VND";
+                displayNotification.Description = "Kỳ hạn đóng lãi đến cần thanh toán: " + displayNotification.TotalPay.ToString("0.##") + " VND";
                 notifiList.Add(displayNotification);
             }
             return notifiList;

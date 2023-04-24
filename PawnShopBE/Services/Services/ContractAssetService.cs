@@ -79,6 +79,15 @@ namespace Services.Services
                 var result = _unitOfWork.Save();
                 if (result > 0)
                 {
+                    //var logAsset = new LogAsset();
+                    //logAsset.contractAssetId = contractAssetUpdate.ContractAssetId;
+                    //logAsset.Description = null;
+                    //logAsset.ImportImg = null;
+                    //logAsset.ExportImg = null;
+                    //logAsset.UserName = GetUser(contract.UserId);
+                    //logAsset.WareHouseName =  .WarehouseName;
+                    //await _logAssetService.CreateLogAsset(logAsset);
+
                     return true;
                 }
             }

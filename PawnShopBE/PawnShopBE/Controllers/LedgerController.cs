@@ -31,35 +31,17 @@ namespace PawnShopBE.Controllers
             }
             return BadRequest();
         }
-        
-    //[HttpPost("createLedger")]
-    //    public async Task<IActionResult> CreateLedger( LedgerDTO ledger)
-    //    {
-    //        //Check Validation
-    //        var checkValidation = await _validation.CheckValidation(ledger);
-    //        if (checkValidation != null)
-    //        {
-    //            return BadRequest(checkValidation);
-    //        }
-    //        var ledgerMapper = _mapper.Map<Ledger>(ledger);
-    //        var respone = await _ledgerService.CreateLedger(ledgerMapper);
-    //        if (respone != null)
-    //        {
-    //            return Ok(respone);
-    //        }
-    //        return BadRequest();
-    //    }
 
-        //[HttpDelete("deleteLedger/{id}")]
-        //public async Task<IActionResult> DeleteLedger( int id)
-        //{
-        //    var respone = await _ledgerService.DeleteLedger(id);
-        //    if (respone != null)
-        //    {
-        //        return Ok(respone);
-        //    }
-        //    return BadRequest();
-        //}
+        [HttpGet("getbyBranchId/{branchId}")]
+        public async Task<IActionResult> GetByBranchId(int branchId)
+        {
+            var respone = await _ledgerService.GetLedgersByBranchId(branchId);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
 
         [HttpPut("updateLedger")]
         public async Task<IActionResult> UpdateLedger( LedgerDTO ledger)
