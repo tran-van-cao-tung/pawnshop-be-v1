@@ -1,4 +1,6 @@
-﻿using PawnShopBE.Core.Interfaces;
+﻿using AutoMapper;
+using PawnShopBE.Core.Display;
+using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
 using Services.Services.IServices;
 using System;
@@ -14,10 +16,14 @@ namespace Services.Services
     {
         private readonly IUnitOfWork _unit;
         private readonly ILogAssetRepository _logAssetRepository;
-        public LogAssetService(IUnitOfWork unit, ILogAssetRepository logAssetRepository)
+        private readonly IMapper _mapper;
+        private readonly IContractAssetService _contractAssetService;
+        public LogAssetService(IUnitOfWork unit, ILogAssetRepository logAssetRepository, IMapper mapper, IContractAssetService contractAssetService)
         {
             _unit = unit;
             _logAssetRepository = logAssetRepository;
+            _mapper = mapper;
+            _contractAssetService = contractAssetService;
         }
         public async Task<bool> CreateLogAsset(LogAsset logAsset)
         {
@@ -29,10 +35,27 @@ namespace Services.Services
             return false;
         }
 
-        public async Task<IEnumerable<LogAsset>> LogAssetByAssetId(int contractAssetId)
+        public async Task<IEnumerable<DisplayLogAsset>> LogAssetByAssetId(int contractAssetId)
         {
             var logAssetList = await _logAssetRepository.GetAllByAssetId(contractAssetId);
-            return (logAssetList != null) ? logAssetList : null;
+            var contractAsset = await _contractAssetService.GetContractAssetById(contractAssetId);
+
+            var displayLogAssetList = new List<DisplayLogAsset>();
+
+            foreach ( var logAsset in logAssetList)
+            {
+                var displayLogAsset = new DisplayLogAsset();
+                displayLogAsset.logAssetId = logAsset.logAssetId;
+                displayLogAsset.AssetName = contractAsset.ContractAssetName;
+                displayLogAsset.WareHouseName = logAsset.WareHouseName;
+                displayLogAsset.UserName = logAsset.UserName;
+                displayLogAsset.contractAssetId = contractAssetId;
+                displayLogAsset.Description = logAsset.Description;
+                displayLogAsset.ImportImg = logAsset.ImportImg;
+                displayLogAsset.ExportImg = logAsset.ExportImg;
+                displayLogAssetList.Add(displayLogAsset);
+            }
+            return (displayLogAssetList != null) ? displayLogAssetList : null;
         }
 
         public async Task<bool> UpdateLogAsset(LogAsset logAsset)

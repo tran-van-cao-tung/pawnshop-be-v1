@@ -65,7 +65,8 @@ namespace Services.Services
 
         public async Task<ContractAsset> GetContractAssetById(int contractAssetId)
         {
-            throw new NotImplementedException();
+            var result = await _unitOfWork.ContractAssets.GetById(contractAssetId);
+            return result;
         }
 
         public async Task<bool> UpdateContractAsset(ContractAsset contractAsset)

@@ -1,4 +1,5 @@
-﻿using PawnShopBE.Core.Models;
+﻿using PawnShopBE.Core.Display;
+using PawnShopBE.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace Services.Services.IServices
     public interface ILogAssetService
     {
         Task<bool> CreateLogAsset(LogAsset logAsset);
-        Task<IEnumerable<LogAsset>> LogAssetByAssetId(int contractAssetId);
+        Task<IEnumerable<DisplayLogAsset>> LogAssetByAssetId(int contractAssetId);
         Task<bool> UpdateLogAsset(LogAsset LogAsset);
 
     }

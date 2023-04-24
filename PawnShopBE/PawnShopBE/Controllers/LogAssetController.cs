@@ -15,9 +15,11 @@ namespace PawnShopBE.Controllers
     public class LogAssetController : ControllerBase
     {
         private readonly ILogAssetService _logAssetService;
-        public LogAssetController(ILogAssetService logAssetService)
+        private readonly IContractService _contractService;
+        public LogAssetController(ILogAssetService logAssetService, IContractService contractService)
         {
             _logAssetService = logAssetService;
+            _contractService = contractService;
         }
 
         [HttpPut("updateLogAsset")]
@@ -34,9 +36,15 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpGet("getLogAssetsByAssetId/{assetId}")]
-        public async Task<IActionResult> GetLogAssetByAssetId(int assetId)
+        [HttpGet("getLogAssetsByContractId/{contractId}")]
+        public async Task<IActionResult> GetLogAssetByContracttId(int contractId)
         {
+            var contract = await _contractService.GetContractById(contractId);
+            if (contract == null)
+            {
+                return NotFound();
+            }
+            var assetId = contract.ContractAssetId;
             var respone = await _logAssetService.LogAssetByAssetId(assetId);
             if (respone != null)
             {
