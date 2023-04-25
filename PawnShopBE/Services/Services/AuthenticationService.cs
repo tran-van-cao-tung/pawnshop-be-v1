@@ -77,6 +77,8 @@ namespace Services.Services
             }
             else
             {
+                var branchList = await _context.Branch.ToListAsync();
+                var firstBranch = branchList.FirstOrDefault();
                 //token for admin
                 tokenDescription = new SecurityTokenDescriptor
                 {
@@ -85,8 +87,8 @@ namespace Services.Services
                     new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                     new Claim("Email",admin.Email),
                     new Claim("Name",admin.UserName),
-                    new Claim("BranchId","Admin không có BranchId"),
-                    new Claim("UserId","Admin không có Id")
+                    new Claim("BranchId",firstBranch.BranchId.ToString()),
+                    new Claim("UserId",admin.Id.ToString())
                 }),
 
                     Expires = DateTime.UtcNow.AddHours(2),
