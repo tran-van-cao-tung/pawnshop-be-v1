@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace PawnShopBE.Core.Interfaces
 {
-    public interface IMoneyRepository : IGenericRepository<Money>
+    public interface ILogAssetRepository : IGenericRepository<LogAsset>
     {
+        public Task<IEnumerable<LogAsset>> GetAllByAssetId(int contractAssetId);
     }
 }

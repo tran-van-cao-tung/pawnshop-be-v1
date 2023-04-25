@@ -35,11 +35,13 @@ namespace Services.Services
         private IPawnableProductService _pawnableService;
         private IWareHouseService _warehouseService;
         private ILogContractService _logContractService;
+        private ILogAssetService _logAssetService;
         private DbContextClass _dbContextClass;
         public ContractService(IUnitOfWork unitOfWork, IContractRepository iContractRepository,
             IContractAssetService contractAssetService, IPackageService packageService,
             IInteresDiaryService interesDiaryService, IServiceProvider serviceProvider,
-            ILedgerService ledger, IPawnableProductService pawnable, IWareHouseService wareHouse, DbContextClass dbContextClass, ILogContractService logContractService)
+            ILedgerService ledger, IPawnableProductService pawnable, IWareHouseService wareHouse, DbContextClass dbContextClass,
+            ILogContractService logContractService, ILogAssetService logAssetService)
         {
             _unitOfWork = unitOfWork;
             _iContractRepository = iContractRepository;
@@ -52,17 +54,11 @@ namespace Services.Services
             _warehouseService = wareHouse;
             _dbContextClass = dbContextClass;
             _logContractService = logContractService;
+            _logAssetService = logAssetService;
         }
-        private void getParameter()
+        public async Task exporteExcel(int branchId)
         {
-            _branchService = _serviceProvider.GetService(typeof(IBranchService)) as IBranchService;
-            _ransomService = _serviceProvider.GetService(typeof(IRansomService)) as IRansomService;
-            _customerService = _serviceProvider.GetService(typeof(ICustomerService)) as ICustomerService;
-        }
-        
-        public async Task exporteExcel()
-        {
-            var listContract = await GetAllDisplayContracts(0);
+            var listContract = await GetAllDisplayContracts(0, 1);
             //set cấu hình excel
             Excel.Application exApp = new Excel.Application();
             Excel.Workbook exBook = exApp.Workbooks.Add(Excel.XlWBATemplate.xlWBATWorksheet);
@@ -158,58 +154,24 @@ namespace Services.Services
 
         public async Task<DisplayContractHomePage> getAllContractHomepage(int branchId)
         {
-            getParameter();
-            //get all List
-            var branchList = await _branchService.GetAllBranch(0);
-            var ledgerList = await _ledgerService.GetLedger();
-            var contractCollection = await GetAllContracts(0);
-            var ransomList = await _ransomService.GetRansom();
-            //var customerList = await _customerService.GetAllCustomer(0);
-            //var assetList = await _iContractAssetService.GetAllContractAssets();
-            //var pawnableList = await _pawnableService.GetAllPawnableProducts(0);
-            //var wareHouseList = await _warehouseService.GetWareHouse(0);
-            // khai báo filed hiển thị chung 
-            var contractList = from c in contractCollection where c.BranchId == branchId select c;
-            decimal fund = 0;
-            decimal loanLedger = 0;
-            decimal recveivedInterest = 0;
-            decimal totalProfit = 0;
-            decimal ransomTotal = 0;
-            //get displayHomePage
-            // List<DisplayContractHomePage> listDipslay = new List<DisplayContractHomePage>();
-            foreach (var contract in contractList)
-            {
-                var contractId = contract.ContractId;
-                //display.contractCode = contract.ContractCode;
-                //display.customerName = getCustomerName(customerList, contract.CustomerId);
-                //display.assestCode = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 1);
-                //display.assetName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 2);
-                //display.loanContract = contract.Loan;
-                //display.startDate = contract.ContractStartDate;
-                //display.endDate = contract.ContractEndDate;
-                //display.wareName = getAsset(contract.ContractAssetId, assetList, pawnableList, wareHouseList, 3);
-                //display.status = contract.Status;
-                //get field hiển thị chung
-                if (fund == 0)
-                {
-                    fund = decimal.Parse(getBranchName(contract.BranchId, branchList, false));
-                }
-                totalProfit += contract.TotalProfit;
-                loanLedger += getLedger(ledgerList, contract.BranchId, true);
-                recveivedInterest += getLedger(ledgerList, contract.BranchId, false);
-                ransomTotal += getRansom(ransomList, contract.ContractId);
-                //add list
-                //listDipslay.Add(display);
-            }
-            DisplayContractHomePage x = new DisplayContractHomePage();
-            //add field hiển thị chung
-            x.totalProfit = totalProfit;
-            x.loanLedger = loanLedger;
-            x.fund = fund;
-            x.recveivedInterest = recveivedInterest;
-            x.ransomTotal = ransomTotal;
+            var branchServiceProvider = _serviceProvider.GetService(typeof(IBranchService)) as IBranchService;
+            var contractService = _serviceProvider.GetService(typeof(IContractService)) as IContractService;
+            
 
-            return x;
+            var branch = await branchServiceProvider.GetBranchById(branchId);
+            var contractList = await contractService.GetAllContracts();
+            contractList = from c in contractList
+                               where c.BranchId == branchId
+                               select c;
+
+            var displayContractHomePage = new DisplayContractHomePage();
+            displayContractHomePage.BranchId = branch.BranchId;
+            displayContractHomePage.Fund = branch.Fund;
+            displayContractHomePage.OpenContract = contractList.Where(c => c.Status == (int)ContractConst.IN_PROGRESS).Count();
+            displayContractHomePage.LateContract = contractList.Where(c => c.Status == (int)ContractConst.OVER_DUE).Count();
+            displayContractHomePage.LiquidationContract = contractList.Where(c => c.Status == (int)ContractConst.LIQUIDATION).Count();
+
+            return displayContractHomePage;
         }
         private async Task<IEnumerable<DisplayContractHomePage>> TakePage
             (int number, IEnumerable<DisplayContractHomePage> list)
@@ -224,15 +186,15 @@ namespace Services.Services
             return ransom.TotalPay;
         }
 
-        private decimal getLedger(IEnumerable<Ledger> ledgerList, int branchId, bool v)
-        {
-            var ledger = (from l in ledgerList where l.BranchId == branchId select l).FirstOrDefault();
-            // true => get loan, false => get receiveInterest (lãi đã nhận)
-            if (v)
-                return ledger.Loan;
-            else
-                return ledger.RecveivedInterest;
-        }
+        //private decimal getLedger(IEnumerable<Ledger> ledgerList, int branchId, bool v)
+        //{
+        //    var ledger = (from l in ledgerList where l.BranchId == branchId select l).FirstOrDefault();
+        //    // true => get loan, false => get receiveInterest (lãi đã nhận)
+        //    if (v)
+        //        return ledger.Loan;
+        //    else
+        //        return ledger.RecveivedInterest;
+        //}
 
         private string getBranchName(int branchId, IEnumerable<Branch> branchList, bool v)
         {
@@ -315,6 +277,17 @@ namespace Services.Services
                 var result = _unitOfWork.Save();
                 if (result > 0)
                 {
+                    var contractAsset = _dbContextClass.ContractAsset.FirstOrDefault(w => w.ContractAssetId == contract.ContractAssetId);
+                    var warehouse = _dbContextClass.Warehouse.FirstOrDefault(w => w.WarehouseId == contractAsset.WarehouseId);
+                    // Create Log Asset
+                    var logAsset = new LogAsset();
+                    logAsset.contractAssetId = contract.ContractAssetId;
+                    logAsset.Description = null;
+                    logAsset.ImportImg = null;
+                    logAsset.ExportImg = null;
+                    logAsset.UserName = GetUser(contract.UserId);
+                    logAsset.WareHouseName = warehouse.WarehouseName;
+                    await _logAssetService.CreateLogAsset(logAsset);
                     // Create Log Contract
                     var logContract = new LogContract();
                     logContract.ContractId = contract.ContractId;
@@ -383,11 +356,12 @@ namespace Services.Services
             {
                 return contractList;
             }
+            contractList.OrderByDescending(c => c.ContractStartDate);
             var result = await _unitOfWork.Contracts.TakePage(num, contractList);
             return result;
         }
 
-        public async Task<ICollection<DisplayContractList>> GetAllDisplayContracts(int num)
+        public async Task<ICollection<DisplayContractList>> GetAllDisplayContracts(int num, int branchId)
         {
             var contractJoinCustomerJoinAsset = from contract in _dbContextClass.Contract
                                                 join customer in _dbContextClass.Customer
@@ -398,6 +372,7 @@ namespace Services.Services
                                                 on contractAsset.PawnableProductId equals pawnableProduct.PawnableProductId
                                                 join warehouse in _dbContextClass.Warehouse
                                                 on contractAsset.WarehouseId equals warehouse.WarehouseId
+                                                where contract.BranchId == branchId
                                                 select new
                                                 {
                                                     ContractId = contract.ContractId,
@@ -411,7 +386,7 @@ namespace Services.Services
                                                     WarehouseName = warehouse.WarehouseName,
                                                     Status = contract.Status
                                                 };
-
+            contractJoinCustomerJoinAsset = contractJoinCustomerJoinAsset.OrderByDescending(c => c.ContractId);
             List<DisplayContractList> displayContractList = new List<DisplayContractList>();
             foreach (var row in contractJoinCustomerJoinAsset)
             {
@@ -756,6 +731,100 @@ namespace Services.Services
                 displayContractInfo = null;
             }
             return displayContractInfo;
+        }
+
+        public async Task<IEnumerable<DisplayNotification>> NotificationList(int branchId)
+        {
+            var notifiList = new List<DisplayNotification>();
+
+            // Notification for interest payment
+            var diaryProvider = _serviceProvider.GetService(typeof(IInteresDiaryService)) as IInteresDiaryService;
+
+            var contractJoinCustomerJoinAsset = from contract in _dbContextClass.Contract
+                                                join customer in _dbContextClass.Customer
+                                                on contract.CustomerId equals customer.CustomerId
+                                                join contractAsset in _dbContextClass.ContractAsset
+                                                on contract.ContractAssetId equals contractAsset.ContractAssetId
+                                                join pawnableProduct in _dbContextClass.PawnableProduct
+                                                on contractAsset.PawnableProductId equals pawnableProduct.PawnableProductId
+                                                join ransom in _dbContextClass.Ransom
+                                                on contract.ContractId equals ransom.ContractId
+                                                where (contract.BranchId == branchId)
+                                                select new
+                                                {
+                                                    ContractId = contract.ContractId,
+                                                    ContractCode = contract.ContractCode,
+                                                    CustomerName = customer.FullName,
+                                                    CommodityCode = pawnableProduct.CommodityCode,
+                                                    ContractAssetName = contractAsset.ContractAssetName,
+                                                    RansomTotalPay = ransom.TotalPay,
+                                                    ContractStartDate = contract.ContractStartDate,
+                                                    ContractEndDate = contract.ContractEndDate,
+                                                    Status = contract.Status
+                                                };
+
+            foreach (var row in contractJoinCustomerJoinAsset)
+            {
+                // Notification for ransom (contract is on due date) payment
+                if (row.ContractEndDate <= DateTime.Today && row.Status != (int)ContractConst.CLOSE)
+                {
+                    DisplayNotification displayNotification = new DisplayNotification();
+                    displayNotification.ContractId = row.ContractId;
+                    displayNotification.ContractCode = row.ContractCode;
+                    displayNotification.CustomerName = row.CustomerName;
+                    displayNotification.CommodityCode = row.CommodityCode;
+                    displayNotification.ContractAssetName = row.ContractAssetName;
+                    displayNotification.TotalPay = row.RansomTotalPay;
+                    displayNotification.ContractStartDate = row.ContractStartDate;
+                    displayNotification.ContractEndDate = row.ContractEndDate;
+                    displayNotification.Description = "Hợp đồng đến hạn cần thanh toán: " + displayNotification.TotalPay.ToString() + " VND";
+                    notifiList.Add(displayNotification);
+                }            
+            }
+
+            var contractJoinCustomerJoinAssetJoinDiaries = from contract in _dbContextClass.Contract
+                                                           join customer in _dbContextClass.Customer
+                                                           on contract.CustomerId equals customer.CustomerId
+                                                           join contractAsset in _dbContextClass.ContractAsset
+                                                           on contract.ContractAssetId equals contractAsset.ContractAssetId
+                                                           join pawnableProduct in _dbContextClass.PawnableProduct
+                                                           on contractAsset.PawnableProductId equals pawnableProduct.PawnableProductId
+                                                           join interestDiary in _dbContextClass.InterestDiary
+                                                           on contract.ContractId equals interestDiary.ContractId
+                                                           where (contract.BranchId == branchId)
+                                                           select new
+                                                           {
+                                                               ContractId = contract.ContractId,
+                                                               ContractCode = contract.ContractCode,
+                                                               CustomerName = customer.FullName,
+                                                               CommodityCode = pawnableProduct.CommodityCode,
+                                                               ContractAssetName = contractAsset.ContractAssetName,
+                                                               InterestTotalPay = interestDiary.TotalPay,
+                                                               NextDueDate = interestDiary.NextDueDate,
+                                                               DueDate = interestDiary.DueDate,
+                                                               Status = contract.Status
+                                                           };
+            foreach (var rows in contractJoinCustomerJoinAssetJoinDiaries)
+            {
+
+
+                if (rows.NextDueDate > DateTime.Today)
+                {
+                    continue;
+                }
+                DisplayNotification displayNotification = new DisplayNotification();
+                displayNotification.ContractId = rows.ContractId;
+                displayNotification.ContractCode = rows.ContractCode;
+                displayNotification.CustomerName = rows.CustomerName;
+                displayNotification.CommodityCode = rows.CommodityCode;
+                displayNotification.ContractAssetName = rows.ContractAssetName;
+                displayNotification.TotalPay = rows.InterestTotalPay;
+                displayNotification.ContractStartDate = rows.DueDate;
+                displayNotification.ContractEndDate = rows.NextDueDate;
+                displayNotification.Description = "Kỳ hạn đóng lãi đến cần thanh toán: " + displayNotification.TotalPay.ToString("0.##") + " VND";
+                notifiList.Add(displayNotification);
+            }
+            return notifiList;
         }
     }
 }

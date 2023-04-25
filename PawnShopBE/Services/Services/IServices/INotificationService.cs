@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Services.Services.IServices
 {
-    public interface IReportService
+    public interface INotificationService
     {
-        Task<IEnumerable<DisplayReportTransaction>> getReportTransaction(int number);
-        Task<List<DisplayReportMonth>> getReportMonth(int branchId);
+        public Task<IEnumerable<DisplayNotification>> NotificationList(int branchId);
     }
 }
