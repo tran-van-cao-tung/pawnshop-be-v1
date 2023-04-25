@@ -21,7 +21,6 @@ namespace PawnShopBE.Core.Models
         public DateTime? PaidDate { get; set; }
         public int Status { get; set; }
         public string? Description { get; set; }
-        public string? ProofImg { get; set; }
 
         public virtual Contract Contract { get; set; }
         public ICollection<DiaryImg>? DiaryImgs { get; set; }

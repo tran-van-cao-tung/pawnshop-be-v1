@@ -22,12 +22,12 @@ namespace PawnShopBE.Controllers
             _contractService = contractService;
         }
 
-        [HttpPut("updateLogAsset")]
-        public async Task<IActionResult> UpdateLogAsset(LogAsset logAsset)
+        [HttpPut("updateLogAsset/{logAssetId}")]
+        public async Task<IActionResult> UpdateLogAsset(int logAssetId, LogAsset logAsset)
         {
             if (logAsset != null)
             {
-                var response = await _logAssetService.UpdateLogAsset(logAsset);
+                var response = await _logAssetService.UpdateLogAsset(logAssetId, logAsset);
                 if (response)
                 {
                     return Ok(response);

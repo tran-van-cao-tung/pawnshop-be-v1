@@ -12,7 +12,7 @@ namespace Services.Services.IServices
     {
         Task<bool> CreateLogAsset(LogAsset logAsset);
         Task<IEnumerable<DisplayLogAsset>> LogAssetByAssetId(int contractAssetId);
-        Task<bool> UpdateLogAsset(LogAsset LogAsset);
+        Task<bool> UpdateLogAsset(int logAssetId, LogAsset LogAsset);
 
     }
 }

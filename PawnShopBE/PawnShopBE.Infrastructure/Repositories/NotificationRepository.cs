@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 
 namespace PawnShopBE.Infrastructure.Repositories
 {
-    public class MoneyRepository : GenericRepository<Money>, IMoneyRepository
+    public class NotificationRepository : GenericRepository<Notification>, INotificationRepository
     {
-        public MoneyRepository(DbContextClass dbContext) : base(dbContext)
+        public NotificationRepository(DbContextClass context) : base(context)
         {
-
         }
     }
 }

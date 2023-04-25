@@ -135,7 +135,6 @@ namespace PawnShopBE.Helpers
             CreateMap<InterestDiary, InterestDiaryDTO>().ReverseMap();
             CreateMap<ContractAsset, ContractAssetDTO>().ReverseMap();
             CreateMap<DependentPeople, DependentPeopleDTO>().ReverseMap();
-            CreateMap<MoneyDTO,Money>().ReverseMap();
             CreateMap<CustomerRelativeDTO, CustomerRelativeRelationship>().ReverseMap();
 
             // Mapping from User to UserRepsonse

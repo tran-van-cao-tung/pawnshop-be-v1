@@ -227,7 +227,7 @@ namespace Services.Services
                 var interestDiary = await _unit.InterestDiaries.GetById(interestDiaryId);
                 if (interestDiary != null && (interestDiaryImg != null))
                 {
-                    interestDiary.ProofImg = interestDiaryImg;
+                    //interestDiary.ProofImg = interestDiaryImg;
                 }
                 _unit.InterestDiaries.Update(interestDiary);
                 var result = _unit.Save();

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PawnShopBE.Core.Interfaces
 {
-    public interface IMoneyRepository : IGenericRepository<Money>
+    public interface INotificationRepository : IGenericRepository<Notification>
     {
     }
 }

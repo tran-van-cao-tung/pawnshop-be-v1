@@ -35,10 +35,17 @@ namespace PawnShopBE.Controllers
             return (response) ? Ok(response) : BadRequest();
         }
         [HttpGet("getDetailById/{branchId}")]
-
         public async Task<IActionResult> GetBranchDetail(int branchId)
         {
             var branchDetail = await _branchService.getDisplayBranchDetail(branchId);
+            return (branchDetail == null) ? NotFound(branchDetail) : Ok(branchDetail);
+
+        }
+
+        [HttpGet("getDetailYearById/{branchId}/{year}")]
+        public async Task<IActionResult> GetBranchDetailYear(int branchId, int year)
+        {
+            var branchDetail = await _branchService.getDisplayBranchYearDetail(branchId, year);
             return (branchDetail == null) ? NotFound(branchDetail) : Ok(branchDetail);
 
         }

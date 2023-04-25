@@ -50,7 +50,8 @@ builder.Services.AddQuartz(q =>
         .WithIdentity("MonthlyJob-trigger")
         // Run at midnight on the 1st of every month
         //.WithCronSchedule("0 0 0 1 * ?")
-        .WithCronSchedule("0 * * ? * *")
+        // each 10 minute
+        .WithCronSchedule("0 */10 * ? * *")
 
     );
     //q.AddTrigger(opts => opts
@@ -126,7 +127,6 @@ builder.Services.AddScoped<IInteresDiaryService, InterestDiaryService>();
 builder.Services.AddScoped<IRansomService, RansomService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<ILogContractService, LogContractService>();
-builder.Services.AddScoped<IMoneyService, MoneyService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IDiaryImgService, DiaryImgService>();
 builder.Services.AddScoped<ILogAssetService, LogAssetService>();

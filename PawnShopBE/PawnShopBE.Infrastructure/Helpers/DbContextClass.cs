@@ -43,10 +43,10 @@ namespace PawnShopBE.Infrastructure.Helpers
         public DbSet<Admin> Admin { get; set; }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<UserPermissionGroup> UserPermissionGroups { get; set; }
-        public DbSet<Money> Money { get; set; }
         public DbSet<LogContract> LogContracts { get; set; }
         public DbSet<LogAsset> LogAssets { get; set; }
         public DbSet<DiaryImg> DiaryImgs { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         #endregion
 
@@ -186,7 +186,7 @@ namespace PawnShopBE.Infrastructure.Helpers
             modelBuilder.Entity<Admin>(entity =>
             {
                 entity.ToTable("Admin");
-                entity.HasKey(a => a.UserName);
+                entity.HasKey(a => a.Id);
             });
             modelBuilder.Entity<UserPermissionGroup>(entity =>
             {
@@ -209,6 +209,12 @@ namespace PawnShopBE.Infrastructure.Helpers
                 entity.ToTable("DiaryImg");
                 entity.HasKey(d => d.DiaryImgId);
                 entity.HasOne(l => l.InterestDiary).WithMany(c => c.DiaryImgs).HasForeignKey(l => l.InterestDiaryId).IsRequired(true);
+            });
+            modelBuilder.Entity<Notification>(entity =>
+            {
+                entity.ToTable("Notification");
+                entity.HasKey(n => n.NotificationId);
+                entity.HasOne(b => b.Branch).WithMany(n => n.Notifications).HasForeignKey(n => n.BranchId).IsRequired(true);
             });
         }
     } 

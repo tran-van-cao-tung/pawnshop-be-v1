@@ -32,10 +32,21 @@ namespace PawnShopBE.Controllers
             return BadRequest();
         }
 
-        [HttpGet("getbyBranchId/{branchId}")]
-        public async Task<IActionResult> GetByBranchId(int branchId)
+        [HttpGet("getbyBranchId/{branchId}/{year}")]
+        public async Task<IActionResult> GetByBranchId(int branchId, int year)
         {
-            var respone = await _ledgerService.GetLedgersByBranchId(branchId);
+            var respone = await _ledgerService.GetLedgersByBranchId(branchId, year);
+            if (respone != null)
+            {
+                return Ok(respone);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("yearsOfLeger")]
+        public async Task<IActionResult> GetYearsOfLeger()
+        {
+            var respone = await _ledgerService.GetYearsOfLedger();
             if (respone != null)
             {
                 return Ok(respone);

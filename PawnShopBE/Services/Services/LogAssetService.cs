@@ -58,9 +58,9 @@ namespace Services.Services
             return (displayLogAssetList != null) ? displayLogAssetList : null;
         }
 
-        public async Task<bool> UpdateLogAsset(LogAsset logAsset)
+        public async Task<bool> UpdateLogAsset(int logAssetId, LogAsset logAsset)
         {
-            var logAssetUpdate =  _unit.LogAssets.SingleOrDefault(logAsset, l => l.logAssetId == logAsset.logAssetId);
+            var logAssetUpdate =  await _unit.LogAssets.GetById(logAssetId);
             if (logAssetUpdate != null)
             {
                 logAssetUpdate.ImportImg = logAsset.ImportImg;

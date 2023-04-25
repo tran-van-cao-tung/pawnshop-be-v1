@@ -21,7 +21,7 @@ namespace Services.Services
             _dbContextClass = dbContextClass;
         }
 
-        public Task<IEnumerable<DisplayNotification>> NotificationList(int branchId)
+        public async Task<IEnumerable<DisplayNotification>> NotificationList(int branchId)
         {
             throw new NotImplementedException();
         }
