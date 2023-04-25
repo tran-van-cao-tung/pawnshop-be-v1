@@ -45,10 +45,10 @@ namespace PawnShopBE.Controllers
             _ransomService = ransomService;
             _mapper = mapper;
         }
-        [HttpGet("excel/{branchId}")]
-        public async Task<IActionResult> exportFileExcel(int branchId)
+        [HttpGet("excel")]
+        public async Task<IActionResult> exportFileExcel()
         {
-            await _contractService.exporteExcel(branchId);
+            await _contractService.exporteExcel();
             return Ok("Export File Excel Success");
         }
         [HttpGet("homepage/{branchId}")]
@@ -57,7 +57,7 @@ namespace PawnShopBE.Controllers
             var listContracts = await _contractService.getAllContractHomepage(branchId);
             if (listContracts == null)
             {
-                return NotFound(listContracts);
+                return NotFound();
             }
             return Ok(listContracts);
         }
@@ -92,10 +92,10 @@ namespace PawnShopBE.Controllers
             var result = await _contractService.CreateContract(contract);
             return result ? Ok(result) : BadRequest();
         }
-        [HttpGet("getAll/{numPage}/{branchId}")]
-        public async Task<IActionResult> GetAllContracts(int numPage,int branchId)
+        [HttpGet("getAll/{numPage}")]
+        public async Task<IActionResult> GetAllContracts(int numPage)
         {
-            var listContracts = await _contractService.GetAllDisplayContracts(numPage, branchId);
+            var listContracts = await _contractService.GetAllDisplayContracts(numPage);
             if (listContracts == null)
             {
                 return NotFound();

@@ -8,6 +8,6 @@ namespace PawnShopBE.Core.Const
 {
     public enum NumberPage
     {
-        numPage = 6
+        numPage=10
     }
 }

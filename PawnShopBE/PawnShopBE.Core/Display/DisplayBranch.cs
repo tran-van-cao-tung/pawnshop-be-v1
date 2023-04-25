@@ -8,11 +8,15 @@ namespace PawnShopBE.Core.Display
 {
     public class DisplayBranch
     {
-        public int BranchId { get; set; }
-        public string BranchName { get; set; }
-        public decimal CurrentFund { get; set; }
+        public int branchId { get; set; }
+        public string branchName { get; set; }
+        public decimal balance { get; set; }
+        public decimal fund { get; set; }
+        public decimal loan { get; set; }
+        public decimal recveivedInterest { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
-        public int LiquidationContracts { get; set; }
+        public DateTime CreateDate { get; set; }
+        public int Status { get; set; }
     }
 }

@@ -48,10 +48,10 @@ namespace Services.Services
         public async Task<Relative_Job_DependentDTO> getRelative(Guid idCus)
         {
             var listCustomer = await GetAllCustomer(0);
-            var customer = (from c in listCustomer where c.CustomerId == idCus select c).FirstOrDefault();
+            var customer=(from c in listCustomer where c.CustomerId== idCus select c).FirstOrDefault();
             //get Job
-            var listJob = await _job.GetJob();
-            var Job = from b in listJob where b.CustomerId == idCus select b;
+            var listJob =await _job.GetJob();
+            var Job = from b in listJob where b.CustomerId==idCus select b;
 
             //get Relative
             var listRelative = await _relative.GetCustomerRelative();
@@ -59,21 +59,20 @@ namespace Services.Services
 
             //get Dependent
             var listDependent = await _dependent.GetDependent();
-            var dependent = from d in listDependent where d.CustomerId == idCus select d;
+            var dependent= from d in listDependent where d.CustomerId==idCus select d;
 
             //trien khai CustomerDTO
             var customerDTOs = new Relative_Job_DependentDTO();
             customerDTOs = getFiledCustomerDTO(customer, customerDTOs);
             try
             {
-                customerDTOs.Jobs = new List<JobDTO>();
-                customerDTOs.DependentPeople = new List<DependentPeopleDTO>();
+                customerDTOs.Jobs= new List<JobDTO>();
+                customerDTOs.DependentPeople= new List<DependentPeopleDTO>();
                 customerDTOs.CustomerRelativeRelationships = new List<CustomerRelativeDTO>();
                 //đưa vào list trong customer
-                customerDTOs = getListRelativeDTO(idCus, customerDTOs, Job, Relative, dependent);
+                customerDTOs = getListRelativeDTO(idCus,customerDTOs,Job,Relative,dependent);
                 return customerDTOs;
-            }
-            catch (Exception ex)
+            }catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -83,17 +82,17 @@ namespace Services.Services
         private Relative_Job_DependentDTO getFiledCustomerDTO(Customer? customer, Relative_Job_DependentDTO customerDTOs)
         {
             customerDTOs.KycId = customer.KycId;
-            customerDTOs.FullName = customer.FullName;
-            customerDTOs.CCCD = customer.CCCD;
-            customerDTOs.Address = customer.Address;
-            customerDTOs.Phone = customer.Phone;
-            customerDTOs.Status = customer.Status;
-            customerDTOs.Point = customer.Point;
-            customerDTOs.CreatedDate = customer.CreatedDate;
+            customerDTOs.FullName=customer.FullName;
+            customerDTOs.CCCD=customer.CCCD;
+            customerDTOs.Address=customer.Address;
+            customerDTOs.Phone=customer.Phone;
+            customerDTOs.Status=customer.Status;
+            customerDTOs.Point=customer.Point;
+            customerDTOs.CreatedDate=customer.CreatedDate;
             return customerDTOs;
         }
 
-        private Relative_Job_DependentDTO getListRelativeDTO(Guid idCus, Relative_Job_DependentDTO customerDTOs, IEnumerable<Job> job,
+        private Relative_Job_DependentDTO getListRelativeDTO(Guid idCus,Relative_Job_DependentDTO customerDTOs, IEnumerable<Job> job, 
             IEnumerable<CustomerRelativeRelationship> relative, IEnumerable<DependentPeople> dependent)
         {
             foreach (var y in job)
@@ -132,7 +131,7 @@ namespace Services.Services
             return customerDTOs;
         }
 
-        public async Task<bool> createRelative(Guid idCus, Relative_Job_DependentDTO customer)
+        public async Task<bool> createRelative(Guid idCus,Relative_Job_DependentDTO customer)
         {
             var job = new Job();
             var relative = new CustomerRelativeRelationship();
@@ -147,15 +146,15 @@ namespace Services.Services
             try
             {
                 //get field for relative
-                job = getFieldJob(customer, job);
-                relative = getFieldRelative(customer, relative);
-                dependent = getFieldDependent(customer, dependent);
-
+                job = getFieldJob(customer,job);
+                relative=getFieldRelative(customer,relative);
+                dependent=getFieldDependent(customer,dependent);
+               
                 //create relative
-                var createRelative = await _relative.CreateCustomerRelative(relative);
-                var createJob = await _job.CreateJob(job);
+                var createRelative =await _relative.CreateCustomerRelative(relative);
+                var createJob =await _job.CreateJob(job);
                 var createDependent = await _dependent.CreateDependent(dependent);
-                if (createRelative || createJob || createDependent)
+                if(createRelative || createJob || createDependent) 
                     return true;
                 else
                     return false;
@@ -165,7 +164,7 @@ namespace Services.Services
                 Console.WriteLine(ex.Message);
                 return false;
             }
-
+            
         }
 
         private DependentPeople getFieldDependent(Relative_Job_DependentDTO customer, DependentPeople dependent)
@@ -211,9 +210,7 @@ namespace Services.Services
         {
             if (customer != null)
             {
-                customer.Point = 50;
-                await _unitOfWork.Customers.Add(customer);
-
+                 await _unitOfWork.Customers.Add(customer);
                 var result = _unitOfWork.Save();
                 if (result > 0) return true;
             }
@@ -223,15 +220,15 @@ namespace Services.Services
         public async Task<int> createKyc(CustomerDTO customer)
         {
             //get list Kyc
-            var kyc = new Kyc();
+            var kyc= new Kyc();
             kyc.IdentityCardBacking = customer.IdentityCardBacking;
             kyc.IdentityCardFronting = customer.IdentityCardFronting;
-            kyc.FaceImg = customer.FaceImg;
+            kyc.FaceImg= customer.FaceImg;
             //create kyc
             await _unitOfWork.Kycs.Add(kyc);
-            _unitOfWork.Save();
+             _unitOfWork.Save();
             //get kycId
-            var listKyc = await _unitOfWork.Kycs.GetAll();
+            var listKyc= await _unitOfWork.Kycs.GetAll();
             var kycLast = listKyc.LastOrDefault();
             if (kycLast != null)
             {
@@ -297,11 +294,9 @@ namespace Services.Services
         {
             if (idCus != null)
             {
-                var customer = await _unitOfWork.Customers.GetById(idCus);             
-                if (customer != null)
+                var customer =await _unitOfWork.Customers.GetById(idCus);
+                if(customer != null)
                 {
-                    var kyc = await _kycService.GetKycById(customer.KycId);
-                    customer.Kyc = kyc;
                     return customer;
                 }
             }
@@ -332,7 +327,7 @@ namespace Services.Services
         {
             if (customer != null)
             {
-                var customerUpdate = _unitOfWork.Customers.SingleOrDefault(customer, en => en.CustomerId == customer.CustomerId);
+                var customerUpdate = _unitOfWork.Customers.SingleOrDefault(customer, en => en.CustomerId ==customer.CustomerId);
                 if (customerUpdate != null)
                 {
                     // customerUpdate = customer;
@@ -343,10 +338,9 @@ namespace Services.Services
                     customerUpdate.Address = customer.Address;
                     customerUpdate.FullName = customer.FullName;
                     customerUpdate.UpdateDate = DateTime.Now;
-                    customerUpdate.Reason = customer.Reason;
                     _unitOfWork.Customers.Update(customerUpdate);
                     var result = _unitOfWork.Save();
-                    if (result > 0)
+                    if(result > 0)
                     {
                         return true;
                     }
@@ -359,7 +353,6 @@ namespace Services.Services
             return false;
         }
 
-       
-
+        
     }
 }

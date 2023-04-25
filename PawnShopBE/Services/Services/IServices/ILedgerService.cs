@@ -11,9 +11,7 @@ namespace Services.Services.IServices
     {
         Task<bool> CreateLedger(Ledger ledger);
         Task<IEnumerable<Ledger>> GetLedger();
-        Task<IEnumerable<Ledger>> GetLedgersByBranchId(int branchId, int year);
         Task<IEnumerable<Ledger>> GetLedgersByBranchId(int branchId);
-        Task<IEnumerable<int>> GetYearsOfLedger();
         Task<bool> UpdateLedger(Ledger ledger);
     }
 }

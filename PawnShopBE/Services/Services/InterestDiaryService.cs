@@ -1,5 +1,4 @@
-﻿using AutoMapper.Execution;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using PawnShopBE.Core.Const;
 using PawnShopBE.Core.Interfaces;
 using PawnShopBE.Core.Models;
@@ -26,14 +25,12 @@ namespace Services.Services
         private DbContextClass _dbContextClass;
         private readonly IInterestDiaryRepository _interestDiaryRepository;
         private readonly ILogContractService _logContractService;
-        private readonly IDiaryImgService _diaryImgService;
-        public InterestDiaryService(IUnitOfWork unitOfWork, DbContextClass dbContextClass, IInterestDiaryRepository interestDiaryRepository, ILogContractService logContractService, IDiaryImgService diaryImgService)
+        public InterestDiaryService(IUnitOfWork unitOfWork, DbContextClass dbContextClass, IInterestDiaryRepository interestDiaryRepository, ILogContractService logContractService)
         {
             _unit = unitOfWork;
             _dbContextClass = dbContextClass;
             _interestDiaryRepository = interestDiaryRepository;
             _logContractService = logContractService;
-            _diaryImgService = diaryImgService;
         }
 
         private string GetCustomerName(Guid customerId)
@@ -71,8 +68,7 @@ namespace Services.Services
                     ICollection<InterestDiary> interestDiaries = new List<InterestDiary>();
 
                     // Interest money
-                    decimal payment = interestDiary.Payment = (int) contract.TotalProfit / numberOfPeriods;
-
+                    decimal payment = interestDiary.Payment = contract.TotalProfit / numberOfPeriods;
                     decimal totalFee = contract.InsuranceFee + contract.StorageFee;
 
                     interestDiary.ContractId = contract.ContractId;
@@ -135,40 +131,25 @@ namespace Services.Services
             return null;
         }
 
-        public async Task<bool> UpdateInterestDiary(int id, decimal paidMoney, List<string> proofImg)
+        public async Task<bool> UpdateInterestDiary(int id, decimal paidMoney)
         {
             try
             {
                 var diaryUpdate = await _unit.InterestDiaries.GetById(id);
-                if (diaryUpdate == null) return false;          
-                // Check current PaidMoney
-                if (paidMoney > diaryUpdate.TotalPay || (paidMoney + diaryUpdate.PaidMoney) > diaryUpdate.TotalPay)
-                {
-                    return false;
-                }
-                if (diaryUpdate.PaidMoney == diaryUpdate.TotalPay)
-                {
-                    paidMoney = 0;
-                }
-                diaryUpdate.InterestDebt = diaryUpdate.TotalPay - (paidMoney + diaryUpdate.PaidMoney);
-                if (diaryUpdate.InterestDebt < 0)
-                {
-                    diaryUpdate.InterestDebt = 0;
-                }
-                diaryUpdate.PaidMoney += paidMoney;
-                // Status is PAID
-                if (diaryUpdate.TotalPay == diaryUpdate.PaidMoney && diaryUpdate.InterestDebt == 0)
+                if (diaryUpdate == null) return false;
+                diaryUpdate.PaidMoney = paidMoney;
+                diaryUpdate.InterestDebt = diaryUpdate.TotalPay - (paidMoney);
+                diaryUpdate.PaidDate = DateTime.Now;
+
+                if (diaryUpdate.TotalPay == paidMoney && diaryUpdate.InterestDebt == 0)
                 {
                     diaryUpdate.Status = (int)InterestDiaryConsts.PAID;
+                    diaryUpdate.InterestDebt = 0;
                 }
 
-                if (diaryUpdate.InterestDebt != 0)
-                {
-                    diaryUpdate.Status = (int)InterestDiaryConsts.DEBT;
 
-                }
                 _unit.InterestDiaries.Update(diaryUpdate);
-
+                
                 var result = _unit.Save();
                 if (result > 0)
                 {
@@ -178,7 +159,6 @@ namespace Services.Services
                                                        on contract.CustomerId equals customer.CustomerId
                                                        join user in _dbContextClass.User
                                                        on contract.UserId equals user.UserId
-                                                       where contract.ContractId == diaryUpdate.ContractId
                                                        select new
                                                        {
                                                            ContractId = contract.ContractId,
@@ -196,21 +176,15 @@ namespace Services.Services
                     logContract.Paid = diaryUpdate.PaidMoney;
                     logContract.Description = diaryUpdate.NextDueDate.ToString("dd/MM/yyyy HH:mm");
                     logContract.EventType = (diaryUpdate.TotalPay == diaryUpdate.PaidMoney) ? (int)LogContractConst.INTEREST_PAID : (int)LogContractConst.INTEREST_NOT_PAID;
-                    if (diaryUpdate.Status == (int)InterestDiaryConsts.DEBT || diaryUpdate.PaidMoney < paidMoney)
-                    {
-                        logContract.EventType = (int)LogContractConst.INTEREST_DEBT;
-                        logContract.Debt = diaryUpdate.InterestDebt;
-                        logContract.Paid = paidMoney;
-                    }
                     logContract.LogTime = DateTime.Now;
-                    await _logContractService.CreateLogContract(logContract);
-                   
-                        await _diaryImgService.CreateDiariesImg(id, proofImg);
-                
-
-
+                    if (logContract.EventType == (int)LogContractConst.INTEREST_PAID)
+                    {
+                        await _logContractService.CreateLogContract(logContract);
+                    }
                     return true;
                 }
+              
+                
             }
             catch (Exception e)
             {
@@ -227,7 +201,7 @@ namespace Services.Services
                 var interestDiary = await _unit.InterestDiaries.GetById(interestDiaryId);
                 if (interestDiary != null && (interestDiaryImg != null))
                 {
-                    //interestDiary.ProofImg = interestDiaryImg;
+                    interestDiary.ProofImg = interestDiaryImg;
                 }
                 _unit.InterestDiaries.Update(interestDiary);
                 var result = _unit.Save();
@@ -241,6 +215,6 @@ namespace Services.Services
             return false;
         }
 
-
+       
     }
 }

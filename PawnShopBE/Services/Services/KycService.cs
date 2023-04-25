@@ -46,12 +46,6 @@ namespace Services.Services
             return kycList;
         }
 
-        public async Task<Kyc?> GetKycById(int kycId)
-        {
-            var kyc = await _unit.Kycs.GetById(kycId);
-            return (kyc != null) ? kyc : null;             
-        }
-
         public async Task<bool> UpdateKyc(Kyc kyc)
         {
             if (kyc != null)

@@ -23,7 +23,15 @@ namespace PawnShopBE.Controllers
         public async Task<IActionResult> GetAttributesById(int id)
         {
             var attributes = await _attributeService.GetAttributesByPawnableId(id);
-            return (attributes != null ) ? Ok(attributes) : NotFound();
+
+            if (attributes != null)
+            {
+                return Ok(attributes);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
     }
 }
