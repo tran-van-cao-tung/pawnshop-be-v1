@@ -36,24 +36,6 @@ namespace Services.Services
             _diaryImgService = diaryImgService;
         }
 
-        private string GetCustomerName(Guid customerId)
-        {
-            var customerIenumerable = from c in _dbContextClass.Customer
-                                      where c.CustomerId == customerId
-                                      select c;
-            var customer = customerIenumerable.FirstOrDefault();
-            return customer.FullName;
-        }
-
-        private string GetUser(Guid userId)
-        {
-            var userIenumerable = from u in _dbContextClass.User
-                                  where u.UserId == userId
-                                  select u;
-            var user = userIenumerable.FirstOrDefault();
-            return user.FullName;
-        }
-
         public async Task<bool> CreateInterestDiary(Contract contract)
         {
             if (contract != null)

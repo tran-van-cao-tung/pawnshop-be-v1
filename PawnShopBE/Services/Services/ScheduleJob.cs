@@ -26,6 +26,8 @@ namespace Services.Services
         private readonly IInteresDiaryService _interesDiaryService;
         private readonly ILogContractService _logContractService;
         private readonly IUserService _userService;
+        private DateTime lastNotificationTime = DateTime.MinValue;
+
         public ScheduleJob(DbContextClass dbContextClass, IContractService contractService, IPackageService packageService, IInteresDiaryService interesDiaryService, ILogContractService logContractService, IUserService userService)
         {
             _contextClass = dbContextClass;
@@ -37,6 +39,12 @@ namespace Services.Services
         }
         public async Task Execute(IJobExecutionContext context)
         {
+            TimeSpan timeSinceLastNotification = DateTime.UtcNow - lastNotificationTime;
+            if (timeSinceLastNotification.TotalMinutes >= 1)
+            {
+                // code to create the notification
+                lastNotificationTime = DateTime.UtcNow;
+            }
             // Auto Create Account Admin if it null Username: Admin, Password: Admin12345
             var admin = _contextClass.Admin.SingleOrDefault(p => p.UserName == "Admin");
             if (admin == null)
@@ -154,6 +162,8 @@ namespace Services.Services
                 logContract.LogTime = DateTime.Now;
                 await _logContractService.CreateLogContract(logContract);
             }
+
+            
             _contextClass.SaveChanges();
         }
     }
